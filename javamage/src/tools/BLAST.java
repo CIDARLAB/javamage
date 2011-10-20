@@ -1,8 +1,8 @@
+package tools;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -155,7 +155,7 @@ public class BLAST {
 			if (line.startsWith("#")){
 				if (line.contains("# Query:")) {
 					count++;
-					System.out.println(count);
+					//System.out.println(count);
 				}
 			}
 			else{
@@ -168,13 +168,14 @@ public class BLAST {
 					br.sStart = Integer.parseInt(parameters[2]);
 					br.sEnd = Integer.parseInt(parameters[3]);
 					br.match_sequence = parameters[4];
-					br.bitscore = Double.parseDouble(parameters[5]);
-					br.evalue = Double.parseDouble(parameters[6]);
+					br.evalue = Double.parseDouble(parameters[5]);
+					br.bitscore = Double.parseDouble(parameters[6]);
 
 					results.add(br);
 				}
 			}
 		}
+		System.out.println("[BLAST] Total Number of Queries = "+count);
 		
 		return results;
 	}
@@ -266,14 +267,16 @@ public class BLAST {
 			this.sStart = -1;
 			this.sEnd = -1;
 			this.match_sequence = "";
-			this.evalue = -1.0;
 			this.bitscore = -1.0;
+			this.evalue = -1.0;
 		}
 		
+		@Override
 		public String toString(){
 			return oligoID.toString()+"\t"+qStart.toString()+"\t"+
 					qEnd.toString()+"\t"+sStart.toString()+"\t"+
-					sEnd.toString()+"\t"+match_sequence+bitscore.toString();
+					sEnd.toString()+"\t"+match_sequence+"\t\t"+
+					bitscore.toString()+"\t"+evalue.toString();
 		}
 		
 	}
