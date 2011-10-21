@@ -28,6 +28,7 @@ public class BLAST {
 	private String queryFileName = "query.fasta";
 	private String subjectFFN;
 	private ArrayList<Integer> index;
+	private int matches;
 	/**
 	 * 
 	 * @param directory	String containing the directory in which the blast results are to be carried out
@@ -41,6 +42,7 @@ public class BLAST {
 		this.db = new DataBase(subjectFFN);
 		this.directory = directory;
 		this.index = new ArrayList<Integer>();
+		this.matches = 0;
 
 		try{
 			ProcessBuilder dbBuilder= new ProcessBuilder(makeBlastDBCommand());
@@ -65,6 +67,7 @@ public class BLAST {
 			queryTerms+="> Oligo_"+entry.getKey().toString();
 			queryTerms+="\n";
 			index.add(entry.getKey());
+			
 			// Split the string by length 80
 			String [] seqSplit = entry.getValue().split("(?<=\\G.{80})");
 
@@ -91,24 +94,30 @@ public class BLAST {
 	 * (made with the setQuery method)
 	 * After calling the external process, this command will waitfor it to complete, parse and store the results
 	 */
-	public void run(){
+	public List<BlastResult> run(){
+		
+		ArrayList<BlastResult> results = new ArrayList<BlastResult>(this.matches);
+
 		if (this.buildQuery){
 			try{
 
 				ProcessBuilder blastn = new ProcessBuilder(makeBlastNCommand());
 				Process blast_standalone = blastn.start();
 				blast_standalone.waitFor();
-
+				
 			}
 			catch (Exception ee) {
 				System.err.println("[BLAST] Fatal Error: Could Successfully Run blastn command"); 
 				ee.printStackTrace(); 
-			}
+			}			
 
 			try{
 				String output = TextFile.read(this.directory+this.db.textFile);
-				for( BlastResult br : parse(output) ) { System.out.println(br);
-					
+				
+				int counter = 0;
+				for( BlastResult br : parse(output) ) { results.add(counter++, br) ;
+				System.out.println(br);
+				
 				}
 
 			}
@@ -118,6 +127,7 @@ public class BLAST {
 
 			}
 		}
+		return results;
 	}
 
 	/**
@@ -175,7 +185,8 @@ public class BLAST {
 				}
 			}
 		}
-		System.out.println("[BLAST] Total Number of Queries = "+count);
+		this.matches = count; 
+		System.out.println("[BLAST] Total Number of Queries = "+this.matches);
 		
 		return results;
 	}
@@ -249,7 +260,8 @@ public class BLAST {
 		}
 	}
 
-	private class BlastResult{
+	
+	public class BlastResult{
 
 		public Integer oligoID;
 		public String match_sequence;
