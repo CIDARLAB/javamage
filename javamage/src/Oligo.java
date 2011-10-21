@@ -7,6 +7,7 @@ import org.biojava3.core.sequence.DNASequence;
 
 import tools.BLAST;
 import tools.BLAST.BlastResult;
+import tools.MFOLD;
 
 
 /**
@@ -50,6 +51,7 @@ public class Oligo extends DNASequence {
 
 	private ArrayList<Double>  bg_scores;
 	private ArrayList<Double>  dg_scores;
+	private ArrayList<Double>  dg_raw_scores;
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
 
@@ -112,12 +114,28 @@ public class Oligo extends DNASequence {
 
 		// Create an ArrayList of Fixed Length for storing blast genome and oligo scores
 		this.bg_scores = new ArrayList<Double>(this.margin);
-		this.dg_scores  = new ArrayList<Double>(this.margin); 
+		this.dg_scores  = new ArrayList<Double>(this.margin);
+		this.dg_raw_scores  = new ArrayList<Double>(this.margin); 
 
 		System.out.println("Span : "+this.span+"\nMargin: "+this.margin);
 	}
 
-
+	public void calc_dg(){
+		try{
+			ArrayList <String> list = new ArrayList<String>(this.margin);
+			for ( int ii = this.oligo_min ; ii < this.oligo_max; ii++){
+				list.add(this.getOligo(ii));
+			}
+			
+			MFOLD mfold = new MFOLD(list);
+			dg_raw_scores = mfold.run();			
+			
+			for (Double dg_value : dg_raw_scores){ 
+				dg_scores.add(Switches.FreeEnergyScore(dg_value));
+			}
+		}
+		catch (Exception ee) {ee.printStackTrace();}
+	}
 
 	public void calc_bg(){
 		try{
@@ -169,14 +187,18 @@ public class Oligo extends DNASequence {
 	}
 
 	
-	public void printBlastGenomeScores(){
-		
+	public void printBlastGenomeScores(){	
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
-			System.out.format( "%d \t \t %.3f \n",jj, bg(ii-this.oligo_min) ); 
+			System.out.format( "%d \t \t %.3f \n",jj, bg(ii) ); 
 		}
-
 	}
-
+	
+	public void printFreeEnergyScores(){
+		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
+			System.out.format( "%d \t \t %.3f \t %.3f \n",jj, dg(ii), dg_raw_scores.get(ii-this.oligo_min) ); 
+		}
+	}
+	
 	public int getGenomeStart(){
 		return this.genome_start;
 	}
@@ -196,8 +218,7 @@ public class Oligo extends DNASequence {
 	}
 
 	public Double dg(int position){
-		// If we are in a good range get the following values.
-		if (position > this.oligo_max && position < this.oligo_min);
+		if (position >= this.oligo_max && position < this.oligo_min);
 		return this.dg_scores.get(position-this.oligo_min);
 	}
 
@@ -206,7 +227,7 @@ public class Oligo extends DNASequence {
 	}
 
 	public Double bg(int position){
-		return this.bg_scores.get(position);
+		return this.bg_scores.get(position-this.oligo_min);
 	}
 
 	public String getOligo(int start_position) throws Exception{
@@ -265,6 +286,7 @@ public class Oligo extends DNASequence {
 	
 	public static void main(String[] args)  {
 		Switches.setBlastScoringMethod(2);
+		Switches.setFreeEnergyScoringMethod(2);
 		Oligo ol= new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",
 				"GGGATTATTATTGGG","CTCGAATCTACCGTCGATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCG",421,560);
 		try {
@@ -275,6 +297,8 @@ public class Oligo extends DNASequence {
 		}
 		ol.calc_bg();
 		ol.printBlastGenomeScores();
+		ol.calc_dg();
+		ol.printFreeEnergyScores();
 	}
 
 }

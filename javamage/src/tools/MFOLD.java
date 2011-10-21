@@ -5,29 +5,28 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.biojava3.core.sequence.DNASequence;
-
-
 public class MFOLD {
 
-	private List<DNASequence> list;
+	private List<String> list;
+	private ArrayList<Double> results;
 
-	public MFOLD (List<DNASequence> list) {
+	public MFOLD (List<String> list) {
 		setOligos(list);
+		this.results = new ArrayList<Double>(list.size());
 	}
 
-	public List<DNASequence> getOligo() {
+	public List<String> getOligo() {
 		return this.list;
 	}
 
-	public void setOligos(List<DNASequence> list) {
+	public void setOligos(List<String> list) {
 		this.list =  list;
 
 	}
 
-	public void run() {
-
-		for ( DNASequence seq: list)
+	public ArrayList<Double> run() {
+				
+		for ( String seq: list)
 		{
 			BufferedReader input;
 			try{
@@ -36,11 +35,11 @@ public class MFOLD {
 						Constants.MFOLD,"--NA=DNA","--energyOnly","-q",seq.toString());
 				Process mfold = pb.start();
 
-				// Extract result from stdout
+				// Extract result from stdout, and Store as a Double
 				input = new BufferedReader(new InputStreamReader(mfold.getInputStream()));
-				String result = input.readLine();
-				System.out.println(result);
-				//Double.parseAsDouble(result));
+				String dg = input.readLine();
+				results.add(Double.parseDouble(dg));
+				
 				// Close the input stream
 				input.close();
 			}
@@ -49,14 +48,19 @@ public class MFOLD {
 				System.err.println("[MFOLD] Fatal Error Executing MFOLD");
 			}
 		}
+		return this.results;
 	}
 
 	public static void main(String[] args) {
-		ArrayList<DNASequence> list = new ArrayList<DNASequence>();
-		list.add(new DNASequence("atcgatcggctaggtaacagattaatctctcggagctgatacgac"));
-		list.add(new DNASequence("ttggttataccaaagcaccagcggtgacgagccattgttggacatcgaacaatccttttgtgataaatgaacggtttgagaaacacatt"));		
+		
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(new String("atcgatcggctaggtaacagattaatctctcggagctgatacgac"));
+		list.add(new String("TTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTACGGGATTATTATTGGGCTCGAATCTACCGTCGATATTGCTGAGTCCACCC"));		
 		MFOLD mf =  new MFOLD(list);
-		mf.run();
+		
+		for ( Double score : mf.run() ) {
+			System.out.println(score);
+		} 
 	}
 
 }
