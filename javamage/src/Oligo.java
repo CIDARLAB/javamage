@@ -55,27 +55,43 @@ public class Oligo extends DNASequence {
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
 
-	//	public class Span{
-	//		public String preSequence;
-	//		public String postSequence;
-	//		public String target;
-	//		public int genome_start;
-	//		public int genome_end;
-	//		
-	//		public Span(DNASequence genome, String target, int targetPosition){
-	//			if (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1)){
-	//				this.preSequence = genome.getSequenceAsString(targetPosition-,targetPosition-1);
-	//				this.postSequence = genome.substring(targetPosition+target.length() ,targetPosition+target.length()+(Oligo.ideal_length-Oligo.buffer_5prime) );
-	//				this.target = target;
-	//				this.genome_end = ;
-	//				this.genome_start;
-	//			}
-	//		}
-	//	}
 
-	//	private Oligo(String span, int target_position);
-	//	{
-	//	}
+	/**
+	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
+	 * 
+	 * @param genome			A string containing the genome to be modified by MAGE
+	 * @param target			A string containing the target mutation to be inserted/mismatched
+	 * @param targetPosition	Integer containing the starting position
+	 * 
+	 * @return
+	 * @throws Exception 
+	 */
+	public static Oligo InsertionFactory(String genome, String target, int targetPosition) throws Exception {
+
+		if (genome.length() < (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 + target.length() ) ) {
+
+			// Define the Genome Starting Position
+			int genome_start = targetPosition+Oligo.buffer_3prime - Oligo.ideal_length + target.length() + 1 ;
+
+			// Extract a Subsequence from that point - THIS FOR A STRING i.e INDEXED FROM ZERO
+			String preSequence = genome.substring( genome_start -1 ,targetPosition);
+
+			// Define a Genome ending position
+			int genome_end = targetPosition +(Oligo.ideal_length-Oligo.buffer_5prime-target.length());
+
+			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
+			String postSequence = genome.substring(targetPosition , genome_end);
+
+			// Return the new Oligo that was just made
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
+
+		}
+	//	else {
+			return null;
+			//throw new Exception("[Insertion Factory] Oligo not defined on correct range");			
+//		}
+
+	}
 
 	private Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end){
 		super(preSequence+targetSequence+postSequence);
@@ -99,7 +115,7 @@ public class Oligo extends DNASequence {
 		this.target_end =  preSequence.length() + this.target_length;
 
 		// The margin for variation is given by L - 5'Buffer - 3-Buffer - t
-		this.margin = Oligo.ideal_length - Oligo.buffer_3prime - Oligo.buffer_5prime - this.target_length;
+		this.margin = Oligo.ideal_length - Oligo.buffer_3prime - Oligo.buffer_5prime - this.target_length +1;
 
 		// Get the index number for the first possible oligo.
 		this.oligo_min = 1;
@@ -126,10 +142,10 @@ public class Oligo extends DNASequence {
 			for ( int ii = this.oligo_min ; ii < this.oligo_max; ii++){
 				list.add(this.getOligo(ii));
 			}
-			
+
 			MFOLD mfold = new MFOLD(list);
 			dg_raw_scores = mfold.run();			
-			
+
 			for (Double dg_value : dg_raw_scores){ 
 				dg_scores.add(Switches.FreeEnergyScore(dg_value));
 			}
@@ -152,20 +168,20 @@ public class Oligo extends DNASequence {
 				System.out.println(this.getOligo(ii));
 				score_list.add(new ArrayList<Double>());
 			}
-			
+
 			/* Set the BLSAT Query and then RUN IT, capturing the results inside a LIST*/
 			blast.setQuery(queries);
 			List<BlastResult> br = blast.run();
-			
+
 			for ( BLAST.BlastResult result :  br) {
 
 				/* Check if we have a mistarget not targeted alignment*/
 				if( !( (result.sStart >= this.genome_start) && (result.sStart <= this.genome_end) ) ||
-					!( (result.sEnd >= this.genome_start) && (result.sEnd <= this.genome_end) ) 	){
+						!( (result.sEnd >= this.genome_start) && (result.sEnd <= this.genome_end) ) 	){
 
 					/* Calculate the score using for the BLAST Genome : SWITCH */
 					Double score = Switches.BlastScore(result.bitscore, result.evalue);
-					
+
 					/* Store the score */
 					score_list.get(result.oligoID - (this.oligo_min)).add(score);
 
@@ -186,19 +202,19 @@ public class Oligo extends DNASequence {
 		catch (Exception ee){ee.printStackTrace();}
 	}
 
-	
+
 	public void printBlastGenomeScores(){	
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
 			System.out.format( "%d \t \t %.3f \n",jj, bg(ii) ); 
 		}
 	}
-	
+
 	public void printFreeEnergyScores(){
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
 			System.out.format( "%d \t \t %.3f \t %.3f \n",jj, dg(ii), dg_raw_scores.get(ii-this.oligo_min) ); 
 		}
 	}
-	
+
 	public int getGenomeStart(){
 		return this.genome_start;
 	}
@@ -273,7 +289,7 @@ public class Oligo extends DNASequence {
 	//		}
 	//	}
 	//	
-	
+
 	public int getFeatureCount(){
 		return this.feature_count;
 	}
@@ -283,22 +299,29 @@ public class Oligo extends DNASequence {
 	}
 
 	// Function of testing
-	
+
 	public static void main(String[] args)  {
-		Switches.setBlastScoringMethod(2);
-		Switches.setFreeEnergyScoringMethod(2);
-		Oligo ol= new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",
-				"GGGATTATTATTGGG","CTCGAATCTACCGTCGATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCG",421,560);
-		try {
-			System.out.println(ol.getOligo(1));
+//		Switches.setBlastScoringMethod(1);
+//		Switches.setFreeEnergyScoringMethod(2);
+
+		try {	
+			Oligo ol2 = new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",
+					"GGGATTATTATTGGG","GATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCGCGCGGTCACAACGTT",421,560);
+		Oligo ol = Oligo.InsertionFactory(
+				"CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTACGATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCGCGCGGTCACAACGTT",
+				"GGGATTATTATTGGG",60);
+		System.out.println(ol.getOligo(1));
+		System.out.println(ol2.getOligo(1));
+
+		ol.calc_bg();
+		ol.printBlastGenomeScores();
+		ol2.calc_bg();
+		ol2.printBlastGenomeScores();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ol.calc_bg();
-		ol.printBlastGenomeScores();
-		ol.calc_dg();
-		ol.printFreeEnergyScores();
 	}
 
 }
