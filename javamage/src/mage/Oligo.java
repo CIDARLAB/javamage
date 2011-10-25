@@ -1,11 +1,15 @@
+package mage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+
 import org.biojava3.core.sequence.DNASequence;
 
 import tools.BLAST;
+import tools.Constants;
 import tools.BLAST.BlastResult;
 import tools.MFOLD;
 
@@ -42,6 +46,8 @@ public class Oligo extends DNASequence {
 
 	private int feature_count;
 	private int oligo_id;
+	
+	private int primary_position;
 
 	private int x;
 	//	private int span.start;
@@ -68,7 +74,7 @@ public class Oligo extends DNASequence {
 	 */
 	public static Oligo InsertionFactory(String genome, String target, int targetPosition) throws Exception {
 
-		if (genome.length() < (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 + target.length() ) ) {
+		if (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) {
 
 			// Define the Genome Starting Position
 			int genome_start = targetPosition+Oligo.buffer_3prime - Oligo.ideal_length + target.length() + 1 ;
@@ -86,10 +92,11 @@ public class Oligo extends DNASequence {
 			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
 
 		}
-	//	else {
-			return null;
-			//throw new Exception("[Insertion Factory] Oligo not defined on correct range");			
-//		}
+		else {
+			//return null;
+			System.out.println("Genome Size = " +genome.length() +  "Requires " +targetPosition + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
+			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
+		}
 
 	}
 
@@ -132,10 +139,21 @@ public class Oligo extends DNASequence {
 		this.bg_scores = new ArrayList<Double>(this.margin);
 		this.dg_scores  = new ArrayList<Double>(this.margin);
 		this.dg_raw_scores  = new ArrayList<Double>(this.margin); 
+		
+		// Set the primary position to -1 until it has been determined
+		this.primary_position = -1;
 
 		System.out.println("Span : "+this.span+"\nMargin: "+this.margin);
 	}
 
+	public void calc_primaryScore() {
+		this.primary_position = Switches.PrimaryScore(bg_scores,dg_scores) + this.oligo_min;	
+	}
+	
+	public String getPrimaryScoreAsString(){
+		return this.bg(this.primary_position).toString() +"\t"+ this.dg(this.primary_position).toString(); 
+	}
+	
 	public void calc_dg(){
 		try{
 			ArrayList <String> list = new ArrayList<String>(this.margin);
@@ -155,7 +173,7 @@ public class Oligo extends DNASequence {
 
 	public void calc_bg(){
 		try{
-			BLAST blast = new BLAST("/Users/mockingbird/dropbox/research/optimization/blast/","genome.ffn");
+			BLAST blast = new BLAST(Constants.blastdirectory,"genome.ffn");
 			HashMap<Integer,String> queries = new HashMap<Integer,String>(); 
 
 			ArrayList< ArrayList<Double>> score_list = new ArrayList< ArrayList<Double> > (this.margin) ;
@@ -203,16 +221,24 @@ public class Oligo extends DNASequence {
 	}
 
 
-	public void printBlastGenomeScores(){	
+	public String getBGasString(){	
+		StringBuilder sb =  new StringBuilder();
+		
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
-			System.out.format( "%d \t \t %.3f \n",jj, bg(ii) ); 
+			sb.append(String.format( "%d \t \t %.3f \n",jj, bg(ii)) ); 
 		}
+		
+		return sb.toString();
 	}
 
-	public void printFreeEnergyScores(){
+	public String getDGasString(){
+		
+		StringBuilder sb =  new StringBuilder();
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
-			System.out.format( "%d \t \t %.3f \t %.3f \n",jj, dg(ii), dg_raw_scores.get(ii-this.oligo_min) ); 
+			sb.append(String.format( "%d \t \t %.3f \n",jj, dg(ii) )); //, dg_raw_scores.get(ii-this.oligo_min) )); 
 		}
+		
+		return sb.toString();
 	}
 
 	public int getGenomeStart(){
@@ -240,6 +266,10 @@ public class Oligo extends DNASequence {
 
 	public List<Double> bgList() {
 		return this.bg_scores;
+	}
+	
+	public String getTarget(){
+		return this.target;
 	}
 
 	public Double bg(int position){
@@ -303,7 +333,7 @@ public class Oligo extends DNASequence {
 	public static void main(String[] args)  {
 //		Switches.setBlastScoringMethod(1);
 //		Switches.setFreeEnergyScoringMethod(2);
-
+		Switches.setPrimaryScoringMethod(1);
 		try {	
 			Oligo ol2 = new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",
 					"GGGATTATTATTGGG","GATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCGCGCGGTCACAACGTT",421,560);
@@ -313,11 +343,12 @@ public class Oligo extends DNASequence {
 		System.out.println(ol.getOligo(1));
 		System.out.println(ol2.getOligo(1));
 
-		ol.calc_bg();
-		ol.printBlastGenomeScores();
 		ol2.calc_bg();
-		ol2.printBlastGenomeScores();
-
+		System.out.println(ol2.getBGasString());
+		ol2.calc_dg();
+		System.out.println(ol2.getDGasString());
+		ol2.calc_primaryScore();
+		System.out.println("PRIMARY SCORES = " +  ol2.getPrimaryScoreAsString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

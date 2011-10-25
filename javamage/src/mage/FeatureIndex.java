@@ -1,3 +1,6 @@
+package mage;
+
+
 /**
  * Simple Index Holder
  * This allows us to keep track on every oligo feature by oligo parent number, and child index number

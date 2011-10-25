@@ -1,4 +1,7 @@
+package mage;
+
 import java.util.List;
+
 
 import org.biojava3.core.sequence.compound.NucleotideCompound;
 import org.biojava3.core.sequence.features.FeatureInterface;

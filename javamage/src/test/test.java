@@ -1,3 +1,7 @@
+package test;
+
+import mage.Mistarget;
+
 import org.biojava3.core.sequence.DNASequence;
 
 

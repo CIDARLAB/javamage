@@ -141,7 +141,7 @@ public class BLAST {
 	// /*
 	public static void main(String[] args) {
 
-		String directory =  "/Users/mockingbird/dropbox/research/optimization/blast/";
+		String directory =  Constants.blastdirectory;
 		String subjectFFN = "genome.ffn";
 
 		HashMap <Integer,String> seqMap = new HashMap<Integer,String>();
