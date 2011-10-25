@@ -60,8 +60,8 @@ public class Oligo extends DNASequence {
 	private ArrayList<Double>  dg_raw_scores;
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
-
-
+	
+	
 	/**
 	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
 	 * 
@@ -151,7 +151,7 @@ public class Oligo extends DNASequence {
 	}
 	
 	public String getPrimaryScoreAsString(){
-		return this.bg(this.primary_position).toString() +"\t"+ this.dg(this.primary_position).toString(); 
+		return String.format("Oligo_%d Primary Score ( %.3f , %.3f )",this.oligo_id , this.bg(this.primary_position),this.dg(this.primary_position)); 
 	}
 	
 	public void calc_dg(){

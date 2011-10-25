@@ -20,11 +20,11 @@ public class Switches {
 		case 1: 
 
 			if (dg_value > -12.5) { score = 0.0; }
-			else { score = dg_value+12.5 ; }
+			else { score = -12.5 + (-1.0*dg_value) ; }
 			break;
 
 			// Case 2 is just the normalized value
-		case 2: score =  -1.0*Math.abs(dg_value +12.5) ; break;
+		case 2: score =  -12.5 + (-1.0*dg_value) ; break;
 		default : System.err.println("[FreeEnergyScoring] Invalid Scoring System Selected") ;  break;
 		}
 		return score;

@@ -8,12 +8,11 @@ import tools.Constants;
 import tools.FASTA;
 
 public class Optimize {
-
 	
 	public static void main(String[] args) throws Exception {
 		
 		Optimize.verbose(false);
-		
+		Switches.setFreeEnergyScoringMethod(2);
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
 		pool  =  Optimize.populate(pool);
@@ -25,7 +24,8 @@ public class Optimize {
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
 			ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
 			
-			System.out.println( "Primary Score " + ol.getPrimaryScoreAsString()  );
+			System.out.println( ol.getPrimaryScoreAsString()  );
+			System.out.println( ol.getDGasString() );
 		}
 	} 
 	
