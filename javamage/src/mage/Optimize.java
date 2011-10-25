@@ -1,6 +1,7 @@
 package mage;
 
-import java.io.IOException;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import tools.Constants;
@@ -8,9 +9,10 @@ import tools.FASTA;
 
 public class Optimize {
 
-
 	
-	public static void main() throws Exception {
+	public static void main(String[] args) throws Exception {
+		
+		Optimize.verbose(false);
 		
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
@@ -19,13 +21,12 @@ public class Optimize {
 		// For each oligo, calculate the Blast Genome and Free Energy Values
 		for ( Oligo ol : pool) {
 			
-			ol.calc_bg();
-			ol.calc_dg();
-			ol.calc_primaryScore();
+			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
+			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
+			ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
 			
+			System.out.println( "Primary Score " + ol.getPrimaryScoreAsString()  );
 		}
-		
-		
 	} 
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
@@ -45,6 +46,13 @@ public class Optimize {
 		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925) );
 		
 		return pool;
+	}
+	
+	private static void verbose (boolean isVerbose) {
+		
+		if (!isVerbose){
+			System.setErr( new PrintStream( new PipedOutputStream() ) );
+		}
 	}
 
 }

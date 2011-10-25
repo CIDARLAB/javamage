@@ -143,7 +143,7 @@ public class Oligo extends DNASequence {
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
 
-		System.out.println("Span : "+this.span+"\nMargin: "+this.margin);
+		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
 
 	public void calc_primaryScore() {
@@ -183,7 +183,7 @@ public class Oligo extends DNASequence {
 
 				// Extract an oligo for every posible position and put it in the map
 				queries.put(ii,this.getOligo(ii));
-				System.out.println(this.getOligo(ii));
+				System.err.println(this.getOligo(ii));
 				score_list.add(new ArrayList<Double>());
 			}
 
@@ -333,7 +333,7 @@ public class Oligo extends DNASequence {
 	public static void main(String[] args)  {
 //		Switches.setBlastScoringMethod(1);
 //		Switches.setFreeEnergyScoringMethod(2);
-		Switches.setPrimaryScoringMethod(1);
+		Switches.setPrimaryScoringMethod(2);
 		try {	
 			Oligo ol2 = new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",
 					"GGGATTATTATTGGG","GATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCGCGCGGTCACAACGTT",421,560);

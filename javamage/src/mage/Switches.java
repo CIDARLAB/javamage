@@ -64,7 +64,21 @@ public class Switches {
 		return total;
 	}
 
-	private static int min(List<Double> list){
+	
+	public static int PrimaryScore(ArrayList<Double> bg_scores, ArrayList<Double> dg_scores) {
+		
+		int primary_position = -1;
+		
+		switch (Switches.PrimaryScoringMethod){
+		
+		case 1:  primary_position = getMinimum(bg_scores,dg_scores); break;
+		case 2:  primary_position = getMinimum(dg_scores,bg_scores); break;
+		}
+		
+		return primary_position;
+	}
+
+	private static int getMinimum(List<Double> list, List<Double> list2){
 		Double min = list.get(0);
 		Integer counter = 0;
 		Integer index = 0;
@@ -73,35 +87,57 @@ public class Switches {
 			counter++;
 		}
 		
-		//ArrayList<Integer> possible = new ArrayList<Integer>();
+		ArrayList<Double> possible = new ArrayList<Double>();		
+		ArrayList<Integer> indicies = new ArrayList<Integer>();
 		
-//		counter =0;
-//		for (Double dd : list) {
-//			if (dd == min) { possible.add(counter); }
-//			counter ++;
-//		}
-//		
-//		Double min2 = list2.get(possible.get(0));
-//		int[] i2 = possible.to;
-//		for (Double dd : ) {
-//			if ( dd < min2 )
-//		}
+		counter =0;
+		for (Double dd : list) {
+
+			if (dd.equals(min) ) {
+				possible.add(list2.get(counter)); 
+				indicies.add(counter);  
+			}
+			counter ++;
+		}
+		
+		Double min2 = possible.get(0);
+		counter = 0;
+		for (Double dd : possible) {
+			if ( dd < min2 ) { index = indicies.get(counter); min2 = dd;}
+			counter++;
+		}
 		
 		
 		return index;
 	}
 	
-	public static int PrimaryScore(ArrayList<Double> bg_scores, ArrayList<Double> dg_scores) {
+	
+	public static void main( String[] args) {
+		ArrayList<Double> l1= new ArrayList<Double>();
+		ArrayList<Double> l2= new ArrayList<Double>();
 		
-		int primary_position = -1;
-		
-		switch (Switches.PrimaryScoringMethod){
-		
-		case 1:  primary_position = min(bg_scores); break;
-		case 2:  primary_position = min(dg_scores); break;
-		}
-		
-		return primary_position;
-	}
+		l1.add(94.0);
+		l1.add(97.0);
+		l1.add(94.0);
+		l1.add(97.0);
+		l1.add(98.0);
+		l1.add(14.0);
+		l1.add(14.0);
+		l1.add(34.0);
 
+		l2.add(0.0);
+		l2.add(0.0);
+		l2.add(0.0);
+		l2.add(0.0);
+		l2.add(0.0);
+		l2.add(4.0);
+		l2.add(1.0);
+		l2.add(0.0);
+		
+		int index = getMinimum(l1,l2);
+		System.out.println( index +  " index gives "+ l1.get(index) ) ;
+		
+	}
 }
+
+

@@ -116,7 +116,7 @@ public class BLAST {
 				
 				int counter = 0;
 				for( BlastResult br : parse(output) ) { results.add(counter++, br) ;
-				System.out.println(br);
+				System.err.println(br);
 				
 				}
 
@@ -186,7 +186,7 @@ public class BLAST {
 			}
 		}
 		this.matches = count; 
-		System.out.println("[BLAST] Total Number of Queries = "+this.matches);
+		System.err.println("[BLAST] Total Number of Queries = "+this.matches);
 		
 		return results;
 	}
