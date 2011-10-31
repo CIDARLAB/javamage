@@ -2,6 +2,8 @@ package tools;
 
 import java.io.IOException;
 
+import mage.Oligo;
+
 import utils.TextFile;
 
 public class FASTA {
@@ -35,7 +37,7 @@ public class FASTA {
 	
 	public static void main(String[] args) throws IOException {
 		
-		System.out.println(readFFN(Constants.blastdirectory,"genome.ffn").length() );
+		System.out.println(readFFN(Constants.blastdirectory,Oligo.Genome).length() );
 	}
 
 }

@@ -20,7 +20,7 @@ public class testDGScoring {
 	public static void main(String[] args) throws Exception {
 	
 
-		String genome = FASTA.readFFN(Constants.blastdirectory,"genome.ffn");
+		String genome = FASTA.readFFN(Constants.blastdirectory,Oligo.Genome);
 		
 		System.out.println(genome.length());
 		

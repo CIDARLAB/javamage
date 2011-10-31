@@ -13,6 +13,7 @@ public class Optimize {
 		
 		Optimize.verbose(false);
 		Switches.setFreeEnergyScoringMethod(2);
+		Switches.setBlastScoringMethod(1);
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
 		pool  =  Optimize.populate(pool);
@@ -25,16 +26,16 @@ public class Optimize {
 			ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
 			
 			System.out.println( ol.getPrimaryScoreAsString()  );
-			System.out.println( ol.getDGasString() );
+			//System.out.println( ol.getDGasString() );
 		}
 	} 
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
-		String genome = FASTA.readFFN(Constants.blastdirectory,"genome.ffn");
+		String genome = FASTA.readFFN(Constants.blastdirectory,Oligo.Genome);
 		
-		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190) );
-		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458) );
+		pool.add(Oligo.InsertionFactory(genome, "GC", 190) );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 458) );
 		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
 		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
 		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599) );

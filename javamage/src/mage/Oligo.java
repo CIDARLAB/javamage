@@ -24,6 +24,7 @@ import tools.MFOLD;
  */
 public class Oligo extends DNASequence {
 
+	public static String Genome = "genome2.ffn";
 	public static Integer ideal_length = 90;
 	public static Integer min_length = 90;
 
@@ -173,7 +174,7 @@ public class Oligo extends DNASequence {
 
 	public void calc_bg(){
 		try{
-			BLAST blast = new BLAST(Constants.blastdirectory,"genome.ffn");
+			BLAST blast = new BLAST(Constants.blastdirectory,Oligo.Genome);
 			HashMap<Integer,String> queries = new HashMap<Integer,String>(); 
 
 			ArrayList< ArrayList<Double>> score_list = new ArrayList< ArrayList<Double> > (this.margin) ;
@@ -249,11 +250,11 @@ public class Oligo extends DNASequence {
 		return this.genome_end;
 	}
 
-	public void addFeature(Mistarget mistarget) {
-		super.addFeature(mistarget);
-		this.feature_count++;
-		index.put(mistarget.getFeatureIndex(), mistarget);
-	}
+//	public void addFeature(Mistarget mistarget) {
+//		super.addFeature(mistarget);
+//		this.feature_count++;
+//		index.put(mistarget.getFeatureIndex(), mistarget);
+//	}
 
 	public List<Double> dgList() {
 		return this.dg_scores;
@@ -290,8 +291,8 @@ public class Oligo extends DNASequence {
 	public static Mistarget getMistarget(FeatureIndex fi) throws Exception {
 
 		Mistarget mt;
-		if (index.containsKey(fi)){
-			mt = index.get(fi);
+		if (Oligo.index.containsKey(fi)){
+			mt = Oligo.index.get(fi);
 		}
 		else {
 			throw new Exception("No such mismatch");
@@ -328,8 +329,7 @@ public class Oligo extends DNASequence {
 		return this.oligo_id;
 	}
 
-	// Function of testing
-
+	
 	public static void main(String[] args)  {
 //		Switches.setBlastScoringMethod(1);
 //		Switches.setFreeEnergyScoringMethod(2);

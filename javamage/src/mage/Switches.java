@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Switches {
 
+	private static int SumMistargetMethod = 1;
 	private static int PrimaryScoringMethod = 1;
 	private static int BlastScoringType = 1;
 	private static int FreeEnergyScoringType = 1;
@@ -136,6 +137,19 @@ public class Switches {
 		
 		int index = getMinimum(l1,l2);
 		System.out.println( index +  " index gives "+ l1.get(index) ) ;
+		
+	}
+
+
+	public static Double SumMistargetScores(ArrayList<Double> scores) {
+		
+		double total=0.0;
+		switch (Switches.SumMistargetMethod) {
+		
+		case 1: for(Double ss: scores) {total+=ss;} break;
+			
+		}
+		return total;
 		
 	}
 }
