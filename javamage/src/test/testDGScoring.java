@@ -14,6 +14,8 @@ public class testDGScoring {
 	private static final String directory = "/Users/mockingbird/dropbox/research/optimization/testFiles/testDGScoreMethod/";
 
 	/**
+	 * Short Static Function for printing and plotting results of DG calculations
+	 * 
 	 * @param args
 	 * @throws Exception 
 	 */

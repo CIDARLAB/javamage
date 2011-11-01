@@ -26,7 +26,7 @@ public class Switches {
 
 			// Case 2 is just the normalized value
 		case 2: score =  -12.5 + (-1.0*dg_value) ; break;
-		default : System.err.println("[FreeEnergyScoring] Invalid Scoring System Selected") ;  break;
+		default : System.err.println("[Switches] Invalid Scoring System Selected") ;  break;
 		}
 		return score;
 	}
@@ -37,7 +37,7 @@ public class Switches {
 		switch (Switches.BlastScoringType) {
 		case 1: score = bitscore * Math.exp(-1.0 * evalue) ; break;
 		case 2: score = bitscore; break;
-		default: System.err.println("[BlastScoring] Invalid Blast Scoring System Selected") ; break;
+		default: System.err.println("[Switches] Invalid Blast Scoring System Selected") ; break;
 		}
 		return score;
 	}
@@ -79,7 +79,7 @@ public class Switches {
 		return primary_position;
 	}
 
-	private static int getMinimum(List<Double> list, List<Double> list2){
+	public static int getMinimum(List<Double> list, List<Double> list2){
 		Double min = list.get(0);
 		Integer counter = 0;
 		Integer index = 0;
@@ -112,35 +112,6 @@ public class Switches {
 		return index;
 	}
 	
-	
-	public static void main( String[] args) {
-		ArrayList<Double> l1= new ArrayList<Double>();
-		ArrayList<Double> l2= new ArrayList<Double>();
-		
-		l1.add(94.0);
-		l1.add(97.0);
-		l1.add(94.0);
-		l1.add(97.0);
-		l1.add(98.0);
-		l1.add(14.0);
-		l1.add(14.0);
-		l1.add(34.0);
-
-		l2.add(0.0);
-		l2.add(0.0);
-		l2.add(0.0);
-		l2.add(0.0);
-		l2.add(0.0);
-		l2.add(4.0);
-		l2.add(1.0);
-		l2.add(0.0);
-		
-		int index = getMinimum(l1,l2);
-		System.out.println( index +  " index gives "+ l1.get(index) ) ;
-		
-	}
-
-
 	public static Double SumMistargetScores(ArrayList<Double> scores) {
 		
 		double total=0.0;
