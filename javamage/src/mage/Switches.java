@@ -2,6 +2,8 @@ package mage;
 import java.util.ArrayList;
 import java.util.List;
 
+import tools.BLAST.BlastResult;
+
 
 public class Switches {
 
@@ -32,27 +34,16 @@ public class Switches {
 	}
 
 
-	public static Double BlastScore(Double bitscore, Double evalue){
+	public static Double BlastScore(BlastResult br){
 		Double score = 0.0;
 		switch (Switches.BlastScoringType) {
-		case 1: score = bitscore * Math.exp(-1.0 * evalue) ; break;
-		case 2: score = bitscore; break;
+		case 1: score = br.bitscore * Math.exp(-1.0 * br.evalue) ; break;
+		case 2: score = br.qEnd-br.qStart + 1.0; break;
 		default: System.err.println("[Switches] Invalid Blast Scoring System Selected") ; break;
 		}
 		return score;
 	}
 
-	public static void setBlastScoringMethod(int method){
-		Switches.BlastScoringType = method;
-	}
-
-	public static void setFreeEnergyScoringMethod(int method){
-		Switches.FreeEnergyScoringType = method;
-	}
-	
-	public static void setPrimaryScoringMethod(int method){
-		Switches.PrimaryScoringMethod = method;
-	}
 
 
 	public static Double BlastGenomeTotalling(ArrayList<Double> position) {
@@ -121,8 +112,20 @@ public class Switches {
 			
 		}
 		return total;
-		
 	}
+	
+	public static void setBlastScoringMethod(int method){
+		Switches.BlastScoringType = method;
+	}
+
+	public static void setFreeEnergyScoringMethod(int method){
+		Switches.FreeEnergyScoringType = method;
+	}
+	
+	public static void setPrimaryScoringMethod(int method){
+		Switches.PrimaryScoringMethod = method;
+	}
+
 }
 
 

@@ -3,6 +3,7 @@ package test;
 import java.util.ArrayList;
 
 import mage.Oligo;
+import mage.Optimize;
 import mage.Switches;
 import tools.Constants;
 import tools.FASTA;
@@ -22,9 +23,12 @@ public class freeEnergyValidate {
 
 		// Create a Genome that encapsulated the default genome that Harris has.
 		String genome = FASTA.readFFN(Constants.blastdirectory,Oligo.Genome);
+		Optimize.verbose(false);
+		Switches.setPrimaryScoringMethod(2);
 		Oligo.buffer_5prime= 35;
-		Oligo.buffer_3prime= 25;
+		Oligo.buffer_3prime= 15;
 		Switches.setFreeEnergyScoringMethod(2);
+		Switches.setBlastScoringMethod(2);
 		System.out.println(genome.length());
 
 		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
@@ -40,7 +44,9 @@ public class freeEnergyValidate {
 		for (Oligo ol : pool) {
 			ol.calc_bg();
 			ol.calc_dg();
-			System.out.println(ol.getDGasString());
+			System.out.println(ol.getBGasString());
+			ol.calc_primaryScore();
+			System.out.println(ol.getPrimaryScoreAsString());
 		}
 		
 	}

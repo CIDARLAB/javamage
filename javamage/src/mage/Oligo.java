@@ -199,7 +199,7 @@ public class Oligo extends DNASequence {
 						!( (result.sEnd >= this.genome_start) && (result.sEnd <= this.genome_end) ) 	){
 
 					/* Calculate the score using for the BLAST Genome : SWITCH */
-					Double score = Switches.BlastScore(result.bitscore, result.evalue);
+					Double score = Switches.BlastScore(result);
 
 					/* Store the score */
 					score_list.get(result.oligoID - (this.oligo_min)).add(score);
@@ -331,8 +331,8 @@ public class Oligo extends DNASequence {
 
 	
 	public static void main(String[] args)  {
-//		Switches.setBlastScoringMethod(1);
-//		Switches.setFreeEnergyScoringMethod(2);
+		Switches.setBlastScoringMethod(2);
+		Switches.setFreeEnergyScoringMethod(2);
 		Switches.setPrimaryScoringMethod(2);
 		try {	
 			Oligo ol2 = new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",

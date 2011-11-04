@@ -49,7 +49,7 @@ public class Optimize {
 		return pool;
 	}
 	
-	private static void verbose (boolean isVerbose) {
+	public static void verbose (boolean isVerbose) {
 		
 		if (!isVerbose){
 			System.setErr( new PrintStream( new PipedOutputStream() ) );
