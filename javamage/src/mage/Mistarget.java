@@ -1,280 +1,142 @@
 package mage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import org.biojava3.core.sequence.compound.NucleotideCompound;
-import org.biojava3.core.sequence.features.FeatureInterface;
-import org.biojava3.core.sequence.location.SequenceLocation;
-import org.biojava3.core.sequence.template.AbstractSequence;
-
 import tools.BLAST.BlastResult;
 
+public class Mistarget {
 
-public class Mistarget { //implements FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> {
+	public	int 	a_start;
+	public 	int 	a_end;
+	public 	int 	b_start;
+	public	int 	b_end;
+	private	Double 	bitscore;
+	private	Double 	evalue;
+	public	int 	id_A;
+	public	int 	id_B;
+	private Oligo	spanA;
+	private Oligo	spanB;
+	private	String 	sequence;
 
-	private String type;
-	private FeatureIndex index;
-	private String description;
-	private SequenceLocation<AbstractSequence<NucleotideCompound>, NucleotideCompound> location;
-	private Double score;
-	private String source;
-	private Object userobject;
-	private List< FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound>> children;
-	
-//	private Double = raw_score;
-	
-	private int parent;
-	private String sequence;
-	private ArrayList<Double> raw_list;
-	private ArrayList<Double> weighted_list;
-	private HashSet<Integer> connected_oligos;
-	private HashMap<Integer,FeatureIndex> location_map;
-	private HashMap<Integer,Double> raw_map;
-	private HashMap<Integer,Double> weighted_map;
-	private Integer start;
-	private Integer end; 
-	public static HashMap<FeatureIndex,Integer> mistarget_index;
+	private int		a_overlap_start;
+	private int		a_overlap_end;
+	private int 	b_overlap_start;
+	private int		b_overlap_end;
 
-	public Mistarget(BlastResult br, int subkectOligo, int parentOligo) {
-		//this(br,subjectOligo,parentOligo,false);
+	Mistarget(BlastResult br,int spanA, int spanB) {
+
+		// Record the span IDs and save the oligo reference
+		this.id_A   =	spanA; 
+		this.id_B   =	spanB;
+		this.spanA	=	Oligo.oligo_map.get(this.id_A);		
+		this.spanB	=	Oligo.oligo_map.get(this.id_B);
+
+		// Get the start and end values in the query
+		this.a_end  =	br.sEnd;
+		this.a_start= 	br.sStart;
+		this.b_end 	= 	br.qEnd;
+		this.b_start= 	br.qStart;
+
+		// Assign bitscore and evalue of the mistarget
+		this.bitscore=	br.bitscore;
+		this.evalue  =	br.evalue;
+
+		// Set overlaps by default to lengths
+		this.a_overlap_start= 0;
+		this.b_overlap_start= 0;
+		this.a_overlap_end	= sequence.length();
+		this.b_overlap_end	= sequence.length();
+
+		// Register this mistarget with those spans
+		this.spanA.addMistarget(this);
+		this.spanB.addMistarget(this);
+
+		System.err.println("Mistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
+
 	}
+
+
+//	public Double getWeightedScore() {
+//		//Switches.WeightOverlap.Score();
+//	}
 	
-	public Mistarget(BlastResult br, int subjectOligo, int parentOligo, boolean IsNew){
-		
-		// Given the input arguments, we can distinguish between parent and linked Oligos
-		// After distinguishing the Oligos, we create an identical Mistarget on for the linked Oligo
-		
-		// Get the parent Oligo value and store the sequence value
-		this.parent = parentOligo;
-		this.sequence = br.match_sequence;
-		
-		// Determine the connected Oligo
-		int otherID;
-		if (parentOligo ==  subjectOligo) {
-			this.start = br.sStart;
-			this.end = br.sEnd;
-			otherID = br.oligoID;
-		} 
-		else {
-			this.start = br.qStart;
-			this.end = br.qEnd;
-			otherID = subjectOligo;
+	/**
+	 * Calculates the number of overlapping basepairs for the given spans and weights accordingly
+	 * 
+	 * @return	Returns integer count of overlapping basepairs
+	 */
+	public int overlap(){
+
+		int count =0;
+		// Bound checking for the entire sequence. O(n) complexity and but with n < 1000 should be trivial w/primatives
+		for (int ii=0; ii<sequence.length();ii++){
+			if ( 	(ii <= a_overlap_end && ii >= a_overlap_start ) 
+					&&	(ii <= b_overlap_end && ii >= b_overlap_start )	)
+			{count++;}
 		}
-		
-		// For the first mistarget of this sequence 
-		if (IsNew) {
-			//Mistarget.addOligo(OligoID, br, subjectOligo, otherID);
-		}
-		
-		// Score the Oligo
-		
-		// Weight the score
-		
-		// 
-		
-		// Create a linked mistarget on the other Oligo;
-		
-		
-		// Add the connection
-		
-		// Initialize some of the arrays
-		
-		
-	
-		//addConnection();
-				
+
+		return count;
 	}
-	
-	
-//	private addScore();
-//	
-//	public void addOligo(BlastResult br,int subjectID){
-//		
-//		if ( !(connected_oligos.contains(br.oligoID) && connected_oligos.contains(subjectID) ) )
-//		{
-//			if (!connected_oligos.contains(br.oligoID)) {
-//				connected_oligos.add(br.oligoID);
-//				location_map.put(subjectID,new FeatureIndex(br.qStart,br.qEnd) );
-//				raw_list.
-//			}
-//			
-//			if (!connected_oligos.contains(subjectID) ) {
-//				connected_oligos.add(subjectID);
-//				location_map.put(subjectID,new FeatureIndex(br.sStart,br.sEnd) );
-//			}
-//			
-//			Switches.SumMistargetScores(this.raw_scores);
-//			
-//		}
-//		else{throw new Exception("[Mistarget] Mistarget already Exists: "+subjectID + " "+br.oligoID);}
-//	}
-//	
-//		this.raw_score += Switches.BlastScore(br.bitscore , br.evalue);
-//		br.oligoID;
-//		
-//		br.match_sequence;
-//		br.qEnd;
-//		br.sEnd;
-//		br.qStart;
-//		br.sStart;		
-//	}
-//	
+
+
+
 	/**
 	 * 
-	 * Constructor takes in location and scoring information
+	 * isValid will checks the position of the mistarget on the oligo and returns true if any part of the mistarget is found on the span
 	 * 
-	 * @param index Contains information about the parent oligo and feature number with relation to the feature oligo
-	 * @param start	Start location of the mistarget
-	 * @param end	End location of the mistarget
-	 * @param score	Score of the mistarget as calulated by Switches.MistargetScore
+	 * @param oligo				The span associated with the mistarget
+	 * @param start_position	The start position of the oligo on the span
+	 * @param end_position		The end position of the oligo on the span
+	 * @return					Returns true of the mistarget is still on the span, false if the mistarget is not on the span
+	 * @throws Exception		In the event that you passed an oligo that is not associated with this mistarget, then the oligo is removed
 	 */
-	
-	/*
+	public boolean isValid(Oligo oligo, int start_position, int end_position) throws Exception {
 
-	public Mistarget(FeatureIndex index ,int start, int end, Double score){
-		setLocation(start, end);
-		setScore(score);
+		int mstart	= this.a_start; 
+		int mend	= this.a_end;
 
-		// Ones that done have to be initialized
-		this.index = index;
-		this.source= "";
-		this.userobject = "";
-		this.type = "Homology Site";
+		int overlap_start = -1;
+		int overlap_end	  = -1;
 
-		// The ones that we don't use...
-		this.children = null;
-		this.parent = null;
-		this.description = "";
+		boolean valid 	= true;
+		boolean isA		= true;
+		// if the oligo in reference is not A, we assume B
+		if (oligo.getOligoId() == this.id_B )
+		{
+			isA		= false;
+			mstart	= this.b_start;
+			mend	= this.b_end;
+		}
+		else if ( oligo.getOligoId() != this.id_A) {
+			// This situation should never occur, if it does that means that there is an error in the way the mistargets are refereneced amongst their relative oligos
+			throw new Exception("[Mistarget] Fatal Error - Mismarget Referenced Incorrectly");
+		}
 
-	}
+		// Does the mistarget start after the oligo ends?
+		if (mstart > end_position)	{ valid = false;}
+		// Does the mistarget end before the oligo starts?
+		if (mend < mstart)			{ valid = false;}
 
-	//A Set of Constructors that all for a variety of constructor calls
-	
-	public Mistarget(FeatureIndex index, int start, int end, Double bitscore, Double evalue) {
-		this(index, start, end, Switches.BlastScore(bitscore, evalue));
-	}
+		// Check if we have 100% overlap
+		if (mend <= end_position && mstart >= start_position )	{ overlap_start=0; overlap_end=this.sequence.length(); }
 
-	public Mistarget(int parent, int feature_no, int start, int end, Double score){
-		this (new FeatureIndex (parent, feature_no), start, end, score);
-	}
+		// Check if we have mistarget hanging of the end
+		if (mend > end_position && mstart >= start_position)	{ overlap_start=0; overlap_end=(end_position-mstart); }
 
-	public Mistarget(int parent, int feature_no, int start, int end, Double bitscore, Double evalue){
-		this( new FeatureIndex(parent, feature_no), start, end, Switches.BlastScore(bitscore, evalue));
-	}
+		// Check if we have the mistartget hanging of the start
+		if (mend <= start_position && mstart < start_position)	{ overlap_start= (mend - start_position +1) ; overlap_end=this.sequence.length(); }
 
-	// Returns the score of a given oligo
-	public Double getScore() {
-		return this.score;
-	}
+		// Assign it to the correct variable
+		if (isA){
+			a_overlap_start = overlap_start;
+			a_overlap_end	= overlap_end;
+		}
+		else {
+			b_overlap_start	= overlap_start;
+			b_overlap_end	= overlap_end;
+		}
 
-	// Set the score of a given oligo
-	public void setScore(Double arg0) {
-		this.score = arg0;
-	}
-
-	// Set the score of a given oligo with bitscore and evalue
-	public void setScore(Double bitscore, Double evalue) {
-		this.score = Switches.BlastScore(bitscore, evalue);
-	}
-
-	// Set the Location with start and ent point
-	public void setLocation(int start, int end){
-		this.location = new SequenceLocation<AbstractSequence<NucleotideCompound>, NucleotideCompound>(start, end, null);
-	}
-	
-	// Return the Feature Index Location about the parent
-	public FeatureIndex getFeatureIndex (){
-		return this.index;
-	}
-	
-	// Get just the Parent Oligo Information
-	public int getParentOligo() {
-		return this.index.parent_oligo;
-	}
-	
-	// Get just the Child Feature Index number Information
-	public int getChildIndex(){
-		return this.index.parent_oligo;
-	}
-
-	@Override
-	// Set the Location with a Sequence Location Object
-	public void setLocation( SequenceLocation<AbstractSequence<NucleotideCompound>, NucleotideCompound> arg0) {
-		this.location =  arg0;
-	}
-
-	// Everything else is for implementing the interface
-
-	@Override
-	public SequenceLocation<AbstractSequence<NucleotideCompound>, NucleotideCompound> getLocations() {
-		return this.location;
+		// if the above criteria is not met, return true
+		return valid;
 	}
 
 
-	@Override
-	public String getSource() {
-		return this.source;
-	}
-
-	@Override
-	public String getType() {
-		return this.type;
-	}
-
-	@Override
-	public Object getUserObject() {
-		return this.userobject;
-	}
-
-	@Override
-	public void setSource(String arg0) {
-		this.source = arg0;
-	}
-
-	@Override
-	public void setUserObject(Object arg0) {
-		this.userobject = arg0;
-	}
-
-
-	@Override
-	public List<FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound>> getChildrenFeatures() {
-		return this.children; 
-	}
-
-	@Override
-	public String getDescription() { 
-		return this.description; 
-	}
-
-	@Override
-	public FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> getParentFeature() {
-		return this.parent;
-	}
-
-	@Override
-	public String getShortDescription() {
-		return this.description;
-	}
-
-	@Override
-	public void setDescription(String arg0) {}
-
-	@Override
-	public void setShortDescription(String arg0) {}
-
-	@Override
-	public void setType(String arg0) {}
-
-	@Override
-	public void setChildrenFeatures(
-			List<FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound>> arg0) {}
-
-	@Override
-	public void setParentFeature(
-			FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> arg0) {}
-*/
 }

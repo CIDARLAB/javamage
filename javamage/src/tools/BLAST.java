@@ -107,7 +107,7 @@ public class BLAST {
 				
 			}
 			catch (Exception ee) {
-				System.err.println("[BLAST] Fatal Error: Could Successfully Run blastn command"); 
+				System.err.println("[BLAST] Fatal Error: Could not Successfully Run blastn command"); 
 				ee.printStackTrace(); 
 			}			
 
