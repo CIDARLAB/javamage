@@ -101,7 +101,7 @@ public class Oligo extends DNASequence {
 
 	}
 
-	private Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end){
+	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end){
 		super(preSequence+targetSequence+postSequence);
 
 		// Store the genome start and end values
