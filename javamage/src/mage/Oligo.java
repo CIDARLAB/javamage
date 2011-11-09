@@ -1,5 +1,6 @@
 package mage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import org.biojava3.core.sequence.DNASequence;
 import tools.BLAST;
 import tools.BLAST.BlastResult;
 import tools.Constants;
+import tools.FASTA;
 import tools.MFOLD;
 
 
@@ -157,13 +159,17 @@ public class Oligo extends DNASequence {
 		
 		// Take the first oligo as the optimized Oligo
 		this.optimized 		= getOligo(this.oligo_min);
-		this.getOptimizedBounds(this.oligo_min);
+		this.calcOptimizedBounds(this.oligo_min);
 		
 		// Notify when Oligo Is Recorded
 		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
 	
-	private void getOptimizedBounds(int start_position){
+	public void setOptimized(int start_position) throws Exception{
+		this.optimized = getOligo(start_position);
+		calcOptimizedBounds(start_position);
+	}
+	private void calcOptimizedBounds(int start_position){
 		this.opt_end	= start_position;
 		this.opt_end	= start_position+Oligo.ideal_length-1;
 	}
@@ -330,18 +336,27 @@ public class Oligo extends DNASequence {
 		return super.getSubSequence( start_position, start_position +ideal_length-1).getSequenceAsString();	
 	}
 
+	
 	public void addMistarget(Mistarget mt) {
 		this.mt_set.add(mt);
 	}
 	
-	public void validateMistargets(int start_position) throws Exception {
+	
+	/** 
+	 * Shift Optimized takes the current span, extracts a subsequence from the desired starting position
+	 * It creates and oligo of ideal length and then updates the mistargets associated with the oligo
+	 * 
+	 * 
+	 * @param start_position
+	 * @throws Exception
+	 */
+	public void shiftOptimized(int new_start_position) throws Exception {
 		// Get new optimized Oligo
-		this.optimized = getOligo(start_position);
-		getOptimizedBounds(start_position);
+		this.setOptimized(new_start_position);
 		
 		// For each associated mistarget check if it is valid
 		for (Mistarget mt : mt_set){
-			if (mt.isValid(this,opt_start,opt_end)) {
+			if (mt.isValid(this)) {
 				this.valid_mt.add(mt);
 			}
 		}
@@ -358,13 +373,60 @@ public class Oligo extends DNASequence {
 		return new FeatureIndex(this.oligo_id,this.feature_count);
 	}
 
-	public int getFeatureCount(){
-		return this.feature_count;
+	/**
+	 * Returns the number of features associated with this oligo
+	 * @return	Returns an positive integer representing the number of linked mistarget
+	 */
+	public int getMistarget(){
+		return this.valid_mt.size();
 	}
 
+	/**
+	 * Every oligo has a unique static id number
+	 * @return	An integer holding the unique id number of the referenced oligo
+	 */
 	public int getOligoId(){
 		return this.oligo_id;
 	}
 
+	/**
+	 * Get the optimized Oligos end position on the span
+	 * @return	End position relative the start of the oligo's span
+	 */
+	public int getOptimizedEnd() {
+		return this.opt_end;
+	}
+
+	/**
+	 * Gets the optimized Oligos start position on the span
+	 * @return	Start Position relative the start of the oligo's span
+	 */
+	public int getOptimizedStart() {
+		return this.opt_start;
+	}
+	
+	public static void BlastOligo(Oligo olA, Oligo olB) throws IOException {
+		
+		// Create a .FFN with Oligo A
+		String filename = "oligo.ffn";
+		String directory = Constants.bodirectory;
+		FASTA.writeFFN(directory, filename, olA.getSequenceAsString().toString());
+		
+		// Create a BLASTDB with Oligo A
+		BLAST bl = new BLAST(directory,filename);
+		
+		// Query BLASTDB with Oligo B
+		HashMap<Integer,String> query= new HashMap<Integer,String>();
+		query.put(1, olB.toString().toString());
+		bl.setQuery(query);
+		
+		// Run BLAST
+		List<BlastResult> results = bl.run();
+		
+		for (BlastResult br:results) {
+			Mistarget.mistarget_collection.add( new Mistarget(br,olA.getOligoId(),olB.getOligoId()) );
+		}
+		
+	}
 
 }

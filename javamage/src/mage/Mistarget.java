@@ -1,5 +1,7 @@
 package mage;
 
+import java.util.ArrayList;
+
 import tools.BLAST.BlastResult;
 
 public class Mistarget {
@@ -20,8 +22,10 @@ public class Mistarget {
 	private int		a_overlap_end;
 	private int 	b_overlap_start;
 	private int		b_overlap_end;
+	
+	public static	ArrayList<Mistarget> mistarget_collection = new ArrayList<Mistarget>();
 
-	Mistarget(BlastResult br,int spanA, int spanB) {
+	public Mistarget(BlastResult br,int spanA, int spanB) {
 
 		// Record the span IDs and save the oligo reference
 		this.id_A   =	spanA; 
@@ -88,16 +92,23 @@ public class Mistarget {
 	 * @return					Returns true of the mistarget is still on the span, false if the mistarget is not on the span
 	 * @throws Exception		In the event that you passed an oligo that is not associated with this mistarget, then the oligo is removed
 	 */
-	public boolean isValid(Oligo oligo, int start_position, int end_position) throws Exception {
-
+	public boolean isValid(Oligo oligo) throws Exception {
+		
+		// Extract the start and end positions of this oligo
+		int start_position = oligo.getOptimizedEnd();
+		int end_position = oligo.getOptimizedStart();
+		
+		// Get the mistargets start and end positions
 		int mstart	= this.a_start; 
 		int mend	= this.a_end;
 
+		// Assume no overlap
 		int overlap_start = -1;
 		int overlap_end	  = -1;
 
 		boolean valid 	= true;
 		boolean isA		= true;
+		
 		// if the oligo in reference is not A, we assume B
 		if (oligo.getOligoId() == this.id_B )
 		{
@@ -106,6 +117,7 @@ public class Mistarget {
 			mend	= this.b_end;
 		}
 		else if ( oligo.getOligoId() != this.id_A) {
+		
 			// This situation should never occur, if it does that means that there is an error in the way the mistargets are refereneced amongst their relative oligos
 			throw new Exception("[Mistarget] Fatal Error - Mismarget Referenced Incorrectly");
 		}

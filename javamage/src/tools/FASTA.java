@@ -35,6 +35,17 @@ public class FASTA {
 		return genome;
 	}
 	
+	public static void writeFFN(String directory, String filename, String sequence) throws IOException {
+		
+		// Split the string by length 80
+		String fasta = ">0\n"+sequence; 
+		String [] seqSplit = fasta.split("(?<=\\G.{80})");
+		StringBuilder sb = new StringBuilder();
+		for (String ss :seqSplit) {	sb.append(ss); }
+		
+		TextFile.write(directory, filename, sb.toString());
+	}
+	
 	public static void main(String[] args) throws IOException {
 		
 		System.out.println(readFFN(Constants.blastdirectory,Oligo.Genome).length() );
