@@ -18,6 +18,8 @@ public class Mistarget {
 	private Oligo	spanB;
 	private	String 	sequence;
 
+	// Score related data members
+	private Double	rawscore;
 	private int		a_overlap_start;
 	private int		a_overlap_end;
 	private int 	b_overlap_start;
@@ -53,11 +55,15 @@ public class Mistarget {
 		// Register this mistarget with those spans
 		this.spanA.addMistarget(this);
 		this.spanB.addMistarget(this);
-
+		
+		// Generate a raw score for the mistarget
+		this.rawscore = Switches.BlastScore(br);
+		
 		System.err.println("\nMistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
 
 	}
-
+	
+	
 
 //	public Double getWeightedScore() {
 //		//Switches.WeightOverlap.Score();
