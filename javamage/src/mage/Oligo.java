@@ -405,26 +405,38 @@ public class Oligo extends DNASequence {
 		return this.opt_start;
 	}
 	
-	public static void BlastOligo(Oligo olA, Oligo olB) throws IOException {
+	
+	/**
+	 * Blast two oligos against each other. Both oligos will have the associated mistargets registerd.
+	 * 
+	 * @param olA
+	 * @param olB
+	 * @throws IOException
+	 */
+	public static void BlastOligo(Oligo subject, List<Oligo> queries) throws IOException {
 		
-		// Create a .FFN with Oligo A
+		// Create a .FFN with from the Subject
 		String filename = "oligo.ffn";
 		String directory = Constants.bodirectory;
-		FASTA.writeFFN(directory, filename, olA.getSequenceAsString().toString());
+		FASTA.writeFFN(directory, filename, subject.getSequenceAsString().toString());
 		
-		// Create a BLASTDB with Oligo A
+		// Create a BLASTDB with .FFN files
 		BLAST bl = new BLAST(directory,filename);
 		
-		// Query BLASTDB with Oligo B
+		// Make a map queries
 		HashMap<Integer,String> query= new HashMap<Integer,String>();
-		query.put(1, olB.toString().toString());
+		for (Oligo ol : queries) { query.put(ol.getOligoId(), ol.toString().toString()) ;}
+		
+		// Assign the queries to this instance of blast
 		bl.setQuery(query);
 		
 		// Run BLAST
 		List<BlastResult> results = bl.run();
 		
+		
+		// Create a mistarget for every blast result
 		for (BlastResult br:results) {
-			Mistarget.mistarget_collection.add( new Mistarget(br,olA.getOligoId(),olB.getOligoId()) );
+			Mistarget.mistarget_collection.add( new Mistarget(br,subject.getOligoId(),br.oligoID ));
 		}
 		
 	}

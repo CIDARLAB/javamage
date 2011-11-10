@@ -46,14 +46,15 @@ public class Mistarget {
 		// Set overlaps by default to lengths
 		this.a_overlap_start= 0;
 		this.b_overlap_start= 0;
-		this.a_overlap_end	= sequence.length();
-		this.b_overlap_end	= sequence.length();
-
+		this.a_overlap_end	= br.match_sequence.length();
+		this.b_overlap_end	= br.match_sequence.length();
+		this.sequence		= br.match_sequence;
+		
 		// Register this mistarget with those spans
 		this.spanA.addMistarget(this);
 		this.spanB.addMistarget(this);
 
-		System.err.println("Mistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
+		System.err.println("\nMistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
 
 	}
 
