@@ -11,9 +11,9 @@ public class Optimize {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Optimize.verbose(false);
-		Switches.setFreeEnergyScoringMethod(2);
-		Switches.setBlastScoringMethod(1);
+		Optimize.verbose(true);
+		mage.Switches.FreeEnergy.method = 2;
+		mage.Switches.Blast.method = 1;
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
 		pool  =  Optimize.populate(pool);

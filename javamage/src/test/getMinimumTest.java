@@ -2,7 +2,7 @@ package test;
 
 import java.util.ArrayList;
 
-import mage.Switches;
+
 
 public class getMinimumTest {
 
@@ -28,7 +28,7 @@ public class getMinimumTest {
 		l2.add(1.0);
 		l2.add(0.0);
 		
-		int index = Switches.getMinimum(l1,l2);
+		int index = mage.Switches.PrimaryScore.getMinimum(l1,l2);
 		System.out.println( index +  " index gives "+ l1.get(index) ) ;
 		
 	}

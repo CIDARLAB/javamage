@@ -2,8 +2,9 @@ package mage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import tools.MFOLD;
  */
 public class Oligo extends DNASequence {
 
+
 	public	static String Genome = "genome2.ffn";
 	public 	static Integer ideal_length = 90;
 	public 	static Integer min_length = 90;
@@ -33,46 +35,48 @@ public class Oligo extends DNASequence {
 	public 	static int oligo_count = 0;
 	public 	static int buffer_3prime = 15;
 	public 	static int buffer_5prime = 15;
+	public 	static ArrayList<Oligo>	all = new ArrayList<Oligo>();
 
 	public 	static HashMap<Integer,Oligo> oligo_map = new HashMap<Integer,Oligo>();
 	private static HashMap<FeatureIndex,Mistarget> index = new HashMap<FeatureIndex,Mistarget>();
 
-	private String target; 
-	private int target_start;
-	private int target_end;
-	private int target_length;
+	final private String target; 
+	final private int target_start;
+	final private int target_end;
+	final private int target_length;
 
-	private int span;
-	private int margin;
-	private int oligo_min;
-	private int oligo_max;
+	final private int span;
+	final private int margin;
+	final private int oligo_min;
+	final private int oligo_max;
 
 	private int feature_count;
-	private int oligo_id;
-	
+	final private int oligo_id;
+
 	private int primary_position;
 
 	private int x;
-	private int genome_start;
-	private int genome_end;	
+	final private int genome_start;
+	final private int genome_end;	
 
 	private ArrayList<Double>  bg_scores;
 	private ArrayList<Double>  dg_scores;
 	private ArrayList<Double>  dg_raw_scores;
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
-	
+
 	// Set of Associated Mistargets with the given span
-	private HashSet< Mistarget > mt_set;
-	
+	public ArrayList< Mistarget > mt_collection;
+
 	// Set of Valid Mistargets with the given subsequence of the span
-	private HashSet< Mistarget> valid_mt;
-	
+	public ArrayList< Mistarget> valid_mt;
+
 	// Datamembers that indicate the optimized oligo
 	private String 	optimized;
 	private int		opt_start;
 	private	int		opt_end;
-	
+	private Double bo_weighted;
+
 	/**
 	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
 	 * 
@@ -138,33 +142,39 @@ public class Oligo extends DNASequence {
 		// Set up data members/ structures for keeping track of features.
 		this.feature_count 	= 0;
 		this.oligo_id 		= ++Oligo.oligo_count;
-
+		
 		// Create arrayList of that hold a list of all the mis-targets in a blast genome sequence
 		this.bg_mistargets 	= new ArrayList< LinkedList<Mistarget>>(this.margin); 
 
 		// Create an ArrayList of Fixed Length for storing blast genome and oligo scores
 		this.bg_scores 		= new ArrayList<Double>(this.margin);
 		this.dg_scores  	= new ArrayList<Double>(this.margin);
-		this.dg_raw_scores  = new ArrayList<Double>(this.margin); 
-		
+		this.dg_raw_scores  = new ArrayList<Double>(this.margin);
+
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
-		
+
 		// Create empty Mistarget Sets
-		this.mt_set			= new HashSet <Mistarget> ();
-		this.valid_mt		= new HashSet <Mistarget> ();
-		
+		this.mt_collection			= new ArrayList <Mistarget> ();
+		this.valid_mt		= new ArrayList <Mistarget> ();
+
+		// Set the score of the weighted BO to zero
+		this.bo_weighted	= 0.0;
+
 		// Add this span to the oligo Map
 		Oligo.oligo_map.put(this.oligo_id, this);
-		
+
 		// Take the first oligo as the optimized Oligo
 		this.optimized 		= getOligo(this.oligo_min);
 		this.calcOptimizedBounds(this.oligo_min);
+
+		// Add the oligo to the collection of all oligos
+		Oligo.all.add(this);
 		
 		// Notify when Oligo Is Recorded
 		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
-	
+
 	public void setOptimized(int start_position) throws Exception{
 		this.optimized = getOligo(start_position);
 		calcOptimizedBounds(start_position);
@@ -178,9 +188,9 @@ public class Oligo extends DNASequence {
 	 * 	Calculates the primary score associated with the span.  Use the getPrimaryScoreAsString method to retreive it
 	 */
 	public void calc_primaryScore() {
-		this.primary_position = Switches.PrimaryScore(bg_scores,dg_scores) + this.oligo_min;	
+		this.primary_position = mage.Switches.PrimaryScore.score(bg_scores,dg_scores) + this.oligo_min;	
 	}
-	
+
 	/**
 	 * The primary score is the optimal free energy and blast genome score combined
 	 * @return	A formatted string in teh form "Oligo_%d Primary Score ( %.3f , %.3f )"
@@ -188,7 +198,7 @@ public class Oligo extends DNASequence {
 	public String getPrimaryScoreAsString(){
 		return String.format("Oligo_%d Primary Score ( %.3f , %.3f )",this.oligo_id , this.bg(this.primary_position),this.dg(this.primary_position)); 
 	}
-	
+
 	/**
 	 * Calculates the Free energy for all positions on the span
 	 * 
@@ -206,13 +216,13 @@ public class Oligo extends DNASequence {
 			dg_raw_scores = mfold.run();			
 
 			for (Double dg_value : dg_raw_scores){ 
-				dg_scores.add(Switches.FreeEnergyScore(dg_value));
+				dg_scores.add(mage.Switches.FreeEnergy.score(dg_value));
 			}
 		}
 		catch (Exception ee) {ee.printStackTrace();}
 	}
 
-	
+
 	/**
 	 * 
 	 * Calculates the Blast genome Score for all the oligos in the span
@@ -247,7 +257,7 @@ public class Oligo extends DNASequence {
 						!( (result.sEnd >= this.genome_start) && (result.sEnd <= this.genome_end) ) 	){
 
 					/* Calculate the score using for the BLAST Genome : SWITCH */
-					Double score = Switches.BlastScore(result);
+					Double score = mage.Switches.Blast.score(result);
 
 					/* Store the score */
 					score_list.get(result.oligoID - (this.oligo_min)).add(score);
@@ -262,31 +272,38 @@ public class Oligo extends DNASequence {
 			// If we have an empty array we simply put in the score zero, otherwise we put in the Genome Score per position
 			for (ArrayList<Double> position : score_list){
 				if (position.isEmpty()){ bg_scores.add( count ,0.0); }
-				else { bg_scores.add( count, Switches.BlastGenomeTotalling(position)); }
+				else { bg_scores.add( count, mage.Switches.BlastGenomeTotal.score(position)); }
 				count ++;
 			}
 		}
 		catch (Exception ee){ee.printStackTrace();}
 	}
 
+	/**
+	 * Returns the start position of the oligo that represents the primary position
+	 * @return	Integer containing the starting position of the primary oligo.
+	 */
+	public int getPrimaryPosition() {
+		return this.primary_position;
+	}
 
 	public String getBGasString(){	
 		StringBuilder sb =  new StringBuilder();
-		
+
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
 			sb.append(String.format( "%d \t \t %.3f \n",jj, bg(ii)) ); 
 		}
-		
+
 		return sb.toString();
 	}
 
 	public String getDGasString(){
-		
+
 		StringBuilder sb =  new StringBuilder();
 		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
 			sb.append(String.format( "%d \t \t %.3f \n",jj, dg(ii) )); //, dg_raw_scores.get(ii-this.oligo_min) )); 
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -297,12 +314,6 @@ public class Oligo extends DNASequence {
 	public int getGenomeEnd(){
 		return this.genome_end;
 	}
-
-//	public void addFeature(Mistarget mistarget) {
-//		super.addFeature(mistarget);
-//		this.feature_count++;
-//		index.put(mistarget.getFeatureIndex(), mistarget);
-//	}
 
 	public List<Double> dgList() {
 		return this.dg_scores;
@@ -316,7 +327,7 @@ public class Oligo extends DNASequence {
 	public List<Double> bgList() {
 		return this.bg_scores;
 	}
-	
+
 	public String getTarget(){
 		return this.target;
 	}
@@ -325,6 +336,21 @@ public class Oligo extends DNASequence {
 		return this.bg_scores.get(position-this.oligo_min);
 	}
 
+	/**
+	 * Returns an oligo that is the subset of the span.
+	 * 
+	 * 
+	 * e.g <pre> 
+	 * {@code
+	 * oligo.getOligo(1)	//will return an oligo of the first n base pairs for n = ideal length of oligo. 
+	 * oligo.getOligo(0)	//will throw an error, because the first position is 1.
+	 * oligo.getOligo(314)	//will throw an error, given that it indexes outside the range of the span of the oligo. 
+	 * }
+	 * </pre>
+	 * @param start_position	An integer representing the starting position of the oligo of ideal length
+	 * @return					An oligo of ideal length
+	 * @throws Exception		If the oligo is outside the bounds of the span, and error is thrown
+	 */
 	public String getOligo(int start_position) throws Exception{
 
 		// Check if this an oligo with the given starting position can be extracted
@@ -336,26 +362,27 @@ public class Oligo extends DNASequence {
 		return super.getSubSequence( start_position, start_position +ideal_length-1).getSequenceAsString();	
 	}
 
-	
+
 	public void addMistarget(Mistarget mt) {
-		this.mt_set.add(mt);
+		this.mt_collection.add(mt);
 	}
-	
-	
+
+
 	/** 
 	 * Shift Optimized takes the current span, extracts a subsequence from the desired starting position
+	 * <p>
 	 * It creates and oligo of ideal length and then updates the mistargets associated with the oligo
-	 * 
+	 * </p>
 	 * 
 	 * @param start_position
 	 * @throws Exception
 	 */
-	public void shiftOptimized(int new_start_position) throws Exception {
+	public void setOligo(int new_start_position) throws Exception {
 		// Get new optimized Oligo
 		this.setOptimized(new_start_position);
-		
+
 		// For each associated mistarget check if it is valid
-		for (Mistarget mt : mt_set){
+		for (Mistarget mt : mt_collection){
 			if (mt.isValid(this)) {
 				this.valid_mt.add(mt);
 			}
@@ -404,8 +431,12 @@ public class Oligo extends DNASequence {
 	public int getOptimizedStart() {
 		return this.opt_start;
 	}
-	
-	
+
+
+	public double getWeightedBOScore() {
+		return this.bo_weighted;
+	}
+
 	/**
 	 * Blast two oligos against each other. Both oligos will have the associated mistargets registerd.
 	 * 
@@ -414,31 +445,58 @@ public class Oligo extends DNASequence {
 	 * @throws IOException
 	 */
 	public static void BlastOligo(Oligo subject, List<Oligo> queries) throws IOException {
-		
+
 		// Create a .FFN with from the Subject
 		String filename = "oligo.ffn";
 		String directory = Constants.bodirectory;
 		FASTA.writeFFN(directory, filename, subject.getSequenceAsString().toString());
-		
+
 		// Create a BLASTDB with .FFN files
 		BLAST bl = new BLAST(directory,filename);
-		
+
 		// Make a map queries
 		HashMap<Integer,String> query= new HashMap<Integer,String>();
 		for (Oligo ol : queries) { query.put(ol.getOligoId(), ol.toString().toString()) ;}
-		
+
 		// Assign the queries to this instance of blast
 		bl.setQuery(query);
-		
+
 		// Run BLAST
 		List<BlastResult> results = bl.run();
-		
-		
+
 		// Create a mistarget for every blast result
 		for (BlastResult br:results) {
 			Mistarget.mistarget_collection.add( new Mistarget(br,subject.getOligoId(),br.oligoID ));
 		}
-		
+
 	}
+
+	/**
+	 * Calculates the BO Score, weighted for the optimized oligo
+	 * 
+	 * This uses a switch.
+	 * 
+	 */
+	public void calc_weighted_bo(){
+
+		// Calculate and assign the blast oligo score
+		this.bo_weighted = mage.Switches.BlastOligoWeight.score(this);
+
+	}
+
+	public static void sort(ArrayList<Oligo> pool){
+
+		// Now sort the mt_collection by 
+		Collections.sort(pool, new Comparator <Oligo>(){
+
+			// Implementing standard compare function by 
+			public int compare(final Oligo o1, final Oligo o2) { 
+				return (int) (o2.getWeightedBOScore() - o1.getWeightedBOScore()); 
+			}
+		});
+	}
+
+
+
 
 }

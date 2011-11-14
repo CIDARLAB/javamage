@@ -4,6 +4,17 @@ import java.util.ArrayList;
 
 import tools.BLAST.BlastResult;
 
+/**
+ * Mistarget Class
+ * 
+ * A mistarget represents a phyiscal alignment match between two oligos
+ * (Like the edge of a graph)
+ * 
+ * Mistargets are defined by the results of a BLAST 
+ * 
+// * @author Samir Ahmed
+ *
+ */
 public class Mistarget {
 
 	public	int 	a_start;
@@ -57,7 +68,7 @@ public class Mistarget {
 		this.spanB.addMistarget(this);
 		
 		// Generate a raw score for the mistarget
-		this.rawscore = Switches.BlastScore(br);
+		this.rawscore = mage.Switches.Blast.score(br);
 		
 		System.err.println("\nMistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
 
@@ -77,7 +88,8 @@ public class Mistarget {
 	public int overlap(){
 
 		int count =0;
-		// Bound checking for the entire sequence. O(n) complexity and but with n < 1000 should be trivial w/primatives
+		
+		// Interval intersect calculation w/ O(n) complexity and but with n < 1000 should be trivial w/primatives
 		for (int ii=0; ii<sequence.length();ii++){
 			if ( 	(ii <= a_overlap_end && ii >= a_overlap_start ) 
 					&&	(ii <= b_overlap_end && ii >= b_overlap_start )	)
@@ -87,7 +99,19 @@ public class Mistarget {
 		return count;
 	}
 
-
+	/**
+	 * Recalculates the overlap of the mistarget with the selected optimized oligos.
+	 * 
+	 * Therefore if there is no overlap,
+	 * 
+	 * @throws Exception
+	 */
+	public void refresh() throws Exception {
+		
+		this.isValid(this.spanA);
+		this.isValid(this.spanB);
+		
+	}
 
 	/**
 	 * 
@@ -102,8 +126,8 @@ public class Mistarget {
 	public boolean isValid(Oligo oligo) throws Exception {
 		
 		// Extract the start and end positions of this oligo
-		int start_position = oligo.getOptimizedEnd();
-		int end_position = oligo.getOptimizedStart();
+		int start_position = oligo.getOptimizedStart();
+		int end_position = oligo.getOptimizedEnd();
 		
 		// Get the mistargets start and end positions
 		int mstart	= this.a_start; 
@@ -155,6 +179,12 @@ public class Mistarget {
 
 		// if the above criteria is not met, return true
 		return valid;
+	}
+
+
+
+	public Double getRawScore() {
+		return this.rawscore;
 	}
 
 

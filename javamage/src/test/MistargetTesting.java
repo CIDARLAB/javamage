@@ -3,13 +3,9 @@ package test;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import mage.Mistarget;
 import mage.Oligo;
-import tools.BLAST;
-import tools.BLAST.BlastResult;
 import tools.Constants;
 import tools.FASTA;
 
@@ -44,8 +40,33 @@ public class MistargetTesting {
 		}
 		
 		System.out.println("\nMistarget Count "+Mistarget.mistarget_collection.size());
+		
+		for (Oligo ol: pool) { 
+			ol.calc_bg();
+			ol.calc_dg();
+			ol.calc_primaryScore();
+			ol.setOligo(ol.getPrimaryPosition());
+			
+			// Now calculate the weighted_bo score of every oligo (Done by a switch)
+			ol.calc_weighted_bo();
+			System.out.println("Oligo " + ol.getOligoId() + " | Primary Postion: " + ol.getPrimaryPosition() + " | Weighted BO Score:" + ol.getWeightedBOScore());
+		}
+		
+		// Sort the oligos based on their wieghted scores
+		Oligo.sort(pool);
+		
+		// Print the sorted pool
+		for (Oligo ol : pool) {
+			System.out.println("ID: "+ol.getOligoId()+ "	Score: "+ol.getWeightedBOScore());
+		}
+		
+		
+		
+		
 
 		System.out.println("\nRuntime: "+(System.currentTimeMillis()-start)+" ms");
+		
+		
 		//		BLAST bg = new BLAST("/Users/mockingbird/dropbox/research/optimization/mt_testing/","genome.ffn");
 		//
 		//		HashMap<Integer,String> query = new HashMap<Integer,String>(1);

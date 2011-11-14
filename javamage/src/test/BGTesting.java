@@ -3,7 +3,6 @@ package test;
 import java.util.HashMap;
 import java.util.List;
 
-import mage.Switches;
 import tools.BLAST;
 import tools.BLAST.BlastResult;
 
@@ -30,10 +29,10 @@ public class BGTesting {
 			
 			// Print out all the results Weighted followed by raw
 			for (BlastResult br : result) {
-				Switches.setBlastScoringMethod(1);
-				System.out.println("Weighted Scoring : " +Switches.BlastScore(br) ) ;
-				Switches.setBlastScoringMethod(2);
-				System.out.println("Raw Scoring : "+Switches.BlastScore(br) ) ;
+				mage.Switches.Blast.method= 1;
+				System.out.println("Weighted Scoring : " +mage.Switches.Blast.score(br) ) ;
+				mage.Switches.Blast.method= 2;
+				System.out.println("Raw Scoring : "+mage.Switches.Blast.score(br) ) ;
 			}
 		}
 	}

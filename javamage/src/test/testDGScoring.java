@@ -3,7 +3,6 @@ package test;
 import java.util.ArrayList;
 
 import mage.Oligo;
-import mage.Switches;
 import tools.Constants;
 import tools.FASTA;
 import utils.TextFile;
@@ -41,7 +40,7 @@ public class testDGScoring {
 		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925) );
 
 		Integer count = 1; 
-		Switches.setFreeEnergyScoringMethod(2);
+		mage.Switches.FreeEnergy.method = 2;
 		// Print files to the specified directory with the output results
 		for ( Oligo ol: pool ){
 			ol.calc_dg();
