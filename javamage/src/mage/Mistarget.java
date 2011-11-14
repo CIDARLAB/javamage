@@ -28,7 +28,8 @@ public class Mistarget {
 	private Oligo	spanA;
 	private Oligo	spanB;
 	private	String 	sequence;
-
+	private Double	overlap_score;
+	
 	// Score related data members
 	private Double	rawscore;
 	private int		a_overlap_start;
@@ -67,18 +68,33 @@ public class Mistarget {
 		this.spanA.addMistarget(this);
 		this.spanB.addMistarget(this);
 		
-		// Generate a raw score for the mistarget
-		this.rawscore = mage.Switches.Blast.score(br);
+		// Generate a raw score for the mistarget, and assign the overlap score to the raw score
+		this.rawscore		= mage.Switches.Blast.score(br);
+		this.overlap_score 	= this.rawscore;
+		
 		
 		System.err.println("\nMistarget Between Oligo "+id_A+" and Oligo "+id_B+" : "+this.sequence);
 
 	}
 	
 	
-
-//	public Double getWeightedScore() {
-//		//Switches.WeightOverlap.Score();
-//	}
+	/**
+	 * Calculates the score of a mistarget based on its overlap
+	 * <p>
+	 * Uses the switches.overlap.score method for determing the score.
+	 * </p>
+	 *
+	 * 
+	 * @return
+	 */
+	public Double score() {
+		
+		// Calculate the score by scaling the overlap by the total length
+		Double weighting = ( (double) (overlap() ) ) / ( (double) (this.sequence.length()) );
+		this.overlap_score = this.rawscore * weighting;
+		
+		return this.overlap_score;
+	}
 	
 	/**
 	 * Calculates the number of overlapping basepairs for the given spans and weights accordingly
@@ -182,10 +198,39 @@ public class Mistarget {
 	}
 
 
-
+	/**
+	 * Returns the raw score of the blast result as defined by the Switches.Blast.score method
+	 * 
+	 * @return	Double containing the raw score of Blast Result
+	 */
 	public Double getRawScore() {
 		return this.rawscore;
 	}
 
+	/**
+	 * Returns the sequence of basepairs for which the two oligos match
+	 * @return	String of basepairs w/possible gaps
+	 */
+	public String getSequence() {
+		return this.sequence;
+	}
+
+	/**
+	 * Returns the bit score associated with this mistarget
+	 * 
+	 * @return	Double containing bitscore
+	 */
+	public double getBitScore() {
+		return this.bitscore;
+	}
+	
+	/**
+	 * Returns the evalue associated with this mistarget
+	 * 
+	 * @return	Double containing evalue
+	 */
+	public double evalue() {
+		return this.evalue();
+	}
 
 }

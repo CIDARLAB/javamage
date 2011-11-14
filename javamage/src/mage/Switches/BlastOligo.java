@@ -3,11 +3,11 @@ package mage.Switches;
 import mage.Mistarget;
 import mage.Oligo;
 
-public class BlastOligoWeight {
+public class BlastOligo {
 
 	public	static int method = 1;
-	
-	
+
+
 	/**
 	 * Calculates the Blast Oligo Weighted score for an optimized oligo
 	 * 
@@ -18,14 +18,17 @@ public class BlastOligoWeight {
 
 		Double score = 0.0;
 
-		switch (mage.Switches.BlastOligoWeight.method) {
-	
+		switch (mage.Switches.BlastOligo.method) {
+
 		// Just sum all the mistarget raw scores.
-		case 1:	for(Mistarget mt : ol.valid_mt) { score += mt.getRawScore(); } break;
+		case 1:	for(Mistarget mt : ol.valid_mt) {
+			score += /*mt.getRawScore()*/mt.score(); 
+			}
+		break;
 		default : break;
 		}
-		
+
 		return score;
 	}
-	
+
 }

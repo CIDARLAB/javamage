@@ -62,6 +62,7 @@ public class Oligo extends DNASequence {
 	private ArrayList<Double>  bg_scores;
 	private ArrayList<Double>  dg_scores;
 	private ArrayList<Double>  dg_raw_scores;
+	private ArrayList<Double>  bo_scores;
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
 
@@ -142,7 +143,7 @@ public class Oligo extends DNASequence {
 		// Set up data members/ structures for keeping track of features.
 		this.feature_count 	= 0;
 		this.oligo_id 		= ++Oligo.oligo_count;
-		
+
 		// Create arrayList of that hold a list of all the mis-targets in a blast genome sequence
 		this.bg_mistargets 	= new ArrayList< LinkedList<Mistarget>>(this.margin); 
 
@@ -150,7 +151,8 @@ public class Oligo extends DNASequence {
 		this.bg_scores 		= new ArrayList<Double>(this.margin);
 		this.dg_scores  	= new ArrayList<Double>(this.margin);
 		this.dg_raw_scores  = new ArrayList<Double>(this.margin);
-
+		this.bo_scores		= new ArrayList<Double>(this.margin);
+		
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
 
@@ -170,7 +172,7 @@ public class Oligo extends DNASequence {
 
 		// Add the oligo to the collection of all oligos
 		Oligo.all.add(this);
-		
+
 		// Notify when Oligo Is Recorded
 		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
@@ -311,15 +313,11 @@ public class Oligo extends DNASequence {
 		return this.genome_start;
 	}
 
-	public int getGenomeEnd(){
-		return this.genome_end;
-	}
-
 	public List<Double> dgList() {
 		return this.dg_scores;
 	}
 
-	public Double dg(int position){
+	private Double dg(int position){
 		if (position >= this.oligo_max && position < this.oligo_min);
 		return this.dg_scores.get(position-this.oligo_min);
 	}
@@ -332,7 +330,11 @@ public class Oligo extends DNASequence {
 		return this.target;
 	}
 
-	public Double bg(int position){
+	public int getGenomeEnd(){
+		return this.genome_end;
+	}
+
+	private Double bg(int position){
 		return this.bg_scores.get(position-this.oligo_min);
 	}
 
@@ -351,7 +353,7 @@ public class Oligo extends DNASequence {
 	 * @return					An oligo of ideal length
 	 * @throws Exception		If the oligo is outside the bounds of the span, and error is thrown
 	 */
-	public String getOligo(int start_position) throws Exception{
+	private String getOligo(int start_position) throws Exception{
 
 		// Check if this an oligo with the given starting position can be extracted
 		if (start_position > this.oligo_max || start_position < this.oligo_min){
@@ -381,6 +383,7 @@ public class Oligo extends DNASequence {
 		// Get new optimized Oligo
 		this.setOptimized(new_start_position);
 
+		this.valid_mt.removeAll(this.valid_mt);
 		// For each associated mistarget check if it is valid
 		for (Mistarget mt : mt_collection){
 			if (mt.isValid(this)) {
@@ -474,16 +477,36 @@ public class Oligo extends DNASequence {
 	/**
 	 * Calculates the BO Score, weighted for the optimized oligo
 	 * 
-	 * This uses a switch.
+	 * This uses switches.BlastOligoWeight.score 
+	 * @throws Exception 
 	 * 
 	 */
-	public void calc_weighted_bo(){
+	public void calc_primary_bo() {
 
 		// Calculate and assign the blast oligo score
-		this.bo_weighted = mage.Switches.BlastOligoWeight.score(this);
+		this.bo_weighted= mage.Switches.BlastOligo.score(this);
 
 	}
 
+	/**
+	 * Calculates the Blast Oligo scores for every oligo on the genome given the current valid set
+	 * @throws Exception
+	 */
+	public void calc_bo() throws Exception {
+		
+		for ( int ii = this.oligo_min; ii < this.oligo_max; ii++ ) {
+			this.setOligo(ii);
+			Double score = mage.Switches.BlastOligo.score(this);
+			bo_scores.add(score);
+		}
+		
+	}
+
+	/**
+	 * Sorts a given pool of oligos by WeightedBO Score
+	 * 
+	 * @param pool	An Array List of Oligos. After calling method, List will be in sorted order
+	 */
 	public static void sort(ArrayList<Oligo> pool){
 
 		// Now sort the mt_collection by 
@@ -497,6 +520,22 @@ public class Oligo extends DNASequence {
 	}
 
 
+	/**
+	 * Get the first possible starting position on the margin
+	 * @return	Integer with starting index
+	 */
+	public int getOligoMinimum() {return this.oligo_min;}
 
+	/**
+	 * Get the last possible starting position on the margin
+	 * @return	Integer with starting index
+	 */
+	public int getOligoMaximum() {return this.oligo_max;}
+
+	/**
+	 * Get the number for possible oligos on the span i.e the length of the margin
+	 * @return Integer count of possible oligos
+	 */
+	public int getMarginLength() {return this.margin;}
 
 }

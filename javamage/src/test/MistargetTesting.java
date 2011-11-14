@@ -48,7 +48,7 @@ public class MistargetTesting {
 			ol.setOligo(ol.getPrimaryPosition());
 			
 			// Now calculate the weighted_bo score of every oligo (Done by a switch)
-			ol.calc_weighted_bo();
+			ol.calc_primary_bo();
 			System.out.println("Oligo " + ol.getOligoId() + " | Primary Postion: " + ol.getPrimaryPosition() + " | Weighted BO Score:" + ol.getWeightedBOScore());
 		}
 		
@@ -58,8 +58,10 @@ public class MistargetTesting {
 		// Print the sorted pool
 		for (Oligo ol : pool) {
 			System.out.println("ID: "+ol.getOligoId()+ "	Score: "+ol.getWeightedBOScore());
+			ol.calc_bo();
 		}
 		
+
 		
 		
 		
