@@ -181,7 +181,7 @@ public class Mistarget {
 		if (mend > end_position && mstart >= start_position)	{ overlap_start=0; overlap_end=(end_position-mstart); }
 
 		// Check if we have the mistartget hanging of the start
-		if (mend <= start_position && mstart < start_position)	{ overlap_start= (mend - start_position +1) ; overlap_end=this.sequence.length(); }
+		if (mend <= end_position && mstart < start_position)	{ overlap_start= (start_position - mstart) ; overlap_end=this.sequence.length(); }
 
 		// Assign it to the correct variable
 		if (isA){

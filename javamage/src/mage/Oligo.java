@@ -181,8 +181,9 @@ public class Oligo extends DNASequence {
 		this.optimized = getOligo(start_position);
 		calcOptimizedBounds(start_position);
 	}
+	
 	private void calcOptimizedBounds(int start_position){
-		this.opt_end	= start_position;
+		this.opt_start	= start_position;
 		this.opt_end	= start_position+Oligo.ideal_length-1;
 	}
 
@@ -498,6 +499,7 @@ public class Oligo extends DNASequence {
 			this.setOligo(ii);
 			Double score = mage.Switches.BlastOligo.score(this);
 			bo_scores.add(score);
+			System.err.println(this.optimized);
 		}
 		
 	}
