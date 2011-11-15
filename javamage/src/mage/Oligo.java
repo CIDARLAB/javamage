@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import org.biojava3.core.sequence.DNASequence;
 
@@ -59,10 +60,12 @@ public class Oligo extends DNASequence {
 	final private int genome_start;
 	final private int genome_end;	
 
-	private ArrayList<Double>  bg_scores;
-	private ArrayList<Double>  dg_scores;
-	private ArrayList<Double>  dg_raw_scores;
-	private ArrayList<Double>  bo_scores;
+	private ArrayList<Double>  	bg_scores;
+	private ArrayList<Double>  	dg_scores;
+	private ArrayList<Double>  	dg_raw_scores;
+	private ArrayList<Double>  	bo_scores;
+	private ArrayList<Integer>	valid_dg_positions;
+	private ArrayList<Integer>	bo_sorted;
 
 	private ArrayList< LinkedList<Mistarget> > bg_mistargets;
 
@@ -148,10 +151,12 @@ public class Oligo extends DNASequence {
 		this.bg_mistargets 	= new ArrayList< LinkedList<Mistarget>>(this.margin); 
 
 		// Create an ArrayList of Fixed Length for storing blast genome and oligo scores
-		this.bg_scores 		= new ArrayList<Double>(this.margin);
-		this.dg_scores  	= new ArrayList<Double>(this.margin);
-		this.dg_raw_scores  = new ArrayList<Double>(this.margin);
-		this.bo_scores		= new ArrayList<Double>(this.margin);
+		this.bg_scores 			= new ArrayList<Double>(this.margin);
+		this.dg_scores  		= new ArrayList<Double>(this.margin);
+		this.dg_raw_scores  	= new ArrayList<Double>(this.margin);
+		this.bo_scores			= new ArrayList<Double>(this.margin);
+		this.valid_dg_positions = new ArrayList<Integer>(this.margin);
+		this.bo_sorted			= new ArrayList<Integer>(this.margin);
 		
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
@@ -214,13 +219,26 @@ public class Oligo extends DNASequence {
 			for ( int ii = this.oligo_min ; ii < this.oligo_max; ii++){
 				list.add(this.getOligo(ii));
 			}
-
+			
+			// Create an new instance of MFOLD using the list of oligos
+			// Run Mfold and capture results in the dg_raw_scores list
 			MFOLD mfold = new MFOLD(list);
 			dg_raw_scores = mfold.run();			
 
+			// Calculate the score with the switch then add it to the valid dg positions list
+			// NOTE: That valid dg positions starts indexing from 1 not zero
+			int counter = 1;
 			for (Double dg_value : dg_raw_scores){ 
-				dg_scores.add(mage.Switches.FreeEnergy.score(dg_value));
+				Double score = mage.Switches.FreeEnergy.score(dg_value);
+				dg_scores.add(score);
+				
+				// Check if we fall below the threshold, if so we add this to the valid dg positions list
+				if (mage.Switches.FreeEnergy.threshold(score)) {
+					valid_dg_positions.add(counter);
+				}
+				counter++;
 			}
+			
 		}
 		catch (Exception ee) {ee.printStackTrace();}
 	}
@@ -498,12 +516,21 @@ public class Oligo extends DNASequence {
 		for ( int ii = this.oligo_min; ii < this.oligo_max; ii++ ) {
 			this.setOligo(ii);
 			Double score = mage.Switches.BlastOligo.score(this);
-			bo_scores.add(score);
+			this.bo_scores.add(score);
+			this.bo_sorted.add(ii);
 			System.err.println(this.optimized);
 		}
 		
+		Collections.sort(this.bo_sorted, new Comparator <Integer>() {
+			
+			//Implementing stanard compare fucntion for sorting ascending
+			public int compare(final Integer ii, final Integer jj) {
+				return (int) ( (bo_scores.get(ii-1))- (bo_scores.get(jj-1)));
+			}
+		});
+		
 	}
-
+	
 	/**
 	 * Sorts a given pool of oligos by WeightedBO Score
 	 * 
@@ -540,4 +567,24 @@ public class Oligo extends DNASequence {
 	 */
 	public int getMarginLength() {return this.margin;}
 
+	/**
+	 * Returns of a list of all the DG positions that fall below the threshold
+	 * 
+	 * 
+	 * @return List of Integers that contains all the DG positions below the threshold
+	 */
+	public List<Integer> getValidDGScores() { return this.valid_dg_positions;}
+	
+	
+	/**
+	 * Returns a stack containing a prioritized Integer values;
+	 * @return	Sorted list of integers containing oligo positions
+	 */
+	public Stack<Integer> getBOStack() { 
+		Stack<Integer> stack = new Stack<Integer>();
+		for (Integer ii: this.bo_sorted) {
+			stack.push(ii);
+		}
+		return stack;
+	}
 }

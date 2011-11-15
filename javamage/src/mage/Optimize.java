@@ -26,8 +26,33 @@ public class Optimize {
 			ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
 			
 			System.out.println( ol.getPrimaryScoreAsString()  );
-			//System.out.println( ol.getDGasString() );
+			
 		}
+		
+		// Blast all the oligos against each other
+		for (int ii = 0; ii<pool.size(); ii++ ) {
+			
+			// Create a list of query oligos
+			ArrayList<Oligo> queries = new ArrayList<Oligo>(pool.size()-ii-1);
+			
+			// Generate the batch of queries
+			for (int jj = ii+1; jj<pool.size(); jj++ ) {
+				queries.add(pool.get(jj));
+			}
+			
+			// Blast the queries against subject ii
+			Oligo.BlastOligo(pool.get(ii),queries);
+			
+		}
+		
+		// Calculate a starting position
+		for (Oligo ol:pool) {
+			ol.calc_primary_bo();
+		}
+		
+		// Sort the pool by primary score
+		Oligo.sort(pool);		
+		
 	} 
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {

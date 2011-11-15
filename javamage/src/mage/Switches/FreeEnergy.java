@@ -23,5 +23,9 @@ public class FreeEnergy {
 		}
 		return score;
 	}
+
+	public static boolean threshold(Double score) {
+			return (score<=0.0);
+	}
 	
 }
