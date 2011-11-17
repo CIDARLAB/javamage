@@ -14,8 +14,8 @@ public class Optimize {
 	public static void main(String[] args) throws Exception {
 		
 		Optimize.verbose(true);
-		mage.Switches.FreeEnergy.method = 2;
-		mage.Switches.Blast.method = 1;
+		mage.Switches.FreeEnergy.method = 1;
+		mage.Switches.Blast.method = 2;
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
 		pool  =  Optimize.populate(pool);
@@ -25,9 +25,9 @@ public class Optimize {
 			
 			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
-			ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
+			//ol.calc_primaryScore();	// Calculate PrimaryScore for all positions on margins
 			
-			System.out.println( ol.getPrimaryScoreAsString()  );
+			//System.out.println( ol.getPrimaryScoreAsString()  );
 			
 		}
 		
@@ -73,13 +73,17 @@ public class Optimize {
 			// Retain only those values for which the Free Energy is Valid
 			start_positions.retainAll(ol.getValidDG());
 			
+			// Set oligo to the primary Position
+			ol.setOligo(ol.getPrimaryPosition());
+			
 			// Set the new Position and current Position
 			Integer newPosition = start_positions.pop();
 			Integer currentPosition = ol.getOptimizedStart();
 			
 			// While the we are not improving keep jumping
 			while (		!(ol.currentScore().isBetterThan( ol.scoreAt(newPosition))) &&
-						 !newPosition.equals(currentPosition)  							) {
+						 !newPosition.equals(currentPosition) && 
+						 !start_positions.isEmpty() 									) {
 				// Print out the scores
 				System.err.println(ol.currentScore() +" vs. " + ol.scoreAt(newPosition).toString());
 				
@@ -96,12 +100,18 @@ public class Optimize {
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
-		String genome = FASTA.readFFN(Constants.blastdirectory,Oligo.Genome);
-		
-		pool.add(Oligo.InsertionFactory(genome, "GC", 190) );
-		pool.add(Oligo.InsertionFactory(genome, "AT", 458) );
-		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
-		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
+		Oligo.Genome = "genome0.ffn";
+		Oligo.Directory = Constants.bo_testing;
+		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
+	
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
+//		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
+//		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
+//		pool.add(Oligo.InsertionFactory(genome, "GC", 190) );
+//		pool.add(Oligo.InsertionFactory(genome, "AT", 458) );
+//		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
+//		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
 //		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599) );
 //		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658) );
 //		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900) );

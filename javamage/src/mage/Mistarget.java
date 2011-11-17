@@ -142,7 +142,7 @@ public class Mistarget {
 	public boolean isValid(Oligo oligo) throws Exception {
 		
 		// Extract the start and end positions of this oligo
-		int start_position = oligo.getOptimizedStart();
+ 		int start_position = oligo.getOptimizedStart();
 		int end_position = oligo.getOptimizedEnd();
 		
 		// Get the mistargets start and end positions
@@ -175,13 +175,13 @@ public class Mistarget {
 		if (mend < mstart)			{ valid = false;}
 
 		// Check if we have 100% overlap
-		if (mend <= end_position && mstart >= start_position )	{ overlap_start=0; overlap_end=this.sequence.length(); }
+		if (mend <= end_position && mstart >= start_position )	{ overlap_start=0; overlap_end=this.sequence.length()-1; }
 
 		// Check if we have mistarget hanging of the end
-		if (mend > end_position && mstart >= start_position)	{ overlap_start=0; overlap_end=(end_position-mstart); }
+		if (mend > end_position && mstart >= start_position && mstart <= end_position)	{ overlap_start=0; overlap_end=(end_position-mstart); }
 
 		// Check if we have the mistartget hanging of the start
-		if (mend <= end_position && mstart < start_position)	{ overlap_start= (start_position - mstart) ; overlap_end=this.sequence.length(); }
+		if (mend <= end_position && mstart < start_position && mend>=start_position)	{ overlap_start= (start_position - mstart) ; overlap_end=this.sequence.length()-1; }
 
 		// Assign it to the correct variable
 		if (isA){

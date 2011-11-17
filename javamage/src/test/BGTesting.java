@@ -17,6 +17,7 @@ public class BGTesting {
 
 	public static void main (String[] args) {
 
+		
 		// Add oligo to a list for BLASTING
 		HashMap<Integer,String> query = new HashMap<Integer,String>(1);
 		query.put(1,oligo);

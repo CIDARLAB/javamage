@@ -31,7 +31,8 @@ import tools.MFOLD;
 public class Oligo extends DNASequence {
 
 
-	public	static String Genome = "genome2.ffn";
+	public	static String 	Genome = "genome2.ffn";
+	public	static String	Directory = Constants.blastdirectory;	
 	public 	static Integer ideal_length = 90;
 	public 	static Integer min_length = 90;
 
@@ -87,6 +88,7 @@ public class Oligo extends DNASequence {
 	// Scoring Objects
 //	private OligoScore	optimizedScore;
 	private OligoScore 	currentScore;
+	final private String sequence;
 	
 
 	/**
@@ -129,7 +131,7 @@ public class Oligo extends DNASequence {
 
 	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end) throws Exception{
 		super(preSequence+targetSequence+postSequence);
-
+		this.sequence = preSequence+targetSequence+postSequence;
 		// Store the genome start and end values
 		this.genome_start 	= genome_start;
 		this.genome_end 	= genome_end;
@@ -196,6 +198,21 @@ public class Oligo extends DNASequence {
 		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
 
+	public void resetOligo() throws Exception {
+		this.optimized	= sequence;
+		this.opt_start 	= this.oligo_min;
+		this.opt_end	= this.oligo_max +Oligo.ideal_length;
+		
+		this.valid_mt.removeAll(this.valid_mt);
+		// For each associated mistarget check if it is valid
+		for (Mistarget mt : mt_collection){
+			if (mt.isValid(this)) {
+				this.valid_mt.add(mt);
+			}
+		}
+		
+	}
+	
 	public void setOptimized(int start_position) throws Exception{
 		this.optimized = getOligo(start_position);
 		calcOptimizedBounds(start_position);
@@ -276,7 +293,7 @@ public class Oligo extends DNASequence {
 	 */
 	public void calc_bg(){
 		try{
-			BLAST blast = new BLAST(Constants.blastdirectory,Oligo.Genome);
+			BLAST blast = new BLAST(Oligo.Directory,Oligo.Genome);
 			HashMap<Integer,String> queries = new HashMap<Integer,String>(); 
 
 			ArrayList< ArrayList<Double>> score_list = new ArrayList< ArrayList<Double> > (this.margin) ;
@@ -538,8 +555,13 @@ public class Oligo extends DNASequence {
 	public void calc_primary_bo() {
 
 		// Calculate and assign the blast oligo score
-		this.bo_weighted= mage.Switches.BlastOligo.score(this);
-
+		try {
+			//this.setOligo(this.primary_position);
+			this.bo_weighted= mage.Switches.BlastOligo.score(this);
+			this.resetOligo();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -556,7 +578,7 @@ public class Oligo extends DNASequence {
 			
 			// Add the Index Number for sorting
 			this.bo_sorted.add(ii);
-			System.err.println(this.optimized);
+			//System.err.println(this.optimized);
 		}
 		
 		// Sort Ascending by BO value
@@ -569,7 +591,7 @@ public class Oligo extends DNASequence {
 		});
 		
 		// Reset the Oligo to the primary position
-		this.setOligo(this.primary_position);
+		this.resetOligo();
 	}
 	
 	/**
