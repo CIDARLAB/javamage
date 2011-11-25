@@ -54,8 +54,7 @@ public class Optimize {
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
 				ol.calc_bo();
-				ol.reset();
-				System.out.println(ol.getBOasString());	
+				System.out.println("Oligo " + ol.getOligoId() + ": \n"+ ol.getBGasString());	
 			}
 			
 			// Sort by whatever greedy-score
@@ -77,6 +76,8 @@ public class Optimize {
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 	
 		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700) );
 		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
 		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650) );
 		
