@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Stack;
 
+
+
 public class Oligo {
 
 	public static int	method_compare 	= 1;
-	public static int	method_score 	= 1;
+	public static int	method_greedy	= 1;
 	/**
 	 * Score comparing function
 	 * 
@@ -35,6 +37,13 @@ public class Oligo {
 		
 		return better;
 	}
+	
+	public static int greedyScore(mage.Oligo ol){
+		
+		return (PrimaryScore.getMinimum(ol.dgList(), ol.boList())+1);
+	}
+	
+	
 	
 //	public static Stack<Integer> score(final ArrayList<Double> BG, final  ArrayList<Double> DG, final ArrayList<Double> BO, mage.Oligo ol) {
 //		

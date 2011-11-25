@@ -47,7 +47,7 @@ public class MistargetTesting {
 			ol.calc_bg();
 			ol.calc_dg();
 			ol.calc_primaryScore();
-			ol.setOligo(ol.getPrimaryPosition());
+			ol.set(ol.getPrimaryPosition());
 			
 			// Now calculate the weighted_bo score of every oligo (Done by a switch)
 			ol.calc_primary_bo();

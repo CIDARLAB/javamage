@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import mage.Switches.OligoScore;
 
@@ -84,12 +83,13 @@ public class Oligo extends DNASequence {
 	private int		opt_start;
 	private	int		opt_end;
 	private Double bo_weighted;
-	
+	private int	greedy_choice;
+
 	// Scoring Objects
-//	private OligoScore	optimizedScore;
+	//	private OligoScore	optimizedScore;
 	private OligoScore 	currentScore;
 	final private String sequence;
-	
+
 
 	/**
 	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
@@ -169,7 +169,7 @@ public class Oligo extends DNASequence {
 		this.bo_sorted			= new ArrayList<Integer>(this.margin);
 		this.bg_sorted			= new ArrayList<Integer>(this.margin);
 		this.dg_sorted			= new ArrayList<Integer>(this.margin);
-		
+
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
 
@@ -185,24 +185,25 @@ public class Oligo extends DNASequence {
 
 		// Take the first oligo as the optimized Oligo
 		this.optimized 		= getOligo(this.oligo_min);
+		this.greedy_choice= this.oligo_min;
 		this.calcOptimizedBounds(this.oligo_min);
 
 		// Add the oligo to the collection of all oligos
 		Oligo.all.add(this);
-		
+
 		// Create scoring values;
-//		this.optimizedScore 	= new OligoScore();
+		//		this.optimizedScore 	= new OligoScore();
 		this.currentScore		= new OligoScore();
-		
+
 		// Notify when Oligo Is Recorded
 		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
 
-	public void resetOligo() throws Exception {
+	public void reset() throws Exception {
 		this.optimized	= sequence;
 		this.opt_start 	= this.oligo_min;
 		this.opt_end	= this.oligo_max +Oligo.ideal_length;
-		
+
 		this.valid_mt.removeAll(this.valid_mt);
 		// For each associated mistarget check if it is valid
 		for (Mistarget mt : mt_collection){
@@ -210,14 +211,14 @@ public class Oligo extends DNASequence {
 				this.valid_mt.add(mt);
 			}
 		}
-		
+
 	}
-	
+
 	public void setOptimized(int start_position) throws Exception{
 		this.optimized = getOligo(start_position);
 		calcOptimizedBounds(start_position);
 	}
-	
+
 	private void calcOptimizedBounds(int start_position){
 		this.opt_start	= start_position;
 		this.opt_end	= start_position+Oligo.ideal_length-1;
@@ -238,6 +239,17 @@ public class Oligo extends DNASequence {
 		return String.format("Oligo_%d Primary Score ( %.3f , %.3f )",this.oligo_id , this.bg(this.primary_position),this.dg(this.primary_position)); 
 	}
 
+	public String getBOasString() {
+
+		StringBuilder sb =  new StringBuilder();
+		for (int ii = this.oligo_min, jj=0 ; ii< oligo_max ; ii++, jj++) {
+			sb.append(String.format( "%d \t \t %.3f \n",ii, this.bo_scores.get(jj) )); //, dg_raw_scores.get(ii-this.oligo_min) )); 
+		}
+
+		return sb.toString();
+
+	}
+
 	/**
 	 * Calculates the Free energy for all positions on the span
 	 * 
@@ -250,7 +262,7 @@ public class Oligo extends DNASequence {
 			for ( int ii = this.oligo_min ; ii < this.oligo_max; ii++){
 				list.add(this.getOligo(ii));
 			}
-			
+
 			// Create an new instance of MFOLD using the list of oligos
 			// Run Mfold and capture results in the dg_raw_scores list
 			MFOLD mfold = new MFOLD(list);
@@ -262,7 +274,7 @@ public class Oligo extends DNASequence {
 			for (Double dg_value : dg_raw_scores){ 
 				Double score = mage.Switches.FreeEnergy.score(dg_value);
 				dg_scores.add(score);
-				
+
 				// Check if we fall below the threshold, if so we add this to the valid dg positions list
 				if (mage.Switches.FreeEnergy.threshold(score)) {
 					valid_dg_positions.add(counter);
@@ -270,7 +282,7 @@ public class Oligo extends DNASequence {
 				dg_sorted.add(counter);
 				counter++;
 			}
-			
+
 			Collections.sort(dg_sorted, new Comparator<Integer>() {
 				//Implementing stanard compare fucntion for sorting ascending
 				public int compare(final Integer ii, final Integer jj) {
@@ -278,7 +290,7 @@ public class Oligo extends DNASequence {
 				}
 			});
 
-			
+
 		}
 		catch (Exception ee) {ee.printStackTrace();}
 	}
@@ -337,7 +349,7 @@ public class Oligo extends DNASequence {
 				count ++;
 				bg_sorted.add(count);
 			}
-			
+
 			// Create a list of sorted Indices based on bg Scores
 			Collections.sort(bg_sorted, new Comparator<Integer>() {
 				//Implementing stanard compare fucntion for sorting ascending
@@ -346,8 +358,8 @@ public class Oligo extends DNASequence {
 				}
 			});
 
-			
-			
+
+
 		}
 		catch (Exception ee){ee.printStackTrace();}
 	}
@@ -450,7 +462,7 @@ public class Oligo extends DNASequence {
 	 * @param start_position
 	 * @throws Exception
 	 */
-	public void setOligo(int new_start_position) throws Exception {
+	public void set(int new_start_position) throws Exception {
 		// Get new optimized Oligo
 		this.setOptimized(new_start_position);
 
@@ -558,7 +570,7 @@ public class Oligo extends DNASequence {
 		try {
 			//this.setOligo(this.primary_position);
 			this.bo_weighted= mage.Switches.BlastOligo.score(this);
-			this.resetOligo();
+			this.reset();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -569,72 +581,59 @@ public class Oligo extends DNASequence {
 	 * @throws Exception
 	 */
 	public void calc_bo() throws Exception {
+
+		// Clear all the values in the BO score list and sorted list
+		this.bo_scores.clear();
+		this.bo_sorted.clear();
 		
 		// Set every possible oligo on the span as the optimized oligo, then calculate the associated BO Value
 		for ( int ii = this.oligo_min; ii < this.oligo_max; ii++ ) {
-			this.setOligo(ii);
+			this.set(ii);
 			Double score = mage.Switches.BlastOligo.score(this);
 			this.bo_scores.add(score);
-			
+
 			// Add the Index Number for sorting
 			this.bo_sorted.add(ii);
 			//System.err.println(this.optimized);
 		}
-		
+
 		// Sort Ascending by BO value
 		Collections.sort(this.bo_sorted, new Comparator <Integer>() {
-			
+
 			//Implementing stanard compare fucntion for sorting ascending
 			public int compare(final Integer ii, final Integer jj) {
 				return (int) ( (bo_scores.get(ii-1))- (bo_scores.get(jj-1)));
 			}
 		});
-		
-		// Reset the Oligo to the primary position
-		this.resetOligo();
-	}
-	
-	/**
-	 * Sorts a given pool of oligos by WeightedBO Score
-	 * 
-	 * @param pool	An Array List of Oligos. After calling method, List will be in sorted order
-	 */
-	public static void sort(ArrayList<Oligo> pool){
 
-		// Now sort the mt_collection by 
-		Collections.sort(pool, new Comparator <Oligo>(){
-
-			// Implementing standard compare function by 
-			public int compare(final Oligo o1, final Oligo o2) { 
-				return (int) (o2.getWeightedBOScore() - o1.getWeightedBOScore()); 
-			}
-		});
+		this.greedy_choice = mage.Switches.Oligo.greedyScore(this);
 	}
+
 
 	/**
 	 * Returns the score at the current position;
 	 * @return	Score in the form of type OligoScore
 	 */
 	public OligoScore currentScore() {
-		
+
 		// Set the current score to the score at the optimized position
 		this.currentScore = this.scoreAt(this.opt_start);
-		
+
 		// Return the current score
 		return this.currentScore;
 	}
-		
+
 	/**
 	 * Returns the OligoScore at the indicated position	
 	 * @param start_position
 	 * @return
 	 */
 	public OligoScore scoreAt(int start_position) {
-		
+
 		// Create a new Oligo Score and Add the Score Components Individually
 		OligoScore newScore = new OligoScore();
 		try {
-		
+
 			newScore.BlastOligo(	bo_scores.get(start_position-1));
 			newScore.BlastGenome(	bg_scores.get(start_position-1));
 			newScore.FreeEnergy(	dg_scores.get(start_position-1));
@@ -642,7 +641,7 @@ public class Oligo extends DNASequence {
 		catch (Exception ee) {
 			ee.printStackTrace();
 		}
-		
+
 		// Return the score
 		return newScore;
 	}
@@ -665,41 +664,95 @@ public class Oligo extends DNASequence {
 	 */
 	public int getMarginLength() {return this.margin;}
 
-	
-//	/**
-//	 * Returns a stack containing a prioritized Integer values;
-//	 * @return	Sorted list of integers containing oligo positions
-//	 */
-//	public Stack<Integer> getBOStack() { 
-//		Stack<Integer> stack = new Stack<Integer>();
-//		for (Integer ii: this.bo_sorted) {
-//			stack.push(ii);
-//		}
-//		return stack;
-//	}
+
+	//	/**
+	//	 * Returns a stack containing a prioritized Integer values;
+	//	 * @return	Sorted list of integers containing oligo positions
+	//	 */
+	//	public Stack<Integer> getBOStack() { 
+	//		Stack<Integer> stack = new Stack<Integer>();
+	//		for (Integer ii: this.bo_sorted) {
+	//			stack.push(ii);
+	//		}
+	//		return stack;
+	//	}
+
+	/**
+	 * Returns the optimized sequence as a string of length = Oligo.ideal_length;
+	 * @return String of ATCGs
+	 */
+	public String	getOptimized() { return this.sequence;}
 
 	/**
 	 * Get A List of Indicies corresponding to sorted BG Positions
 	 * @return
 	 */
 	public List<Integer> getBGSorted() { return this.bg_sorted; }
-	
+
 	/**
 	 * Get A Lst of Indicies corresponding to sorted BO positions
 	 * @return
 	 */
 	public List<Integer> getBOSorted() {return this.bo_sorted; }
-	
+
 	/**
 	 * Gets a List of Indicices corresponding to sorted DG positions
 	 * @return
 	 */
 	public List<Integer> getDGSorted() { return this.dg_sorted; }
-	
+
 	/**
 	 * Get a list of Indicies corresponding to DG positions below the designated threshold
 	 * @return
 	 */
 	public List<Integer> getValidDG() { return this.valid_dg_positions;}
+
+	public List<Double> boList() {
+		// TODO Auto-generated method stub
+		return this.bo_scores;
+	}
+
+	/**
+	 * Sorts a given pool of oligos by WeightedBO Score
+	 * 
+	 * @param pool  An Array List of Oligos. After calling method, List will be in sorted order
+	 */
+	public static void sort(List<mage.Oligo> pool){
+
+
+		// Now sort th by 
+		Collections.sort(pool, new Comparator<Oligo>(){
+
+			// Implementing standard compare function by 
+			public int compare(final Oligo o1, final mage.Oligo o2) { 
+
+				double o1_min= o1.getGreedyScore();
+				double o2_min= o2.getGreedyScore();
+				
+				return (int) (o2_min - o1_min);
+			}
+		});
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private double getGreedyScore() { return bo_scores.get(this.greedy_choice); }
+
 	
+	/**
+	 * Function sets the optmized oligo on the span to be the one defined by the greedy choice
+	 * 
+	 */
+	public void select() {
+		try {
+			this.set(this.greedy_choice);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 }

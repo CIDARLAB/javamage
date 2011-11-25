@@ -27,11 +27,14 @@ public class PrimaryScore {
 		case 2:  primary_position = getMinimum(dg_scores,bg_scores); break;
 		}
 
-		return primary_position;
+		return primary_position+1;
 	}
 
 	/**
 	 * Function for determing the minimum values of list 2 given a list 1
+	 * 
+	 * Remember that is indexed from Zero
+	 * 
 	 * 
 	 * @param list	List with more priority
 	 * @param list2 List with second priority
