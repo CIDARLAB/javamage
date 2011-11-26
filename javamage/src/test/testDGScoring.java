@@ -2,9 +2,10 @@ package test;
 
 import java.util.ArrayList;
 
-import mage.Oligo;
-import tools.Constants;
-import tools.FASTA;
+
+import mage.Core.Oligo;
+import mage.Tools.Constants;
+import mage.Tools.FASTA;
 import utils.TextFile;
 
 public class testDGScoring {

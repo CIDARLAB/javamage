@@ -2,10 +2,11 @@ package test;
 
 import java.util.ArrayList;
 
-import mage.Oligo;
-import mage.Optimize;
-import tools.Constants;
-import tools.FASTA;
+
+import mage.Core.Oligo;
+import mage.Core.Optimize;
+import mage.Tools.Constants;
+import mage.Tools.FASTA;
 
 public class freeEnergyValidate {
 

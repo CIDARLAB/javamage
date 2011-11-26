@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
 
-import mage.Mistarget;
-import mage.Oligo;
-import tools.Constants;
-import tools.FASTA;
+
+import mage.Core.Mistarget;
+import mage.Core.Oligo;
+import mage.Tools.Constants;
+import mage.Tools.FASTA;
 
 public class MistargetTesting {
 

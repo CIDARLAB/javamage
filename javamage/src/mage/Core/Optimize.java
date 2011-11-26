@@ -1,12 +1,14 @@
-package mage;
+package mage.Core;
 
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import tools.Constants;
-import tools.FASTA;
+import mage.Tools.Constants;
+import mage.Tools.FASTA;
+
+
 
 public class Optimize {
 	
@@ -54,7 +56,7 @@ public class Optimize {
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
 				ol.calc_bo();
-				System.out.println("Oligo " + ol.getOligoId() + ": \n"+ ol.getBGasString());	
+				System.out.println("Oligo " + ol.getOligoId() + ": \n"+ ol.boList().get(ol.getGreedyChoice()-1));	
 			}
 			
 			// Sort by whatever greedy-score

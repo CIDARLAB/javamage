@@ -1,8 +1,10 @@
-package mage;
+package mage.Core;
 
 import java.util.ArrayList;
 
-import tools.BLAST.BlastResult;
+import mage.Tools.BLAST.BlastResult;
+
+
 
 /**
  * Mistarget Class

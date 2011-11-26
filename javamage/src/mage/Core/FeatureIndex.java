@@ -1,4 +1,4 @@
-package mage;
+package mage.Core;
 
 
 /**

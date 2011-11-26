@@ -3,8 +3,10 @@ package test;
 import java.util.HashMap;
 import java.util.List;
 
-import tools.BLAST;
-import tools.BLAST.BlastResult;
+import mage.Tools.BLAST;
+import mage.Tools.BLAST.BlastResult;
+
+
 
 public class BGTesting {
 

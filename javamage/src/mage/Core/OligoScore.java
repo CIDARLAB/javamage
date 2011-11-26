@@ -1,4 +1,6 @@
-package mage.Switches;
+package mage.Core;
+
+import mage.Switches.Oligo;
 
 /**
  * 

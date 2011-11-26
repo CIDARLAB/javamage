@@ -1,4 +1,4 @@
-package mage;
+package mage.Core;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,15 +7,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import mage.Switches.OligoScore;
+import mage.Tools.BLAST;
+import mage.Tools.Constants;
+import mage.Tools.FASTA;
+import mage.Tools.MFOLD;
+import mage.Tools.BLAST.BlastResult;
 
 import org.biojava3.core.sequence.DNASequence;
 
-import tools.BLAST;
-import tools.BLAST.BlastResult;
-import tools.Constants;
-import tools.FASTA;
-import tools.MFOLD;
+
 
 
 /**
@@ -116,14 +116,14 @@ public class Oligo extends DNASequence {
 	 * 
 	 * @param pool  An Array List of Oligos. After calling method, List will be in sorted order
 	 */
-	public static void sort(List<mage.Oligo> pool){
+	public static void sort(List<mage.Core.Oligo> pool){
 
 
 		// Now sort th by 
 		Collections.sort(pool, new Comparator<Oligo>(){
 
 			// Implementing standard compare function by 
-			public int compare(final Oligo o1, final mage.Oligo o2) { 
+			public int compare(final Oligo o1, final mage.Core.Oligo o2) { 
 
 				double o1_min= o1.getGreedyScore();
 				double o2_min= o2.getGreedyScore();
@@ -741,4 +741,10 @@ public class Oligo extends DNASequence {
 	public String getAsString() { return this.sequence; }
 
 
+	/**
+	 * Returns the greedy choice index, remember that this is this position on the margin, indexing begins from 1
+	 * @return	Integer between 1 and margin length inclusive
+	 */
+	public int	getGreedyChoice() { return this.greedy_choice; }
+	
 }

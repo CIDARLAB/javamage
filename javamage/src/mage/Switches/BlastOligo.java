@@ -1,7 +1,7 @@
 package mage.Switches;
 
-import mage.Mistarget;
-import mage.Oligo;
+import mage.Core.Mistarget;
+import mage.Core.Oligo;
 
 public class BlastOligo {
 

@@ -1,6 +1,6 @@
 package test;
 
-import mage.Oligo;
+import mage.Core.Oligo;
 
 public class OligoTesting {
 

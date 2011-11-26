@@ -1,5 +1,7 @@
 package mage.Switches;
 
+import mage.Core.OligoScore;
+
 public class Oligo {
 
 	public static int	method_compare 	= 1;
@@ -31,7 +33,7 @@ public class Oligo {
 		return better;
 	}
 	
-	public static int greedyScore(mage.Oligo ol){
+	public static int greedyScore(mage.Core.Oligo ol){
 		
 		return (PrimaryScore.getMinimum(ol.dgList(), ol.boList())+1);
 	}

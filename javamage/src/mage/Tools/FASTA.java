@@ -1,8 +1,8 @@
-package tools;
+package mage.Tools;
 
 import java.io.IOException;
 
-import mage.Oligo;
+import mage.Core.Oligo;
 
 import utils.TextFile;
 

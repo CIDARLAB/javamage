@@ -1,6 +1,6 @@
 package mage.Switches;
 
-import tools.BLAST.BlastResult;
+import mage.Tools.BLAST.BlastResult;
 
 public class Blast {
 

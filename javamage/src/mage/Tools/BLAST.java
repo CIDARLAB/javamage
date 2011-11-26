@@ -1,4 +1,4 @@
-package tools;
+package mage.Tools;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package mage.Switches;
 
-import mage.Mistarget;
+import mage.Core.Mistarget;
 
 public class Overlap {
 
