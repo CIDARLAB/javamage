@@ -8,7 +8,7 @@ import mage.Tools.BLAST.BlastResult;
 
 
 
-public class BGTesting {
+public class BlastGenome {
 
 	//Oligo is the test Oligo that we select
 	public static String oligo = "TTCTACtatacgagtgcgacgtaatgcGTTGTTTGGTAGCACAAAAGTATTACCATGGTCCTAGgattacagattacagattacaAGCCT";

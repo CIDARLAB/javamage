@@ -1,6 +1,5 @@
 package mage.Core;
 
-import mage.Switches.Oligo;
 
 /**
  * 
@@ -100,7 +99,7 @@ public class OligoScore {
 	
 	
 	public String toString(){
-		return String.format("BG: %6.3f DG: %6.3f BO: %6.3f", this.BG,this.DG, this.BO);
+		return String.format("{%7.3f,%7.3f,%7.3f}", this.DG,this.BG, this.BO);
 	}
 	
 }

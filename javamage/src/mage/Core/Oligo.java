@@ -40,6 +40,7 @@ public class Oligo extends DNASequence {
 	public 	static int oligo_count = 0;
 
 	public 	static HashMap<Integer,Oligo> oligo_map = new HashMap<Integer,Oligo>();
+
 	/**
 	 * Blast two oligos against each other. Both oligos will have the associated mistargets registerd.
 	 * 
@@ -73,7 +74,47 @@ public class Oligo extends DNASequence {
 		}
 
 	} 
-/**
+
+	//	public static Oligo Factory(String genome, Target tt) throws Exception {
+	//		
+	//		if ( tt.type.startsWith("I") ){
+	//			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position);
+	//		}
+	////		else if (tt.type.startsWith("M")) {
+	////		}
+	////		else if (tt.type.startsWith("D")) {
+	////			
+	////		}
+	//
+	//	}
+
+	public static Oligo DeletionFactory(String genome, int left_position, int right_position) throws Exception {
+
+		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) {
+
+			// Define the starting pisition on the genome)
+			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
+
+			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
+			String preSequence =  genome.substring(genome_start-1, left_position);
+
+			// Define the ending position on the gneome
+			int genome_end  = right_position+(Oligo.ideal_length - Oligo.buffer_5prime -1);
+
+			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
+			String postSequence = genome.substring(right_position-1, genome_end ); 
+			
+			return new Oligo(preSequence,"",postSequence,genome_start,genome_end);
+		}
+		else {
+			//return null;
+			System.out.println("Genome Size = " +genome.length() +  "Requires " + right_position + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
+			throw new Exception("[Deletion Factory] Oligo not defined on correct range");			
+		}
+
+	}
+
+	/**
 	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
 	 * 
 	 * @param genome			A string containing the genome to be modified by MAGE
@@ -85,7 +126,7 @@ public class Oligo extends DNASequence {
 	 */
 	public static Oligo InsertionFactory(String genome, String target, int targetPosition) throws Exception {
 
-		if (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) {
+		if ( (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (targetPosition > 60 ) ) {
 
 			// Define the Genome Starting Position
 			int genome_start = targetPosition+Oligo.buffer_3prime - Oligo.ideal_length + target.length() + 1 ;
@@ -127,13 +168,13 @@ public class Oligo extends DNASequence {
 
 				double o1_min= o1.getGreedyScore();
 				double o2_min= o2.getGreedyScore();
-				
+
 				return (int) (o2_min - o1_min);
 			}
 		});
 	}
-	
-	
+
+
 	private ArrayList<Double>  	bg_scores;
 	private ArrayList<Integer>	bg_sorted;
 	private ArrayList<Double>  	bo_scores;
@@ -151,27 +192,28 @@ public class Oligo extends DNASequence {
 	final 	private int genome_start;
 	private int			greedy_choice;
 	final 	private int margin;
-	
+
 	// Set of Associated Mistargets with the given span
 	public 	ArrayList< Mistarget > 	mt_collection;
 	private ArrayList<Integer>		valid_dg_positions;
 	public 	ArrayList< Mistarget> 	valid_mt;
-	
+
 	final 	private	int		oligo_id;
 	final 	private int		oligo_max;
 	final 	private int		oligo_min;
-	
+
 	private	int				opt_end;
 	private int				opt_start;
 	private String 			optimized;
 	private int 			primary_position;
-	
+
 	final 	private String 	sequence;
 	final 	private int 	span;
 	final 	private String 	target;
 	final 	private int 	target_length;
 
 	private int x;
+	private ArrayList<OligoScore> scores;
 
 	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end) throws Exception{
 		super(preSequence+targetSequence+postSequence);
@@ -208,7 +250,7 @@ public class Oligo extends DNASequence {
 		this.bo_sorted			= new ArrayList<Integer>(this.margin);
 		this.bg_sorted			= new ArrayList<Integer>(this.margin);
 		this.dg_sorted			= new ArrayList<Integer>(this.margin);
-
+		this.scores				= new ArrayList<OligoScore>(this.margin);
 		// Set the primary position to -1 until it has been determined
 		this.primary_position = -1;
 
@@ -333,7 +375,7 @@ public class Oligo extends DNASequence {
 		// Clear all the values in the BO score list and sorted list
 		this.bo_scores.clear();
 		this.bo_sorted.clear();
-		
+		this.scores.clear();
 		// Set every possible oligo on the span as the optimized oligo, then calculate the associated BO Value
 		for ( int ii = this.oligo_min; ii < this.oligo_max; ii++ ) {
 			this.set(ii);
@@ -342,7 +384,8 @@ public class Oligo extends DNASequence {
 
 			// Add the Index Number for sorting
 			this.bo_sorted.add(ii);
-			//System.err.println(this.optimized);
+			
+			this.scores.add(this.scoreAt(ii));
 		}
 
 		// Sort Ascending by BO value
@@ -566,12 +609,12 @@ public class Oligo extends DNASequence {
 	 * @throws Exception		If the oligo is outside the bounds of the span, and error is thrown
 	 */
 	private String getOligo(int start_position) throws Exception{
-	
+
 		// Check if this an oligo with the given starting position can be extracted
 		if (start_position > this.oligo_max || start_position < this.oligo_min){
 			throw new Exception("Extracting Oligo outside of Span");
 		}
-	
+
 		// Return the subsequence as a string
 		return super.getSubSequence( start_position, start_position +ideal_length-1).getSequenceAsString();	
 	}
@@ -656,7 +699,7 @@ public class Oligo extends DNASequence {
 		this.optimized	= sequence;
 		this.opt_start 	= this.oligo_min;
 		this.opt_end	= this.oligo_max +Oligo.ideal_length;
-
+	
 		this.valid_mt.removeAll(this.valid_mt);
 		// For each associated mistarget check if it is valid
 		for (Mistarget mt : mt_collection){
@@ -664,6 +707,9 @@ public class Oligo extends DNASequence {
 				this.valid_mt.add(mt);
 			}
 		}
+		
+		// Reset the oligo score to be N/A for the entire span
+		this.currentScore = new OligoScore();
 
 	}
 
@@ -697,6 +743,7 @@ public class Oligo extends DNASequence {
 	public void select() {
 		try {
 			this.set(this.greedy_choice);
+			this.currentScore = this.scoreAt(this.greedy_choice);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -733,7 +780,7 @@ public class Oligo extends DNASequence {
 		this.optimized = getOligo(start_position);
 		calcOptimizedBounds(start_position);
 	}
-	
+
 	/**
 	 * Return a string containing the nucleotides of the entire span
 	 * @return	String of nucleotide A,T,C,G
@@ -746,5 +793,10 @@ public class Oligo extends DNASequence {
 	 * @return	Integer between 1 and margin length inclusive
 	 */
 	public int	getGreedyChoice() { return this.greedy_choice; }
-	
+
+	/**
+	 * Returns a list of Oligo Scores
+	 * @return	List of OligoScore objects
+	 */
+	public List<OligoScore> getScores() {return this.scores;}
 }

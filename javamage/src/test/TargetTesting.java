@@ -7,7 +7,7 @@ import java.util.List;
 
 
 
-public class testTarget {
+public class TargetTesting {
 
 	
 	// Test function for loading Target and each property

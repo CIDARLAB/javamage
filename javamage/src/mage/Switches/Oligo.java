@@ -1,11 +1,18 @@
 package mage.Switches;
 
+import java.util.List;
+
 import mage.Core.OligoScore;
 
 public class Oligo {
 
 	public static int	method_compare 	= 1;
 	public static int	method_greedy	= 1;
+	
+	// Constant weighting
+	public static double	dg_constant	= 100.0;
+	public static double	bg_constant = 1.0;
+	public static double	bo_constant = 1.0;
 	/**
 	 * Score comparing function
 	 * 
@@ -16,18 +23,30 @@ public class Oligo {
 	public static int compare(OligoScore g1,OligoScore g2){
 
 
-		int better = 1;
+		int better = 0;
 
 		switch (mage.Switches.Oligo.method_compare) {
+		default: ;
 		case 1: 
-				// If g1 is worse in any return worse.
-				if (	(g1.BlastGenome() 	> g2.BlastGenome() )	&&
-						(g1.BlastOligo()  	> g2.BlastOligo() )		&&
-						(g1.FreeEnergy() 	> g2.FreeEnergy() ) 		){
-					better = 0;
+				// Lexicographical ordering
+				if (g2.FreeEnergy() <= g1.FreeEnergy()) {
+					if (g2.BlastGenome() <= g1.BlastGenome() ){
+						if (g2.BlastOligo() <= g1.BlastOligo()) {
+							better= 1;
+						}
+					}
 				}
+				break;
+		case 2: 
+				// Weighted summing
+				double d1 = dg_constant*g1.FreeEnergy() + bg_constant*g1.BlastGenome() + bo_constant*g1.BlastOligo();
+				double d2 = dg_constant*g2.FreeEnergy() + bg_constant*g2.BlastGenome() + bo_constant*g2.BlastOligo();
+				if (d2 > d1) {
+					better =1;
+				}
+				break;
 				
-		default : better = 1 ;
+		
 		}		
 		
 		return better;
@@ -35,7 +54,31 @@ public class Oligo {
 	
 	public static int greedyScore(mage.Core.Oligo ol){
 		
-		return (PrimaryScore.getMinimum(ol.dgList(), ol.boList())+1);
+		List<OligoScore> list = ol.getScores();
+		int choice=-1;
+		
+		switch (method_greedy) {
+		
+		default: ;
+		case 1 :
+			//  Compare scores and return the best
+			
+			OligoScore best =list.get(0);
+			int counter = 1;
+			choice = counter;
+			
+			// Loop through and get the minimum 
+			for (OligoScore os : list) {
+				if ( os.isBetterThan(best) ) {
+					best = os;
+					choice = counter;
+				}
+				counter++;
+			}
+			break;
+		}
+		
+		return choice;
 	}
 	
 

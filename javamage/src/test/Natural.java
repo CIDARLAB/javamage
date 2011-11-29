@@ -1,34 +1,38 @@
-package mage.Core;
+package test;
 
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import mage.Core.Oligo;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
-
-
-public class Optimize {
+public class Natural {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Optimize.verbose(true);
+		Natural.verbose(false);
 		mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.Blast.method = 2;
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
-		pool  =  Optimize.populate(pool);
+		pool  =  Natural.populate(pool);
 		
+		
+		System.out.println("\n# BG Calculation, Free Energy Calculation");
 		// For each oligo, calculate the Blast Genome and Free Energy Values
 		for ( Oligo ol : pool) {
 			
 			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
+			
+			System.out.print(ol.getOligoId()+" ");
 		}
 		
 		// Blast all the oligos against each other
+		System.out.println("\n# Blasting Oligos");
 		for (int ii = 0; ii<(pool.size()-1); ii++ ) {
 			
 			// Create a list of query oligos
@@ -42,6 +46,7 @@ public class Optimize {
 			// Blast the queries against subject ii
 			Oligo.BlastOligo(pool.get(ii),queries);
 			
+			System.out.print((ii+1)+" ");
 		}
 		
 		// Heuristic Optimization
@@ -55,12 +60,12 @@ public class Optimize {
 		
 		while (stack.size() > 0) {
 
-			System.out.println("\n# Iteration "+ (iteration++) +  "");
+			System.out.println("\n\n# Iteration "+ (iteration++) +  "");
 			
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
 				ol.calc_bo();
-				System.out.println("Oligo " + ol.getOligoId() + ": "+ol.scoreAt(ol.getGreedyChoice()).toString());
+				System.out.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
 			
 			// Sort by whatever greedy-score
@@ -75,7 +80,7 @@ public class Optimize {
 		// Print the final configuration
 		System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
-			System.out.println("Oligo "+ ol.getOligoId() + ": "+ ol.currentScore().toString() );
+			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 			
 		
@@ -83,29 +88,18 @@ public class Optimize {
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
-		Oligo.Genome = "genome0.ffn";
-		Oligo.Directory = Constants.bo_testing;
+		Oligo.Genome = "genome.ffn";
+		Oligo.Directory = Constants.naturalTestDirectory;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
-	
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650) );
-		
-//		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
-//		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
-//		pool.add(Oligo.InsertionFactory(genome, "GC", 190) );
-//		pool.add(Oligo.InsertionFactory(genome, "AT", 458) );
-//		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408) );
-//		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349) );
-//		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599) );
-//		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658) );
-//		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900) );
-//		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029) );
-//		pool.add(Oligo.InsertionFactory(genome, "AT", 15426) );
-//		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592) );
-//		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925) );
+
+		for (int ii=0; ii < 20;  ii++) {
+			int start =  (int) Math.round((Math.random()*genome.length()-200));
+			int end = start + (int) Math.round(Math.random()*30);
+			String target = genome.substring(start,end);
+			
+			int x = (int) Math.round((Math.random()*genome.length()-200));
+			pool.add(Oligo.InsertionFactory(genome, target, x) );
+		}
 		
 		return pool;
 	}
@@ -113,10 +107,8 @@ public class Optimize {
 	public static void verbose (boolean isVerbose) {
 		
 		if (!isVerbose){
-			
 			System.setErr( new PrintStream( new PipedOutputStream() ) );
 		}
 	}
-	
 
 }

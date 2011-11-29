@@ -8,7 +8,7 @@ import mage.Core.Optimize;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
-public class freeEnergyValidate {
+public class FreeEnergy {
 
 	
 	/**
@@ -47,6 +47,7 @@ public class freeEnergyValidate {
 			System.out.println(ol.getBGasString());
 			ol.calc_primaryScore();
 			System.out.println(ol.getPrimaryScoreAsString());
+			System.out.println(ol.getAsString());
 		}
 		
 	}
