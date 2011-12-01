@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 
 import mage.Core.Oligo;
-import mage.Core.Optimize;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
@@ -23,7 +22,7 @@ public class FreeEnergy {
 
 		// Create a Genome that encapsulated the default genome that Harris has.
 		String genome = FASTA.readFFN(Constants.blastdirectory,Oligo.Genome);
-		Optimize.verbose(false);
+		Heuristic.verbose(false);
 		mage.Switches.PrimaryScore.method =  2 ;
 		Oligo.buffer_5prime= 35;
 		Oligo.buffer_3prime= 15;

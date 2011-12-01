@@ -187,7 +187,6 @@ public class Oligo extends DNASequence {
 	private ArrayList<Double>  	dg_scores;
 	private ArrayList<Integer>	dg_sorted;
 
-	private int 		feature_count;
 	final 	private int genome_end;
 	final 	private int genome_start;
 	private int			greedy_choice;
@@ -212,7 +211,7 @@ public class Oligo extends DNASequence {
 	final 	private String 	target;
 	final 	private int 	target_length;
 
-	private int x;
+	public final int x;
 	private ArrayList<OligoScore> scores;
 
 	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end) throws Exception{
@@ -238,7 +237,6 @@ public class Oligo extends DNASequence {
 		this.oligo_max 		= this.oligo_min + this.margin;
 
 		// Set up data members/ structures for keeping track of features.
-		this.feature_count 	= 0;
 		this.oligo_id 		= ++Oligo.oligo_count;
 
 		// Create an ArrayList of Fixed Length for storing blast genome and oligo scores
@@ -581,18 +579,6 @@ public class Oligo extends DNASequence {
 		return this.valid_mt.size();
 	}
 
-
-	/**
-	 * To get a new index for a feature - the getNewFeatureIndex method will return a FeatureIndex
-	 * That may be used to create a new feature.
-	 * 
-	 * @return
-	 */
-	public FeatureIndex getNewFeatureIndex(){
-		this.feature_count++;
-		return new FeatureIndex(this.oligo_id,this.feature_count);
-	}
-
 	/**
 	 * Returns an oligo that is the subset of the span.
 	 * 
@@ -799,4 +785,10 @@ public class Oligo extends DNASequence {
 	 * @return	List of OligoScore objects
 	 */
 	public List<OligoScore> getScores() {return this.scores;}
+
+	/**
+	 * Returns the current subsequence selected
+	 * @return	A String of ideal oligo length
+	 */
+	public String getOptimizedAsString() {return this.optimized;}
 }

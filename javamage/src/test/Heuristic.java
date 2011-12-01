@@ -9,29 +9,28 @@ import mage.Core.Oligo;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
-public class Natural {
+
+
+public class Heuristic {
 	
 	public static void main(String[] args) throws Exception {
 		
-		
-		Natural.verbose(false);
+		Heuristic.verbose(true);
 		mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.Blast.method = 2;
+		
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
-		pool  =  Natural.populate(pool);
+		pool  =  Heuristic.populate(pool);
 		
-		
-		System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
 		// For each oligo, calculate the Blast Genome and Free Energy Values
+		System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
 		for ( Oligo ol : pool) {
 			
 			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
-			
-			System.out.print(ol.getOligoId()+" ");
 		}
-		
+	
 		// Blast all the oligos against each other
 		System.out.println("\n\n# Calculating Oligo to Oligo Homology [BO]");
 		for (int ii = 0; ii<(pool.size()-1); ii++ ) {
@@ -47,7 +46,6 @@ public class Natural {
 			// Blast the queries against subject ii
 			Oligo.BlastOligo(pool.get(ii),queries);
 			
-			System.out.print((ii+1)+" ");
 		}
 		
 		// Heuristic Optimization
@@ -67,7 +65,7 @@ public class Natural {
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
 				ol.calc_bo();
-				System.out.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
+				System.out.println("Oligo " + ol.getOligoId() + ": "+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
 			
 			// Sort by whatever greedy-score
@@ -82,7 +80,7 @@ public class Natural {
 		// Print the final configuration
 		System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
-			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
+			System.out.println("Oligo "+ ol.getOligoId() + ": "+ ol.currentScore().toString() );
 		}
 			
 		
@@ -90,29 +88,26 @@ public class Natural {
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
-		Oligo.Genome = "genome.ffn";
-		Oligo.Directory = Constants.naturalTestDirectory;
+		Oligo.Genome = "genome0.ffn";
+		Oligo.Directory = Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
-				
-		for (int ii=0; ii < 20;  ii++) {
-			int start =  (int) Math.round((Math.random()*genome.length()-200));
-			int end = start + (int) Math.round(Math.random()*30);
-			String target = genome.substring(start,end);
-			
-			int x = (int) Math.round((Math.random()*genome.length()-200));
-			pool.add(Oligo.InsertionFactory(genome, target, x) );
-		}
-		
+	
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650) );
 		
 		return pool;
-		
 	}
 	
 	public static void verbose (boolean isVerbose) {
 		
 		if (!isVerbose){
+			
 			System.setErr( new PrintStream( new PipedOutputStream() ) );
 		}
 	}
+	
 
 }

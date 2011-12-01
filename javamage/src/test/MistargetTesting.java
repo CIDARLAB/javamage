@@ -3,9 +3,6 @@ package test;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
-
 
 import mage.Core.Mistarget;
 import mage.Core.Oligo;

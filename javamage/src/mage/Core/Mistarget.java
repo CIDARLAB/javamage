@@ -23,8 +23,8 @@ public class Mistarget {
 	public 	int 	a_end;
 	public 	int 	b_start;
 	public	int 	b_end;
-	private	Double 	bitscore;
-	private	Double 	evalue;
+	public final	Double 	bitscore;
+	public final	Double 	evalue;
 	public	int 	id_A;
 	public	int 	id_B;
 	private Oligo	spanA;
