@@ -6,37 +6,33 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import mage.Core.Oligo;
+import mage.Core.OligoScore;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
-public class Heuristic {
-	
+public class ExhaustiveSearch {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Heuristic.verbose(false);
+		
+		ExhaustiveSearch.verbose(false);
 		mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.Blast.method = 2;
-		
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
-		pool  =  Heuristic.populate(pool);
-		Heuristic.optimize(pool);
-	}
-
-	public static void optimize(ArrayList<Oligo> pool) throws Exception{
+		pool  =  ExhaustiveSearch.populate(pool);
 		
-		// For each oligo, calculate the Blast Genome and Free Energy Values
+		
 		System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
+		// For each oligo, calculate the Blast Genome and Free Energy Values
 		for ( Oligo ol : pool) {
 			
 			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
 			
 			System.out.print(ol.getOligoId()+" ");
-
 		}
-	
+		
 		// Blast all the oligos against each other
 		System.out.println("\n\n# Calculating Oligo to Oligo Homology [BO]");
 		for (int ii = 0; ii<(pool.size()-1); ii++ ) {
@@ -52,9 +48,7 @@ public class Heuristic {
 			// Blast the queries against subject ii
 			Oligo.BlastOligo(pool.get(ii),queries);
 			
-			// Print Oligo number
 			System.out.print((ii+1)+" ");
-
 		}
 		
 		// Heuristic Optimization
@@ -74,7 +68,7 @@ public class Heuristic {
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
 				ol.calc_bo();
-				System.out.println("Oligo " + ol.getOligoId() + ": "+ol.scoreAt(ol.getGreedyChoice()).toString());
+				System.out.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
 			
 			// Sort by whatever greedy-score
@@ -86,36 +80,51 @@ public class Heuristic {
 			
 		}
 		
-		// Print the final configuration
+		// Print the Heuristics configuration
 		System.out.println("\n# Heuristic Choice");
+		
+		OligoScore globalscore = new OligoScore(); 
+		
 		for (Oligo ol: pool) {
-			System.out.println("Oligo "+ ol.getOligoId() + ": "+ ol.currentScore().toString() );
+		
+			globalscore.add(ol.currentScore());
+			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 		
-	}
+		// Print the final score
+		System.out.println("\n# Heuristic Score = "+globalscore.toString());
+		
+		
+		// Exhaustive Backtracking Search
+		
+		
+	} 
 	
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
-		Oligo.Genome = "genome0.ffn";
+		Oligo.Genome = "genome.ffn";
 		Oligo.Directory = Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
-	
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650) );
+				
+		for (int ii=0; ii < 20;  ii++) {
+			int start =  (int) Math.round((Math.random()*genome.length()-200));
+			int end = start + (int) Math.round(Math.random()*30);
+			String target = genome.substring(start,end);
+			
+			int x = (int) Math.round((Math.random()*genome.length()-200));
+			pool.add(Oligo.InsertionFactory(genome, target, x) );
+		}
+		
 		
 		return pool;
+		
 	}
 	
 	public static void verbose (boolean isVerbose) {
 		
 		if (!isVerbose){
-			
 			System.setErr( new PrintStream( new PipedOutputStream() ) );
 		}
 	}
-	
 
 }

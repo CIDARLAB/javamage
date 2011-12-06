@@ -146,7 +146,7 @@ public class Oligo extends DNASequence {
 		}
 		else {
 			//return null;
-			System.out.println("Genome Size = " +genome.length() +  "Requires " +targetPosition + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
+			System.out.println("Genome Size = " +genome.length() +  " Requires " +targetPosition + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
 			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
 		}
 
@@ -223,7 +223,7 @@ public class Oligo extends DNASequence {
 
 		// Calculate the span of the oligo
 		this.span 			= super.getLength();
-		this.x 				= preSequence.length()+1;
+		this.x 				= preSequence.length()+genome_start;
 
 		// Store the target sequence and length
 		this.target 		= targetSequence;

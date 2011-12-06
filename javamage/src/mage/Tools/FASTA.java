@@ -2,8 +2,6 @@ package mage.Tools;
 
 import java.io.IOException;
 
-import mage.Core.Oligo;
-
 import utils.TextFile;
 
 public class FASTA {
@@ -38,17 +36,14 @@ public class FASTA {
 	public static void writeFFN(String directory, String filename, String sequence) throws IOException {
 		
 		// Split the string by length 80
-		String fasta = ">0\n"+sequence; 
-		String [] seqSplit = fasta.split("(?<=\\G.{80})");
+		String [] seqSplit = TextFile.splitEqually(sequence, 80);
+		String fastaHeader = ">0\n"; 
 		StringBuilder sb = new StringBuilder();
-		for (String ss :seqSplit) {	sb.append(ss); }
-		
+		sb.ensureCapacity(sequence.length()+fastaHeader.length());
+		sb.append(fastaHeader);
+		for (String ss :seqSplit) {	sb.append(ss); sb.append("\n"); }//System.out.println(sequence.length()+" "+sb.length()+" "+sb.capacity() +" "+Runtime.getRuntime().freeMemory()); }
+		//System.out.println(seqSplit.length);
 		TextFile.write(directory, filename, sb.toString());
-	}
-	
-	public static void main(String[] args) throws IOException {
-		
-		System.out.println(readFFN(Constants.blastdirectory,Oligo.Genome).length() );
 	}
 
 }

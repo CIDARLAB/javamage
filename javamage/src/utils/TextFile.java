@@ -19,7 +19,7 @@ public class TextFile{
 	 * @return			the contents of the specified file
 	 */
 	public static String read(String file) throws IOException {
-		
+
 		BufferedReader reader = new BufferedReader( new FileReader(file));
 		String line  = null;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -30,7 +30,7 @@ public class TextFile{
 		}
 		return stringBuilder.toString();
 	}
-	
+
 	/**
 	 * Given a string, filename and directory, this function will write the string to file
 	 * 
@@ -40,26 +40,26 @@ public class TextFile{
 	 * @throws IOException
 	 */
 	public static void write(String directory,String fileName, String fileContents) throws IOException{
-	    BufferedWriter out = new BufferedWriter(new FileWriter(directory+fileName));
-	    out.write(fileContents);
-	    out.close();
+		BufferedWriter out = new BufferedWriter(new FileWriter(directory+fileName));
+		out.write(fileContents);
+		out.close();
 	}
-	
+
 	/**
 	 * @param filePath		Given the path of the file (directory+filename), it will be deleted.
 	 * @throws IllegalArgumentException
 	 */
 	public static void delete(String filePath) throws IllegalArgumentException{
-		
-		 File ff = new File(filePath);
-		    boolean success = ff.delete();
-		    if (!success) {
-		    	System.err.println("Failure to delete File, Check if file path is correct and if file is referenced");
-			    throw new IllegalArgumentException("Delete: deletion failed");
-		    }
-		
+
+		File ff = new File(filePath);
+		boolean success = ff.delete();
+		if (!success) {
+			System.err.println("Failure to delete File, Check if file path is correct and if file is referenced");
+			throw new IllegalArgumentException("Delete: deletion failed");
+		}
+
 	}
-	
+
 	/**
 	 * A function that returns all the lines in a file in an array of type string
 	 * 
@@ -72,7 +72,24 @@ public class TextFile{
 		String[] lines = contents.split("\n");
 		return lines;
 	}
-	
-	
-	
+
+	/**
+	 * Simple splitter - Simply takes a string and splits into chunks of specified size
+	 * 
+	 * @param text
+	 * @param size
+	 * @return
+	 */
+	public static String[] splitEqually(String text, int size){
+
+		String[] ret = new String[(text.length() + size - 1) / size];
+
+		int ii= 0;
+		for (int start = 0; start < text.length(); start += size, ii++) {
+			ret[ii]= (text.substring(start, Math.min(text.length(), start + size)));
+		}
+		return ret;
+	}
+
+
 }

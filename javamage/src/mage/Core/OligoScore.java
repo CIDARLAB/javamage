@@ -97,9 +97,20 @@ public class OligoScore {
 		this.DG = newDG;
 	}
 	
-	
+	/**
+	 * Returns a formatted string
+	 */
 	public String toString(){
 		return String.format("{%7.3f,%7.3f,%7.3f}", this.DG,this.BG, this.BO);
+	}
+
+	/**
+	 * Will add the score values of the 
+	 * 
+	 * @param currentScore
+	 */
+	public void add(OligoScore currentScore) {
+		mage.Switches.Oligo.add(this,currentScore);
 	}
 	
 }
