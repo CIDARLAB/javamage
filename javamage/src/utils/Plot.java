@@ -27,9 +27,11 @@ public class Plot {
 		// Set to a column style
 		AutoGraphLayout layout =((AutoGraphLayout) jplot.getLayout());
 		layout.setColumns(1);
+		//layout.setRows(3);
 		
 		// Set aesthetic properties
 		jplot.set("key", "outside right spacing 0.75");
+		jplot.set("screen-coordinate", "min 0,0 max 1,1");
 		jplot.set("border", "3");
 		jplot.set("xtics", "nomirror");
 		jplot.set("ytics", "nomirror");

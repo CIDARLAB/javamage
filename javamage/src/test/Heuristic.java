@@ -64,6 +64,7 @@ public class Heuristic {
 		
 		Stack<Oligo> stack = new Stack<Oligo>();
 		stack.addAll(pool);
+		for (Oligo ol: stack) {ol.reset();}
 		
 		int iteration = 1;
 		
@@ -100,11 +101,11 @@ public class Heuristic {
 		Oligo.Directory = Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 	
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250, 2,true) );
+//		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800, 2,true) );
+//		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650, 2,true) );
 		
 		return pool;
 	}

@@ -50,8 +50,8 @@ public class Mistarget {
 		this.spanB	=	Oligo.oligo_map.get(this.id_B);
 
 		// Get the start and end values in the query
-		this.a_end  =	br.sEnd;
-		this.a_start= 	br.sStart;
+		this.a_end  =	Math.max(br.sEnd,br.sStart);
+		this.a_start= 	Math.min(br.sEnd,br.sStart);
 		this.b_end 	= 	br.qEnd;
 		this.b_start= 	br.qStart;
 
@@ -174,7 +174,7 @@ public class Mistarget {
 		// Does the mistarget start after the oligo ends?
 		if (mstart > end_position)	{ valid = false;}
 		// Does the mistarget end before the oligo starts?
-		if (mend < mstart)			{ valid = false;}
+		if (mend < start_position)			{ valid = false;}
 
 		// Check if we have 100% overlap
 		if (mend <= end_position && mstart >= start_position )	{ overlap_start=0; overlap_end=this.sequence.length()-1; }

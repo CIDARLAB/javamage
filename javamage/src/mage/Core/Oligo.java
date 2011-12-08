@@ -11,6 +11,7 @@ import mage.Tools.BLAST;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 import mage.Tools.MFOLD;
+import mage.Tools.SequenceTools;
 import mage.Tools.BLAST.BlastResult;
 
 import org.biojava3.core.sequence.DNASequence;
@@ -34,7 +35,7 @@ public class Oligo extends DNASequence {
 	public 	static int buffer_5prime = 15;
 	public	static String	Directory = Constants.blastdirectory;
 
-	public	static String 	Genome = "genome2.ffn";
+	public	static String 	Genome = "genome.ffn";
 	public 	static Integer ideal_length = 90;
 	public 	static Integer min_length = 90;
 	public 	static int oligo_count = 0;
@@ -60,7 +61,9 @@ public class Oligo extends DNASequence {
 
 		// Make a map queries
 		HashMap<Integer,String> query= new HashMap<Integer,String>();
-		for (Oligo ol : queries) { query.put(ol.getOligoId(), ol.toString().toString()) ;}
+		for (Oligo ol : queries) { 
+			query.put(ol.getOligoId(), SequenceTools.ReverseCompliment(ol.getSequenceAsString())) ;
+		}
 
 		// Assign the queries to this instance of blast
 		bl.setQuery(query);
@@ -88,7 +91,7 @@ public class Oligo extends DNASequence {
 	//
 	//	}
 
-	public static Oligo DeletionFactory(String genome, int left_position, int right_position) throws Exception {
+	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore) throws Exception {
 
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) {
 
@@ -103,12 +106,24 @@ public class Oligo extends DNASequence {
 
 			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
 			String postSequence = genome.substring(right_position-1, genome_end ); 
-			
+
+			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
+			if (replichore == 1){
+
+				// Get RC
+				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
+
+				// Calculate index to split from and then reassign post and pre sequnence
+				int splitIndex 		= preSequence.length();
+				postSequence 		= reverseComp.substring(splitIndex);
+				preSequence 		= reverseComp.substring(0,splitIndex);
+			}
+
 			return new Oligo(preSequence,"",postSequence,genome_start,genome_end);
 		}
 		else {
 			//return null;
-			System.out.println("Genome Size = " +genome.length() +  "Requires " + right_position + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
+			System.out.println("Could Not Create Oligo") ;
 			throw new Exception("[Deletion Factory] Oligo not defined on correct range");			
 		}
 
@@ -124,7 +139,7 @@ public class Oligo extends DNASequence {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static Oligo InsertionFactory(String genome, String target, int targetPosition) throws Exception {
+	public static Oligo InsertionFactory(String genome, String target, int targetPosition, int replichore, boolean sense) throws Exception {
 
 		if ( (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (targetPosition > 60 ) ) {
 
@@ -140,13 +155,29 @@ public class Oligo extends DNASequence {
 			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
 			String postSequence = genome.substring(targetPosition , genome_end);
 
+			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
+			if (replichore == 1){
+
+				// Get RC
+				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
+
+				// Calculate index to split from and then reassign post and pre sequnence
+				int splitIndex 		= preSequence.length();
+				postSequence 		= reverseComp.substring(splitIndex);
+				preSequence 		= reverseComp.substring(0,splitIndex);
+			}
+			if ( ((replichore==2) && !sense) || ((replichore==1) && sense) ) {
+				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
+			}
+			
 			// Return the new Oligo that was just made
 			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
+
 
 		}
 		else {
 			//return null;
-			System.out.println("Genome Size = " +genome.length() +  " Requires " +targetPosition + " + " + (Oligo.ideal_length - Oligo.buffer_3prime) ) ;
+			System.out.println("Could Not Create Oligo");
 			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
 		}
 
@@ -265,7 +296,7 @@ public class Oligo extends DNASequence {
 		// Take the first oligo as the optimized Oligo
 		this.optimized 		= getOligo(this.oligo_min);
 		this.greedy_choice= this.oligo_min;
-		this.calcOptimizedBounds(this.oligo_min);
+		//this.calcOptimizedBounds(this.oligo_min);
 
 		// Add the oligo to the collection of all oligos
 		Oligo.all.add(this);
@@ -314,7 +345,7 @@ public class Oligo extends DNASequence {
 			for ( int ii = this.oligo_min ; ii < this.oligo_max ; ii ++) {
 
 				// Extract an oligo for every posible position and put it in the map
-				queries.put(ii,this.getOligo(ii));
+				queries.put(ii,SequenceTools.ReverseCompliment(this.getOligo(ii)) );
 				System.err.println(this.getOligo(ii));
 				score_list.add(new ArrayList<Double>());
 			}
@@ -382,7 +413,7 @@ public class Oligo extends DNASequence {
 
 			// Add the Index Number for sorting
 			this.bo_sorted.add(ii);
-			
+
 			this.scores.add(this.scoreAt(ii));
 		}
 
@@ -397,6 +428,7 @@ public class Oligo extends DNASequence {
 
 		this.greedy_choice = mage.Switches.Oligo.greedyScore(this);
 		this.reset();
+
 	}
 
 	/**
@@ -685,7 +717,7 @@ public class Oligo extends DNASequence {
 		this.optimized	= sequence;
 		this.opt_start 	= this.oligo_min;
 		this.opt_end	= this.oligo_max +Oligo.ideal_length;
-	
+
 		this.valid_mt.removeAll(this.valid_mt);
 		// For each associated mistarget check if it is valid
 		for (Mistarget mt : mt_collection){
@@ -693,7 +725,7 @@ public class Oligo extends DNASequence {
 				this.valid_mt.add(mt);
 			}
 		}
-		
+
 		// Reset the oligo score to be N/A for the entire span
 		this.currentScore = new OligoScore();
 

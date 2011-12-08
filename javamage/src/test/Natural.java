@@ -12,7 +12,7 @@ import mage.Tools.FASTA;
 
 public class Natural {
 
-	public static int  oligoNo = 2;
+	public static int  oligoNo = 50;
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 
 	public static ArrayList< ArrayList<String  > > plot_names;
 
@@ -53,9 +53,9 @@ public class Natural {
 		pp.draw();
 	}
 
-	private static void plotAllThree(){
-		
-	}
+//	private static void plotAllThree(){
+//		
+//	}
 
 
 
@@ -126,6 +126,7 @@ public class Natural {
 		// Print the final configuration
 		System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
+			
 			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 
@@ -144,7 +145,7 @@ public class Natural {
 	private static ArrayList<Oligo> populateNatural( ArrayList<Oligo> pool) throws Exception {
 
 		// Load the original genome's properties
-		Oligo.Genome = "genome0.ffn";
+		Oligo.Genome = "genome.ffn";
 		Oligo.Directory = Constants.naturalTestDirectory;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 		StringBuilder gn = new StringBuilder();
@@ -193,7 +194,7 @@ public class Natural {
 
 		// For each target generate an oligo
 		for (int ii=0; ii<targets.size() ;ii++) {
-			pool.add(Oligo.InsertionFactory(genome, targets.get(ii), positions.get(ii) ) );
+			pool.add(Oligo.InsertionFactory(genome, targets.get(ii), positions.get(ii),2,true) );
 		}
 
 
