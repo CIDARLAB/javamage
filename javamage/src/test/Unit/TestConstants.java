@@ -1,4 +1,4 @@
-package test;
+package test.Unit;
 
 public class TestConstants {
 	

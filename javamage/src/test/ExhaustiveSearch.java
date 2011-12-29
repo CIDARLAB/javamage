@@ -7,7 +7,6 @@ import java.util.Stack;
 
 import mage.Core.Oligo;
 import mage.Core.OligoScore;
-import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
 public class ExhaustiveSearch {
@@ -103,7 +102,7 @@ public class ExhaustiveSearch {
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
 		Oligo.Genome = "genome.ffn";
-		Oligo.Directory = Constants.bo_testing;
+		Oligo.Directory = test.Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 				
 		for (int ii=0; ii < 20;  ii++) {

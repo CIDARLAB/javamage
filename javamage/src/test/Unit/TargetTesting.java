@@ -1,7 +1,7 @@
-package test;
+package test.Unit;
 
 import mage.Core.Target;
-import mage.Tools.Constants;
+import test.Constants;
 
 import java.util.List;
 

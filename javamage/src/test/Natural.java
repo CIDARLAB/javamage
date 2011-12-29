@@ -5,17 +5,16 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import utils.Plot;
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
 public class Natural {
 
-	public static int  oligoNo = 50;
+	public static int  oligoNo = 8;
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 
 	public static ArrayList< ArrayList<String  > > plot_names;
-
 
 	public static void main(String[] args) throws Exception {
 
@@ -23,25 +22,42 @@ public class Natural {
 		Natural.verbose(false);
 		mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.Blast.method = 2;
-		
+
 		// Create a collection of oligos and populate it
 		ArrayList<Oligo> pool = new ArrayList<Oligo> ();
 		pool  =  Natural.populateNatural(pool);
-		
+
 		// Optimize the pool
 		Natural.OptimizeHeuristic(pool);
 
 		// Plot the BO Values over time
-		Natural.plotBO();
-		//	Natural.plotAllThree();
+		plotBO();
+		
+		for (Oligo ol: pool) {
+			Natural.plotBG_DG(ol); 
+		}
 	}
 
+	
+	private static void plotBO () {
+		for (int ii = 0; ii<bo_plots.size() ;ii++){
+			Plot pl = new Plot();
+			pl.addGraph(bo_plots.get(ii), plot_names.get(ii));
+			pl.setToLines();
+			pl.title("Oligo " + ii );
+			pl.draw("Oligo_" + ii+"_BO" );
+		}
+	}
 
-	private static void plotBO() {
+	/**
+	 *  Plot BO Scores for a given iteration as a function of position
+	 * 
+	 */
+	private static void plotAllBO() {
 
 		// Create a new plot
 		utils.Plot pp = new utils.Plot();
-		
+
 		// Add all the graphs
 		for (int ii = 0; ii<bo_plots.size() ;ii++){
 			pp.addGraph(bo_plots.get(ii), plot_names.get(ii));
@@ -52,13 +68,31 @@ public class Natural {
 		pp.title("Blast Oligo Variation");
 		pp.draw();
 	}
+	
+	/**
+	 * Plot the Blast Genome and Free Energy Scores as a function of position
+	 * @param ol
+	 */
 
-//	private static void plotAllThree(){
-//		
-//	}
+	private static void plotBG_DG(Oligo ol){
 
+		Double[] bgScores = ol.bgList().toArray(new Double[ol.bgList().size()]);
+		Double[] dgScores  = ol.dgList().toArray(new Double[ol.dgList().size()]);
 
+		Plot pl = new Plot();
+		pl.addGraph(bgScores, "Blast Genome");
+		pl.addGraph(dgScores, "Free Energy Scores"); 
+		pl.setToLines();
+		pl.title("Oligo : "+ol.getOligoId());
+		pl.draw("Oligo_"+ol.getOligoId()+"_BG_DG");
+	}
 
+	/**
+	 * Heurisitic for optimization
+	 * 
+	 * @param pool			An a list of Oligos 
+	 * @throws Exception
+	 */
 	private static void OptimizeHeuristic(ArrayList<Oligo> pool) throws Exception {
 
 		System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
@@ -126,12 +160,19 @@ public class Natural {
 		// Print the final configuration
 		System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
-			
+
 			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 
 	} 
 
+	/**
+	 * Helper function for capturing the plotting
+	 * 
+	 * @param array
+	 * @param iteration
+	 * @param oligoID
+	 */
 	private static void addPlot(Double[] array, int iteration, int oligoID) {
 
 		// Take array and create plot set and store
@@ -141,12 +182,21 @@ public class Natural {
 		plot_names.get(id).add(name);
 
 	}
-
+	
+	/**
+	 * populate the pool using pieces of the genome.  This means that are changing the genome as we go.
+	 * To ensure that our indexing is correct, we do this 'in order', cut from the genome, remake genome
+	 * and cut from next position in the genome
+	 * 
+	 * @param pool
+	 * @return
+	 * @throws Exception
+	 */
 	private static ArrayList<Oligo> populateNatural( ArrayList<Oligo> pool) throws Exception {
 
 		// Load the original genome's properties
 		Oligo.Genome = "genome.ffn";
-		Oligo.Directory = Constants.naturalTestDirectory;
+		Oligo.Directory = test.Constants.naturalTestDirectory;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 		StringBuilder gn = new StringBuilder();
 		gn.append(genome);
@@ -210,7 +260,8 @@ public class Natural {
 
 	}
 
-	public static void verbose (boolean isVerbose) {
+	
+	private static void verbose (boolean isVerbose) {
 
 		if (!isVerbose){
 			System.setErr( new PrintStream( new PipedOutputStream() ) );

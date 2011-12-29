@@ -138,22 +138,7 @@ public class BLAST {
 		return this.db.name;
 	}
 
-	// /*
-	public static void main(String[] args) {
 
-		String directory =  Constants.blastdirectory;
-		String subjectFFN = "genome.ffn";
-
-		HashMap <Integer,String> seqMap = new HashMap<Integer,String>();
-		seqMap.put(12,"CAAATGTGCAGCATACGTATTTGCTCGGCGTGCTTGGTCTCTCGTACTTCTCCTGGAGATCAAGGAAATGTTTCTTGTCCAAGCGGACAG");
-		seqMap.put(144,"AGCTCTCGATAGACGACTACGGGAAAATACGATCAGGACTCGGGACTACGATATACGACAGAAAGACGTACGATTTACGACTGCGCGCGA");
-
-		BLAST bg = new BLAST(directory,subjectFFN);
-		bg.setQuery(seqMap);
-		bg.run();
-
-	} 
-	// */
 
 	private List<BlastResult> parse(String output){
 		String [] lines = output.split("\\n");

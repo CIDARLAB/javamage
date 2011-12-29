@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import mage.Tools.BLAST;
+import mage.Tools.BLAST.BlastResult;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 import mage.Tools.MFOLD;
 import mage.Tools.SequenceTools;
-import mage.Tools.BLAST.BlastResult;
 
 import org.biojava3.core.sequence.DNASequence;
 
@@ -33,7 +33,7 @@ public class Oligo extends DNASequence {
 	public 	static ArrayList<Oligo>	all = new ArrayList<Oligo>();
 	public 	static int buffer_3prime = 15;	
 	public 	static int buffer_5prime = 15;
-	public	static String	Directory = Constants.blastdirectory;
+	public	static String	Directory = Constants.workingdirectory;
 
 	public	static String 	Genome = "genome.ffn";
 	public 	static Integer ideal_length = 90;
@@ -53,7 +53,7 @@ public class Oligo extends DNASequence {
 
 		// Create a .FFN with from the Subject
 		String filename = "oligo.ffn";
-		String directory = Constants.bodirectory;
+		String directory = Constants.workingdirectory;
 		FASTA.writeFFN(directory, filename, subject.getSequenceAsString().toString());
 
 		// Create a BLASTDB with .FFN files
@@ -169,7 +169,7 @@ public class Oligo extends DNASequence {
 			if ( ((replichore==2) && !sense) || ((replichore==1) && sense) ) {
 				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
 			}
-			
+
 			// Return the new Oligo that was just made
 			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
 
@@ -823,4 +823,14 @@ public class Oligo extends DNASequence {
 	 * @return	A String of ideal oligo length
 	 */
 	public String getOptimizedAsString() {return this.optimized;}
+
+
+	public List<String> getPossibleOligos() throws Exception{
+
+		ArrayList<String> poligos = new ArrayList<String> ();
+		for (int ii = this.oligo_min; ii<this.oligo_max; ii++) {
+			poligos.add(this.getOligo(ii));
+		}
+		return poligos;
+	}
 }

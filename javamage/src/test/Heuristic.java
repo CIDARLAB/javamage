@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
 import mage.Tools.FASTA;
 
 public class Heuristic {
@@ -98,7 +97,7 @@ public class Heuristic {
 	private static ArrayList<Oligo> populate( ArrayList<Oligo> pool) throws Exception {
 		
 		Oligo.Genome = "genome0.ffn";
-		Oligo.Directory = Constants.bo_testing;
+		Oligo.Directory = test.Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 	
 		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250, 2,true) );

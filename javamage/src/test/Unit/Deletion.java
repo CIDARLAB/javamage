@@ -1,8 +1,8 @@
-package test;
+package test.Unit;
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
 import mage.Tools.FASTA;
+import test.Constants;
 
 public class Deletion {
 

@@ -1,10 +1,10 @@
-package test;
+package test.Unit;
 
 import java.util.ArrayList;
 
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
+import test.Constants;
 import mage.Tools.FASTA;
 import utils.TextFile;
 

@@ -2,33 +2,57 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import mage.Tools.Constants;
+
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.layout.AutoGraphLayout;
 import com.panayotis.gnuplot.plot.AbstractPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.style.Style;
+import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
+import com.panayotis.gnuplot.terminal.PostscriptTerminal;
 
 
 public class Plot {
-	
+
 	private JavaPlot	jplot;
 	private ArrayList<SubGraph> graphs;
 
+	/**
+	 * Quickly plot Ydata with a title
+	 * @param Ydata	Double Array of Y axis data
+	 * @param title	String title for the plot
+	 */
 	public Plot(Double[] Ydata, String title) {
 		this();
 		this.addGraph(Ydata, title);
+		this.draw();
 	}
-	
-	public	Plot(){
+
+	/**
+	 * Create a vertical stack plot of graphs
+	 */
+	public Plot() {
+		this(0,1);
+	}
+
+	/**
+	 * Create a rowsxcolumn subplot graph layout and file it in.
+	 * @param rows		Number of rows
+	 * @param columns	Number of columns
+	 */
+	public	Plot(int rows, int columns){
 		// Initialize
 		jplot = new JavaPlot();
 		graphs = new ArrayList<SubGraph>();
-		
+
 		// Set to a column style
 		AutoGraphLayout layout =((AutoGraphLayout) jplot.getLayout());
-		layout.setColumns(1);
-		//layout.setRows(3);
-		
+
+		// Set the rows and columns
+		if (rows>0) 	{ layout.setColumns(columns); }
+		if (columns>0) 	{ layout.setRows(rows);	}
+
 		// Set aesthetic properties
 		jplot.set("key", "outside right spacing 0.75");
 		jplot.set("screen-coordinate", "min 0,0 max 1,1");
@@ -38,11 +62,11 @@ public class Plot {
 		jplot.set("bmargin", "1");
 		jplot.set("tmargin", "2");
 	}
-	
+
 	public void  addGraph(List<Double[]> Ydatas, List<String> titles){
 
 		ArrayList<DataSetPlot> data = new ArrayList<DataSetPlot>();
-		
+
 		for (int ii = 0 ; ii< Ydatas.size() ;ii++){
 
 			Double[] yy = Ydatas.get(ii);
@@ -59,7 +83,7 @@ public class Plot {
 			set.setTitle(titles.get(ii));
 			data.add(set);
 		}
-		
+
 		SubGraph sg = new SubGraph(data); 
 		graphs.add(sg);
 
@@ -86,15 +110,15 @@ public class Plot {
 			set.setTitle(titles.get(ii));
 			data.add(set);
 		}
-		
+
 		SubGraph sg = new SubGraph(data); 
 		graphs.add(sg);
 
-//		for (DataSetPlot set: data) {
-//			Graph gr =  new Graph();
-//			gr.add(set);
-//			graphs.add(gr);
-//		}
+		//		for (DataSetPlot set: data) {
+		//			Graph gr =  new Graph();
+		//			gr.add(set);
+		//			graphs.add(gr);
+		//		}
 
 	}
 
@@ -112,7 +136,7 @@ public class Plot {
 		set.setTitle(title);
 		ArrayList<DataSetPlot> data = new ArrayList<DataSetPlot>();
 		data.add(set);
-		
+
 		SubGraph sg = new SubGraph(data); 
 		graphs.add(sg);
 	}
@@ -129,7 +153,7 @@ public class Plot {
 
 		DataSetPlot set = new DataSetPlot(dataArray);
 		set.setTitle(title);
-		
+
 		ArrayList<DataSetPlot> data = new ArrayList<DataSetPlot>();
 		data.add(set);
 		SubGraph sg = new SubGraph(data); 
@@ -173,7 +197,7 @@ public class Plot {
 	}
 
 	public void draw() {		
-		
+
 		boolean first=true;
 		for ( SubGraph sg: graphs ){
 			if (!first) { jplot.newGraph(); } else {first= false;}	
@@ -182,30 +206,43 @@ public class Plot {
 		jplot.plot();
 	}
 
+	public void draw(String filename) {
+		boolean first=true;
+		for ( SubGraph sg: graphs ){
+			if (!first) { jplot.newGraph(); } else {first= false;}	
+			this.addSubGraph(sg);	
+		}
+		PostscriptTerminal epsf = new PostscriptTerminal(Constants.workingdirectory+ filename+ ".eps");
+		epsf.setColor(true);
+		jplot.setTerminal(epsf);
+		//jplot.set("output",filename);
+		jplot.plot();
+	}
+
 	private void addSubGraph(SubGraph sg){
 		for (DataSetPlot dsp : sg.getDataSets()) {
 			jplot.addPlot(dsp);
 		}
 	}
-	
+
 	public static void quickPlot(Double[] dd,String title){
 		Plot plotwindow = new Plot(dd,title);
 		plotwindow.setToLinePoints();
 		plotwindow.draw();
 
 	}
-	
+
 	public class SubGraph{
-		
+
 		private List<DataSetPlot>	data;
-		
+
 		public SubGraph(List<DataSetPlot> ll){
-			
+
 			this.data = ll;
 		}
-		
+
 		public List<DataSetPlot> getDataSets(){
-			
+
 			return data;
 		}
 	}

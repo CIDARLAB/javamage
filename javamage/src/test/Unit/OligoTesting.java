@@ -1,4 +1,4 @@
-package test;
+package test.Unit;
 
 import mage.Core.Oligo;
 

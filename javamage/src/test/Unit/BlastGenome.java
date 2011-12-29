@@ -1,7 +1,8 @@
-package test;
+package test.Unit;
 
 import java.util.HashMap;
 import java.util.List;
+
 
 import mage.Tools.BLAST;
 import mage.Tools.BLAST.BlastResult;

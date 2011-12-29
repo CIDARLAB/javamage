@@ -1,9 +1,9 @@
-package test;
+package test.Unit;
 
 import java.io.IOException;
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
+import test.Constants;
 
 public class FASTA {
 

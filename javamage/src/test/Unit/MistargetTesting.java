@@ -1,4 +1,4 @@
-package test;
+package test.Unit;
 
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import mage.Core.Mistarget;
 import mage.Core.Oligo;
-import mage.Tools.Constants;
+import test.Constants;
 import mage.Tools.FASTA;
 
 public class MistargetTesting {

@@ -1,10 +1,12 @@
-package test;
+package test.Unit;
 
 import java.util.ArrayList;
 
+import test.Heuristic;
+
 
 import mage.Core.Oligo;
-import mage.Tools.Constants;
+import test.Constants;
 import mage.Tools.FASTA;
 
 public class FreeEnergy {
