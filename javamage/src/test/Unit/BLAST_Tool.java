@@ -7,7 +7,6 @@ import test.Constants;
 
 public class BLAST_Tool {
 
-	// /*
 	public static void main(String[] args) {
 
 		String directory =  Constants.blastdirectory;
@@ -22,6 +21,6 @@ public class BLAST_Tool {
 		bg.run();
 
 	} 
-	// */
+	
 	
 }

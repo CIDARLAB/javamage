@@ -9,7 +9,6 @@ import com.panayotis.gnuplot.layout.AutoGraphLayout;
 import com.panayotis.gnuplot.plot.AbstractPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.style.Style;
-import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
 import com.panayotis.gnuplot.terminal.PostscriptTerminal;
 
 
@@ -54,7 +53,7 @@ public class Plot {
 		if (columns>0) 	{ layout.setRows(rows);	}
 
 		// Set aesthetic properties
-		jplot.set("key", "outside right spacing 0.75");
+		jplot.set("key", "top right 0.75");
 		jplot.set("screen-coordinate", "min 0,0 max 1,1");
 		jplot.set("border", "3");
 		jplot.set("xtics", "nomirror");
@@ -158,6 +157,21 @@ public class Plot {
 		data.add(set);
 		SubGraph sg = new SubGraph(data); 
 		graphs.add(sg);
+	}
+	
+	public void addLine(Double[] doubles, Double[] doubles2, String title){
+		
+		// Populate the dataArray
+		double[][] dataArray	= new double[2][2];
+		dataArray[0][0] = doubles[0];
+		dataArray[0][1] = doubles2[0];
+		dataArray[1][0] = doubles[1];
+		dataArray[1][1] = doubles2[1];
+		
+		DataSetPlot set = new DataSetPlot(dataArray);
+		set.setTitle(title);
+		((AbstractPlot) set).getPlotStyle().setStyle(Style.LINES);
+		graphs.get(graphs.size()-1).getDataSets().add(set);
 	}
 
 	public void title(String titleString) {

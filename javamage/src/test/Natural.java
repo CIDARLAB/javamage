@@ -12,7 +12,7 @@ import mage.Tools.FASTA;
 
 public class Natural {
 
-	public static int  oligoNo = 8;
+	public static int  oligoNo = 9;
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 
 	public static ArrayList< ArrayList<String  > > plot_names;
 

@@ -5,36 +5,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mage.Core.Oligo;
-import mage.Tools.FASTA;
-import test.Constants;
 import utils.TextFile;
 
-public class parseOptMAGE {
+public class Parser {
 
-	public static void main(String[] args) throws Exception {
-	
-		String genome = FASTA.readFFN(Constants.optMagedirectory, "genome.fasta");
-		Oligo ol = Oligo.InsertionFactory(genome, "atcggg", 1000, 1, false);		
+	public static List<Integer> parse(String filepath, List<Oligo> pool) throws Exception {
 		
-		List<String> shifts = parse(Constants.optMagedirectory+"test.txt");
-
-		for (String ss : shifts){
-					System.out.println("optMAGE Shift: " + ss + "\tAdjusted : "+ adjust(ss,ol));
+		ArrayList<Integer> result = new ArrayList<Integer>(pool.size());
+		List<String> optResults = parse(filepath);
+		for (int ii = 0; ii<pool.size() ;ii++) {
+			result.add( adjust(optResults.get(ii), pool.get(ii) ) );
 		}
+		
+		return result;
 	}
 	
-	public static int adjust(String ol1, Oligo ol) throws Exception{
+	/**
+	 * Identifies the oligo in the span that corresponds to the optMAGE selection
+	 * for comparison
+	 * 
+	 * @param optmage
+	 * @param ol
+	 * @return
+	 * @throws Exception
+	 */
+	public static int adjust(String optmage, Oligo ol) throws Exception{
 		int shift = 0;
 		int position = -1;
 		
 		// Find the oligo and return the position
 		for (String poligo : ol.getPossibleOligos()){
-			if (poligo.equalsIgnoreCase(ol1)) {position = shift; break;}
+			if (poligo.equalsIgnoreCase(optmage)) {position = shift; break;}
 			shift ++; 
 		}
 		return position;
 	}
 	
+	/**
+	 * Helper function for parsing the optMAGE output
+	 * 
+	 * @param filepath		The File path of the optMAGE file
+	 * @return				Returns a pool of oligos
+	 * @throws IOException
+	 */
 	public static List<String> parse(String filepath) throws IOException{
 		
 		String file = TextFile.read(filepath);
