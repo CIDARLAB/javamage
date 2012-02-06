@@ -171,7 +171,7 @@ public class BLAST {
 			}
 		}
 		this.matches = count; 
-		System.err.println("[BLAST] Total Number of Queries = "+this.matches);
+		System.err.println("[BLAST] Total Number of Query Hits = "+this.matches);
 		
 		return results;
 	}

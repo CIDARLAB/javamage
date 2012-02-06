@@ -1,11 +1,11 @@
 package test.optMAGE;
 
+import java.util.List;
+
 import mage.Core.Oligo;
-import mage.Tools.FASTA;
-import test.Constants;
 import utils.Plot;
 
-public class compareBO_BG {
+public class Comparator {
 
 
 	public static void plot(Oligo ol, int optMagePosition){
@@ -28,7 +28,7 @@ public class compareBO_BG {
 					"optMAGE" );
 		
 		// Draw final plot
-		pl.draw();
+		pl.draw("Oligo_" + ol.getOligoId()+" DG_BG Comparison");
 	}
 	
 	/**
@@ -63,14 +63,16 @@ public class compareBO_BG {
 		return index;
 	}
 
-	
-	public static void main(String[] args) throws Exception {
-
-		String genome = FASTA.readFFN(Constants.optMagedirectory, "genome.fasta");
-		Oligo ol = Oligo.InsertionFactory(genome, "atcggg", 1000, 1, false);	
-		ol.calc_bg();
-		ol.calc_dg();
-		plot(ol,27);
+	public static void compare(String filepath, List<Oligo> pool) throws Exception {  
+		
+		List<Integer> results = Parser.parse(filepath, pool);
+		for ( int ii=0; ii< results.size() ; ii++) { 
+			plot( pool.get(ii),results.get(ii));
+		}
+		
 	}
+	
+	
+
 
 }

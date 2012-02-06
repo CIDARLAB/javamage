@@ -12,7 +12,7 @@ import mage.Tools.FASTA;
 
 public class Natural {
 
-	public static int  oligoNo = 9;
+	public static int  oligoNo = 50;
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 
 	public static ArrayList< ArrayList<String  > > plot_names;
 
@@ -49,25 +49,25 @@ public class Natural {
 		}
 	}
 
-	/**
-	 *  Plot BO Scores for a given iteration as a function of position
-	 * 
-	 */
-	private static void plotAllBO() {
-
-		// Create a new plot
-		utils.Plot pp = new utils.Plot();
-
-		// Add all the graphs
-		for (int ii = 0; ii<bo_plots.size() ;ii++){
-			pp.addGraph(bo_plots.get(ii), plot_names.get(ii));
-		}
-
-		// Set plotsytle to lines, set title and then draw
-		pp.setToLines();
-		pp.title("Blast Oligo Variation");
-		pp.draw();
-	}
+//	/**
+//	 *  Plot BO Scores for a given iteration as a function of position
+//	 * 
+//	 */
+//	private static void plotAllBO() {
+//
+//		// Create a new plot
+//		utils.Plot pp = new utils.Plot();
+//
+//		// Add all the graphs
+//		for (int ii = 0; ii<bo_plots.size() ;ii++){
+//			pp.addGraph(bo_plots.get(ii), plot_names.get(ii));
+//		}
+//
+//		// Set plotsytle to lines, set title and then draw
+//		pp.setToLines();
+//		pp.title("Blast Oligo Variation");
+//		pp.draw();
+//	}
 	
 	/**
 	 * Plot the Blast Genome and Free Energy Scores as a function of position
@@ -145,7 +145,7 @@ public class Natural {
 				Natural.addPlot( ol.boList().toArray( new Double[ol.bgList().size()])
 						, iteration ,ol.getOligoId() );
 
-				System.out.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
+				//System.out.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
 
 			// Sort by whatever greedy-score
@@ -153,6 +153,7 @@ public class Natural {
 
 			// Select the best choice and the repeat until the stack is empty
 			Oligo greedyChoice = stack.pop();
+			System.out.println("Oligo "+ greedyChoice.getOligoId() + ":\t"+greedyChoice.scoreAt(greedyChoice.getGreedyChoice()).toString() ); 
 			greedyChoice.select();
 			iteration++;
 		}
@@ -160,7 +161,7 @@ public class Natural {
 		// Print the final configuration
 		System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
-
+			ol.finalize();
 			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 
@@ -251,6 +252,7 @@ public class Natural {
 		// Set up the plot List stuff
 		Natural.bo_plots = new ArrayList< ArrayList<Double[]>>();
 		Natural.plot_names = new ArrayList< ArrayList<String>>();
+		
 		for (Oligo ol : pool) {
 			bo_plots.add(new ArrayList<Double[]>(ol.getMarginLength()));
 			plot_names.add(new ArrayList<String>(ol.getMarginLength()));

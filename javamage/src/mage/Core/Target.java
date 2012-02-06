@@ -65,6 +65,8 @@ public class Target {
 	 * @return			A list of Targets
 	 * @throws IOException
 	 */
-	public static List<Target> loadTarget(String directory,String filename) throws IOException{ return loadTarget(directory+filename); }
+	public static List<Target> loadTarget(String directory,String filename) throws IOException{
+			return loadTarget(directory+filename); 
+	}
 
 }

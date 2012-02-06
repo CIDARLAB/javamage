@@ -78,18 +78,77 @@ public class Oligo extends DNASequence {
 
 	} 
 
-	//	public static Oligo Factory(String genome, Target tt) throws Exception {
-	//		
-	//		if ( tt.type.startsWith("I") ){
-	//			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position);
-	//		}
-	////		else if (tt.type.startsWith("M")) {
-	////		}
-	////		else if (tt.type.startsWith("D")) {
-	////			
-	////		}
-	//
-	//	}
+	/**
+	 * Oligo Factory,
+	 * 
+	 * Given a genome, and a target.  The oligo factory will return the desired Oligo object
+	 * defined by the parameters of the target object.
+	 * 
+	 * @param genome	A genome of sufficient length
+	 * @param tt		A target mutation object 
+	 * @return 			An unoptimized oligomer to perform the target mutation
+	 * @throws Exception
+	 */
+	public static Oligo OligoFactory(String genome, Target tt) throws Exception {
+
+		if ( tt.type.startsWith("I") ){
+			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position, tt.replichore , tt.sense );
+		}
+		else if (tt.type.startsWith("M")) {
+			return Oligo.MismatchFactory(genome, tt.sequence, tt.left_position, tt.right_position, tt.replichore, tt.sense) ;
+		}
+		else if (tt.type.startsWith("D")) {
+			return Oligo.DeletionFactory(genome, tt.left_position, tt.right_position, tt.replichore) ;
+		}
+		else {
+			System.out.println("Could Not Create Oligo");
+			throw new Exception("[OligoFactory] Oligo not defined on correct range" );	
+		}
+
+	}
+
+	public static Oligo MismatchFactory(String genome, String target, int left_position, int right_position, int replichore, boolean sense)  throws Exception { 
+		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) 
+		{
+			// Define the starting pisition on the genome)
+			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
+
+			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
+			String preSequence =  genome.substring(genome_start-1, left_position);
+
+			// Define the ending position on the gneome
+			int genome_end  = right_position+(Oligo.ideal_length - Oligo.buffer_5prime -1);
+
+			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
+			String postSequence = genome.substring(right_position-1, genome_end ); 
+
+			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
+			if (replichore == 1){
+
+				// Get RC
+				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
+
+				// Calculate index to split from and then reassign post and pre sequnence
+				int splitIndex 		= preSequence.length();
+				postSequence 		= reverseComp.substring(splitIndex);
+				preSequence 		= reverseComp.substring(0,splitIndex);
+			}
+			if ( ((replichore==2) && !sense) || ((replichore==1) && sense) ) {
+				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
+			}
+
+			// Return the new Oligo that was just made
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
+
+		}
+		else {
+			//return null;
+			System.out.println("Could Not Create Oligo");
+			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
+		}
+
+	}
+
 
 	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore) throws Exception {
 
@@ -405,6 +464,7 @@ public class Oligo extends DNASequence {
 		this.bo_scores.clear();
 		this.bo_sorted.clear();
 		this.scores.clear();
+
 		// Set every possible oligo on the span as the optimized oligo, then calculate the associated BO Value
 		for ( int ii = this.oligo_min; ii < this.oligo_max; ii++ ) {
 			this.set(ii);
@@ -428,6 +488,26 @@ public class Oligo extends DNASequence {
 
 		this.greedy_choice = mage.Switches.Oligo.greedyScore(this);
 		this.reset();
+
+	}
+
+	/**
+	 * Finalize a choice of oligo based on the greedy Score
+	 * 
+	 */
+
+	public void finalize() throws Exception {
+
+		// Set the oligo to the greedy Choice to recalculate the mistargets
+		this.select();
+
+		// Recalculate the score at the final position and update it
+		Double score = mage.Switches.BlastOligo.score(this);
+		this.bo_scores.set(this.greedy_choice-1, score);
+		this.scores.add(this.scoreAt(greedy_choice-1));
+
+		// Re select this position to update the greedy score;
+		this.select();
 
 	}
 
