@@ -7,6 +7,7 @@ import java.util.List;
 
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
+import mage.optMage.Comparator;
 import utils.TextFile;
 
 /**
@@ -26,6 +27,8 @@ public class Merlin{
 	public static boolean compare = true;
 	public static boolean plot = true;
 	
+	public ArrayList<Oligo> pool ;
+	
 	final static private String configFileName= "config.txt";
 	
 	/**
@@ -41,7 +44,7 @@ public class Merlin{
 	 */
 	
 	public Merlin (String directory, String targetsFileName, String parametersFileName, String genomeFileName) throws Exception {
-		this( directory, targetsFileName, parametersFileName, "", genomeFileName ,false);
+		this( directory, targetsFileName, parametersFileName, genomeFileName ,false);
 	}
 	
 	
@@ -56,7 +59,7 @@ public class Merlin{
 	 * @throws Exception			In the event a file cannot be loaded/ parsed correctly, an exception will be thrown
 	 */
 	public Merlin (String directory, String targetsFileName, String parametersFileName ) throws Exception { 
-		this( directory, targetsFileName, parametersFileName, "", "genome.ffn" ,false);
+		this( directory, targetsFileName, parametersFileName, "genome.ffn" ,false);
 	}
 	
 	public void optimize() throws Exception {
@@ -81,6 +84,9 @@ public class Merlin{
 		// Then we read and parse the parameters
 		loadParameters(Constants.parameters);
 		
+		// The switches are public and can be turned on and off at any time
+		// So there is no need to load a file
+		
 		/* ***********************************************
 		 * Stage 2: Load targets and Populate Oligo Pool *
 		 * ***********************************************/
@@ -88,9 +94,7 @@ public class Merlin{
 		// Create a list of targets from by parsing the targets file
 		List<Target> targets = Target.loadTarget(Constants.targets);
 		
-		// Create a Pool of oligos
-		ArrayList<Oligo> pool = new ArrayList<Oligo>(targets.size());
-				
+		// Add each target in the pool to factory and push that into the pool
 		for ( Target tt : targets) {
 			pool.add( Oligo.OligoFactory(genome, tt) );
 		}
@@ -100,13 +104,25 @@ public class Merlin{
 		 * Stage 3: Run the Heuristic *
 		 * ****************************/
 		
+		//
+		
 		// Optimize the pool
 		mage.Core.Optimize.optimize(pool);
 		
 		
 		/* *************************************
-		 * Stage 4: Compare and return results *
+		 * Stage 4: Return results *
 		 * *************************************/
+		
+	}
+	
+	
+	public void compareToOptMage( String filename) throws Exception{
+		
+		// Check if the filename is valid
+		if ( isValidFilePath(filename) ) { 
+			Comparator.compare(Constants.workingdirectory+filename, this.pool);
+		}
 		
 	}
 	
@@ -121,40 +137,37 @@ public class Merlin{
 	 * @param directory
 	 * @param targetsFileName
 	 * @param parametersFileName
-	 * @param switchesFileName
 	 * @param genomeFileName
 	 * @param defaultSwitches		If the default switches boolean is set to true, Merlin will not search for a switches file
 	 * @throws Exception
 	 */
 	private Merlin (String directory,
 			String targetsFileName, 
-			String parametersFileName, 
-			String switchesFileName,  
+			String parametersFileName,  
 			String genomeFileName,
 			boolean defaultSwitches) throws Exception {
 		
 		// Load the working directory
 		Constants.workingdirectory = directory;
 		
-		if ( Constants.workingdirectory.endsWith("/") ) { Constants.workingdirectory += "/"; }		
+		if ( !Constants.workingdirectory.endsWith("/") ) { Constants.workingdirectory += "/"; }		
 		Oligo.Directory = Constants.workingdirectory;
 		
 		// Test if the genome file exists
 		if ( isValidFilePath( genomeFileName )) { Oligo.Genome = genomeFileName; }
 		
 		// Test if the parameters file exists	
-		if ( isValidFilePath( targetsFileName)) { Constants.targets = targetsFileName; }
+		if ( isValidFilePath( targetsFileName)) { Constants.targets = Constants.workingdirectory+ targetsFileName; }
 		
 		// Test if the targets file exists
-		if ( isValidFilePath( parametersFileName)) { Constants.parameters = parametersFileName; }	
-		
-		// Test if the switches file exists
-		if ( !defaultSwitches ) {
-			if ( isValidFilePath( switchesFileName)) { Constants.switches = switchesFileName; }
-		}
+		if ( isValidFilePath( parametersFileName)) { Constants.parameters = Constants.workingdirectory + parametersFileName; }	
 		
 		// Load the configuration files
 		loadConfig(Constants.workingdirectory);
+		
+		// Create a Pool of oligos
+		this.pool = new ArrayList<Oligo>();
+				
 		
 	} 
 	
@@ -171,9 +184,9 @@ public class Merlin{
 	private void loadConfig(String workingdirectory) throws IOException {
 		if (isValidFilePath(Merlin.configFileName)) {
 			String configs[] = TextFile.read(workingdirectory + Merlin.configFileName).split("\n");
-			Constants.blastn = configs[0].split("\\s+")[1];
+			Constants.blastn = configs[1].split("\\s+")[1];
 			Constants.makeblastdb = configs[0].split("\\s+")[1];
-			Constants.MFOLD = configs[0].split("\\s+")[1];
+			Constants.MFOLD = configs[2].split("\\s+")[1];
 		}
 	}
 

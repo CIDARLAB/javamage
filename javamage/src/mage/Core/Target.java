@@ -33,7 +33,9 @@ public class Target {
 		this.left_position	= Integer.parseInt(properties[3]);
 		this.right_position	= Integer.parseInt(properties[4]);
 		this.type			= properties[5];
-		this.sequence		= properties[6];
+		
+		if ( properties.length > 6 ){ this.sequence	= properties[6]; }
+		else {	this.sequence= ""; }
 	}
 
 	/**

@@ -2,6 +2,7 @@ package test.optMAGE;
 
 import mage.Core.Oligo;
 import mage.Tools.FASTA;
+import mage.optMage.Comparator;
 import test.Constants;
 
 public class testComparator {

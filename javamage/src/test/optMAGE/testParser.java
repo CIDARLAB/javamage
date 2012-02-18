@@ -4,6 +4,7 @@ import java.util.List;
 
 import mage.Core.Oligo;
 import mage.Tools.FASTA;
+import mage.optMage.Parser;
 import test.Constants;
 
 public class testParser {

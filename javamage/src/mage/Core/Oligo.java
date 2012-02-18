@@ -504,7 +504,7 @@ public class Oligo extends DNASequence {
 		// Recalculate the score at the final position and update it
 		Double score = mage.Switches.BlastOligo.score(this);
 		this.bo_scores.set(this.greedy_choice-1, score);
-		this.scores.add(this.scoreAt(greedy_choice-1));
+		this.scores.add(this.scoreAt(greedy_choice));
 
 		// Re select this position to update the greedy score;
 		this.select();

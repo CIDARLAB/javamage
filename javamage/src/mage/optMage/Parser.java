@@ -1,4 +1,4 @@
-package test.optMAGE;
+package mage.optMage;
 
 import java.io.IOException;
 import java.util.ArrayList;
