@@ -134,7 +134,7 @@ public class Optimize {
 			pl.addGraph(bo_plots.get(ii), plot_names.get(ii));
 			pl.setToLines();
 			pl.title("Oligo " + ii );
-			pl.draw("Oligo_" + ii+"_BO" );
+			pl.draw("Oligo_" + (ii+1) +"_BO" );
 		}
 	}
 
