@@ -13,7 +13,7 @@ public class Parser {
 		
 		ArrayList<Integer> result = new ArrayList<Integer>(pool.size());
 		List<String> optResults = parse(filepath);
-		for (int ii = 0; ii<pool.size() ;ii++) {
+		for (int ii = 0; ii< Math.min(pool.size(),optResults.size()) ;ii++) {
 			result.add( adjust(optResults.get(ii), pool.get(ii) ) );
 		}
 		

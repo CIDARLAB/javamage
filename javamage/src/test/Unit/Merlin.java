@@ -25,6 +25,8 @@ public class Merlin {
 		// Optimize oligos
 		merlin.optimize();
 		
+		merlin.compareToOptMage("OUToligos.txt");
+		
 	}
 
 }

@@ -2,6 +2,8 @@ package mage.Core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +118,20 @@ public class Merlin{
 		
 	}
 	
+	/**
+	 * Hide all output to the error stream
+	 * This will also hide any runtime exceptions.
+	 * 
+	 * @param Boolean enable:  if true, verbose mode is enabled
+	 */
+	public void verbose(boolean enable){
+		if (!enable){
+			System.setErr( new PrintStream( new PipedOutputStream() ) );	
+		}
+		else{
+			System.setErr( System.err);
+		}
+	}
 	
 	public void compareToOptMage( String filename) throws Exception{
 		
@@ -168,7 +184,8 @@ public class Merlin{
 		// Create a Pool of oligos
 		this.pool = new ArrayList<Oligo>();
 				
-		
+		// Turn verbose mode off.
+		this.verbose(false);
 	} 
 	
 	/**

@@ -7,7 +7,11 @@ import utils.Plot;
 
 public class Comparator {
 
-
+	/**
+	 * Plots the oligo for the given optMAGE positions
+	 * @param ol				Oligo
+	 * @param optMagePosition	optMAGE optimal position
+	 */
 	public static void plot(Oligo ol, int optMagePosition){
 		Double[] bgScores = ol.bgList().toArray(new Double[ol.bgList().size()]);
 		Double[] dgScores  = ol.dgList().toArray(new Double[ol.dgList().size()]);		
@@ -15,19 +19,32 @@ public class Comparator {
 		// Create Plot object
 		Plot pl = new Plot(1,2);
 		
-		// Add plot and line
+		// Get Line min and max points
+		double line_min =(double) min(bgScores)-1; 
+		double line_max = (double) max(bgScores)-1;
+		
+		// Add plot and line for optMAGE position and MERLIN Position
 		pl.addGraph( bgScores, "Genome Homology");
 		pl.addLine(	new Double [] { (double) optMagePosition, (double) optMagePosition },  
-					new Double [] { (double) min(bgScores)-1 , (double) max(bgScores)+1  }, 
+					new Double [] { line_min , line_max }, 
 					"optMAGE" );
+		pl.addLine(	new Double [] { (double)ol.getGreedyChoice() , (double) ol.getGreedyChoice() }, 
+					new Double [] { line_min , line_max },
+					"MERLIN");
 		
-		// Add next plot and line
+		// Add next plot and lines for optMAGE position and MERLIN Position
 		pl.addGraph(dgScores, "Free Energy");
+		line_min =(double) min(dgScores)-1; 
+		line_max = (double) max(dgScores)-1;
 		pl.addLine(	new Double [] { (double) optMagePosition, (double) optMagePosition },  
-					new Double [] { (double) min(dgScores)-1 , (double) max(dgScores)+1  }, 
+					new Double [] { line_min ,line_max  }, 
 					"optMAGE" );
+		pl.addLine(	new Double [] { (double)ol.getGreedyChoice() , (double) ol.getGreedyChoice() }, 
+					new Double [] { line_min , line_max },
+					"MERLIN");
 		
 		// Draw final plot
+		pl.setToLines();
 		pl.draw("Oligo_" + ol.getOligoId()+" DG_BG Comparison");
 	}
 	
@@ -36,15 +53,12 @@ public class Comparator {
 	 * @param darray 	Double Array
 	 * @return			Integer index 
 	 */
-	private static int min(Double[] darray){
-		double min=darray[0]; int count = 0; int index =0;
-		for (Double dd: darray) {  
-			if (min < dd) { 
-				index =count; 
-				min = dd; 
-			} count++;
+	private static double min(Double[] darray){
+		double min = darray[0];
+		for ( double dd : darray){
+			min = Math.min(min,dd);
 		}
-		return index;
+		return min;
 	}
 
 	/**
@@ -52,17 +66,22 @@ public class Comparator {
 	 * @param darray	Double Array
 	 * @return			Integer Index
 	 */
-	private static int max(Double[] darray){
-		double max=darray[0]; int count = 0; int index =0;
-		for (Double dd: darray) { 
-			if (max > dd) { 
-				index =count; 
-				max = dd; 
-			} 
-			count++; }
-		return index;
+	private static double max(Double[] darray){
+		double max = darray[0];
+		for ( double dd : darray){
+			max = Math.max(max,dd);
+		}
+		return max;
 	}
 
+	/**
+	 * Given the filepath to the optmage OUToligo.txt file, this will load and plot the 
+	 * difference between optMAGE and javaMAGE
+	 * 
+	 * @param filepath		the file path, name+directory
+	 * @param pool			List of Oligos			
+	 * @throws Exception	
+	 */
 	public static void compare(String filepath, List<Oligo> pool) throws Exception {  
 		
 		List<Integer> results = Parser.parse(filepath, pool);
