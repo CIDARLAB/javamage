@@ -3,6 +3,7 @@ package test.Unit;
 public class Merlin {
 
 	/**
+	 * Test Function
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {

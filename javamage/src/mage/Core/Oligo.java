@@ -129,7 +129,7 @@ public class Oligo extends DNASequence {
 				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
 
 				// Calculate index to split from and then reassign post and pre sequnence
-				int splitIndex 		= preSequence.length();
+				int splitIndex 		= postSequence.length();
 				postSequence 		= reverseComp.substring(splitIndex);
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
@@ -221,7 +221,7 @@ public class Oligo extends DNASequence {
 				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
 
 				// Calculate index to split from and then reassign post and pre sequnence
-				int splitIndex 		= preSequence.length();
+				int splitIndex 		= postSequence.length()	;
 				postSequence 		= reverseComp.substring(splitIndex);
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
@@ -912,5 +912,15 @@ public class Oligo extends DNASequence {
 			poligos.add(this.getOligo(ii));
 		}
 		return poligos;
+	}
+
+	/**
+	 * This funciton will return the optimal position of shift for the sub-oligo from the span 
+	 * with the best score after optimization.
+	 * 
+	 * @return a 0 indexed number
+	 */
+	public double getOptimalPosition() {
+		return this.getGreedyChoice()-1;
 	}
 }
