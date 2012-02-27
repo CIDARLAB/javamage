@@ -92,13 +92,13 @@ public class Oligo extends DNASequence {
 	public static Oligo OligoFactory(String genome, Target tt) throws Exception {
 
 		if ( tt.type.startsWith("I") ){
-			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position, tt.replichore , tt.sense );
+			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position, tt.replichore , tt.sense , tt.gene_name);
 		}
 		else if (tt.type.startsWith("M")) {
-			return Oligo.MismatchFactory(genome, tt.sequence, tt.left_position, tt.right_position, tt.replichore, tt.sense) ;
+			return Oligo.MismatchFactory(genome, tt.sequence, tt.left_position, tt.right_position, tt.replichore, tt.sense, tt.gene_name) ;
 		}
 		else if (tt.type.startsWith("D")) {
-			return Oligo.DeletionFactory(genome, tt.left_position, tt.right_position, tt.replichore) ;
+			return Oligo.DeletionFactory(genome, tt.left_position, tt.right_position, tt.replichore, tt.gene_name) ;
 		}
 		else {
 			System.out.println("Could Not Create Oligo");
@@ -107,7 +107,7 @@ public class Oligo extends DNASequence {
 
 	}
 
-	public static Oligo MismatchFactory(String genome, String target, int left_position, int right_position, int replichore, boolean sense)  throws Exception { 
+	public static Oligo MismatchFactory(String genome, String target, int left_position, int right_position, int replichore, boolean sense, String name)  throws Exception { 
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) 
 		{
 			// Define the starting pisition on the genome)
@@ -138,7 +138,7 @@ public class Oligo extends DNASequence {
 			}
 
 			// Return the new Oligo that was just made
-			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, name);	
 
 		}
 		else {
@@ -150,7 +150,7 @@ public class Oligo extends DNASequence {
 	}
 
 
-	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore) throws Exception {
+	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore, String name) throws Exception {
 
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) {
 
@@ -178,7 +178,7 @@ public class Oligo extends DNASequence {
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
 
-			return new Oligo(preSequence,"",postSequence,genome_start,genome_end);
+			return new Oligo(preSequence,"",postSequence,genome_start,genome_end, name);
 		}
 		else {
 			//return null;
@@ -198,7 +198,7 @@ public class Oligo extends DNASequence {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static Oligo InsertionFactory(String genome, String target, int targetPosition, int replichore, boolean sense) throws Exception {
+	public static Oligo InsertionFactory(String genome, String target, int targetPosition, int replichore, boolean sense, String name) throws Exception {
 
 		if ( (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (targetPosition > 60 ) ) {
 
@@ -230,7 +230,7 @@ public class Oligo extends DNASequence {
 			}
 
 			// Return the new Oligo that was just made
-			return new Oligo(preSequence, target, postSequence, genome_start, genome_end);	
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, name);	
 
 
 		}
@@ -295,17 +295,25 @@ public class Oligo extends DNASequence {
 	private int				opt_start;
 	private String 			optimized;
 	private int 			primary_position;
-
-	final 	private String 	sequence;
-	final 	private int 	span;
-	final 	private String 	target;
-	final 	private int 	target_length;
+	private int				optMagePosition;
+	
+	// Immutable members
+	final 	public String 	sequence;
+	final 	public int 	span;
+	final 	public String 	target;
+	final 	public int 	target_length;
+	final   public int target_position;
+	
+	final public String 	name;
 
 	public final int x;
 	private ArrayList<OligoScore> scores;
 
-	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end) throws Exception{
+	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end, String name) throws Exception{
 		super(preSequence+targetSequence+postSequence);
+		
+		this.name = name.replaceAll("\\s+", "");
+		
 		this.sequence = preSequence+targetSequence+postSequence;
 		// Store the genome start and end values
 		this.genome_start 	= genome_start;
@@ -318,7 +326,7 @@ public class Oligo extends DNASequence {
 		// Store the target sequence and length
 		this.target 		= targetSequence;
 		this.target_length 	= targetSequence.length();
-
+		this.target_position= preSequence.length();
 		// The margin for variation is given by L - 5'Buffer - 3-Buffer - t
 		this.margin 		= Oligo.ideal_length - Oligo.buffer_3prime - Oligo.buffer_5prime - this.target_length +1;
 
@@ -355,6 +363,7 @@ public class Oligo extends DNASequence {
 		// Take the first oligo as the optimized Oligo
 		this.optimized 		= getOligo(this.oligo_min);
 		this.greedy_choice= this.oligo_min;
+		this.optMagePosition = -1;
 		//this.calcOptimizedBounds(this.oligo_min);
 
 		// Add the oligo to the collection of all oligos
@@ -904,7 +913,24 @@ public class Oligo extends DNASequence {
 	 */
 	public String getOptimizedAsString() {return this.optimized;}
 
-
+	/**
+	 * Sets the optMagePosition
+	 * @param position
+	 */
+	public void  setOptMagePosition( int position )
+	{
+		this.optMagePosition = position;
+	}
+	
+	/**
+	 * Returns the position that optMAGE selected
+	 * @return
+	 */
+	public int  getOptMagePosition( )
+	{
+		return this.optMagePosition;
+	}
+	
 	public List<String> getPossibleOligos() throws Exception{
 
 		ArrayList<String> poligos = new ArrayList<String> ();
@@ -920,7 +946,7 @@ public class Oligo extends DNASequence {
 	 * 
 	 * @return a 0 indexed number
 	 */
-	public double getOptimalPosition() {
+	public int getOptimalPosition() {
 		return this.getGreedyChoice()-1;
 	}
 }

@@ -111,7 +111,7 @@ public class ExhaustiveSearch {
 			String target = genome.substring(start,end);
 			
 			int x = (int) Math.round((Math.random()*genome.length()-200));
-			pool.add(Oligo.InsertionFactory(genome, target, x,2,true) );
+			pool.add(Oligo.InsertionFactory(genome, target, x,2,true, Integer.toString(ii)) );
 		}
 		
 		

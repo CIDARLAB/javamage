@@ -30,17 +30,17 @@ public class TestBlastGenome {
 		
 		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
 
-		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
 
 		Integer count = 1; 
 		mage.Switches.Blast.method = 2;

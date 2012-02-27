@@ -29,14 +29,20 @@ public class Oligo {
 		switch (mage.Switches.Oligo.method_compare) {
 		default: ;
 		case 1: 
-			// Lexicographical ordering
-			if (g2.FreeEnergy() <= g1.FreeEnergy()) {
-				if (g2.BlastGenome() <= g1.BlastGenome() ){
-					if (g2.BlastOligo() <= g1.BlastOligo()) {
-						better= 1;
-					}
-				}
-			}
+			
+			// This scoring system gives priority to the DG, then BG, then BO
+			if (g2.BlastOligo() >g1.BlastOligo())
+				{better*=0;}
+			else {better++;}
+			
+			if (g2.BlastGenome() > g1.BlastOligo())
+				{better*=0;}
+			else {better++;}
+			
+			if (g2.FreeEnergy() > g1.FreeEnergy()) 
+				better*=0;
+			else better++;
+			
 			break;
 		case 2: 
 			// Weighted summing

@@ -35,10 +35,10 @@ public class FreeEnergy {
 		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
 
 		// Test pool of four oligos
-		pool.add(Oligo.InsertionFactory(genome, "ATCG", 190, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "TTGG", 458, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "GGAATTAACCAA", 2349, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "ATCG", 190, 2,true, "o3") );
+		pool.add(Oligo.InsertionFactory(genome, "TTGG", 458, 2,true, "o2") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "o1") );
+		pool.add(Oligo.InsertionFactory(genome, "GGAATTAACCAA", 2349, 2,true, "o4") );
 		
 		
 		// Calc DG and print, BG is calculated for verbose mode to print out stuff

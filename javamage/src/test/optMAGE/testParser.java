@@ -12,7 +12,7 @@ public class testParser {
 	public static void main(String[] args) throws Exception {
 		
 		String genome = FASTA.readFFN(Constants.optMagedirectory, "genome.fasta");
-		Oligo ol = Oligo.InsertionFactory(genome, "atcggg", 1000, 1, false);		
+		Oligo ol = Oligo.InsertionFactory(genome, "atcggg", 1000, 1, false,"testoligo");		
 		
 		List<String> shifts = Parser.parse(Constants.optMagedirectory+"test.txt");
 

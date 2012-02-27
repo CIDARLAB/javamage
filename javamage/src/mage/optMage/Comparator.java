@@ -14,6 +14,9 @@ public class Comparator {
 	 */
 	public static void plot(Oligo ol, int optMagePosition){
 		
+		// Set the oligos optmage position
+		ol.setOptMagePosition(optMagePosition);
+		
 		// Create double arrays
 		Double[] bgScores = ol.bgList().toArray(new Double[ol.bgList().size()]);
 		Double[] dgScores = ol.dgList().toArray(new Double[ol.dgList().size()]);		

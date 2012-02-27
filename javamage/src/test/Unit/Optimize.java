@@ -94,7 +94,7 @@ public class Optimize {
 
 		// For each target generate an oligo
 		for (int ii=0; ii<targets.size() ;ii++) {
-			pool.add(Oligo.InsertionFactory(genome, targets.get(ii), positions.get(ii),2,true) );
+			pool.add(Oligo.InsertionFactory(genome, targets.get(ii), positions.get(ii),2,true, Integer.toString(ii)) );
 		}
 
 		return pool;

@@ -100,11 +100,11 @@ public class Heuristic {
 		Oligo.Directory = test.Constants.bo_testing;
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 	
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 250, 2,true, "o1") );
 //		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 800, 2,true) );
 //		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 700, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850, 2,true) );
-		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650, 2,true) );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 850, 2,true, "o2") );
+		pool.add(Oligo.InsertionFactory(genome, "aattccgg", 650, 2,true, "o3") );
 		
 		return pool;
 	}

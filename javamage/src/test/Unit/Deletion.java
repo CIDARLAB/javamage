@@ -16,7 +16,7 @@ public class Deletion {
 
 		try {
 			String genome = FASTA.readFFN(Constants.naturalTestDirectory,"genome.ffn");
-			Oligo ol = Oligo.DeletionFactory(genome, 205, 207, 2);
+			Oligo ol = Oligo.DeletionFactory(genome, 205, 207, 2,"deletionTest");
 
 			System.out.println(ol.getAsString());
 			ol.calc_bg();

@@ -1,12 +1,15 @@
 package mage.Core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import mage.Editor.GenbankWriter;
+import mage.Editor.PlotData;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 import mage.optMage.Comparator;
@@ -133,14 +136,59 @@ public class Merlin{
 		}
 	}
 	
+	/**
+	 * Will search Merlin's working environment for optMage's output Oligo file
+	 * Will then find the corresponding oligos in the oligo folder, and save the corresponding shift position
+	 * 
+	 * @param filename the filename under which the desired optMage file is positioned
+	 * @throws Exception Throws an exception if there is a problem with the IO, for instance no file is found, or data in unparseable
+	 */
 	public void compareToOptMage( String filename) throws Exception{
 		
 		// Check if the filename is valid
 		if ( isValidFilePath(filename) ) { 
 			Comparator.compare(Constants.workingdirectory+filename, this.pool);
 		}
+		else
+		{
+			// Throw fnf exception
+			throw new FileNotFoundException("No file called "+filename+" found");
+		}
 		
 	}
+	
+	/**
+	 * Returns a String in Genbank format for displaying in Mage-Editor
+	 * The file will feature markings and the span of the oligo
+	 *  
+	 * @return Genbank string
+	 */
+	public List<String> generateGenbank(){
+		
+		ArrayList<String > list = new ArrayList<String>(pool.size());
+		for ( Oligo ol : pool)
+		{
+			GenbankWriter gw = new GenbankWriter(ol);
+			list.add(gw.toString());
+		}
+		
+		return list;
+	}
+	
+	
+	public List<PlotData> generatePlotData(){
+		
+		ArrayList<PlotData> list = new ArrayList<PlotData>(pool.size());
+		
+		for ( Oligo ol: pool)
+		{
+			PlotData pd = new PlotData(ol);
+			list.add(pd);
+		}
+		
+		return list;
+	}
+	
 	
 	/**
 	 * 
