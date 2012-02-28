@@ -38,7 +38,7 @@ public class Oligo extends DNASequence {
 	public	static String 	Genome = "genome.ffn";
 	public 	static Integer ideal_length = 90;
 	public 	static Integer min_length = 90;
-	public 	static int oligo_count = 0;
+	private static int oligo_count = 0;
 
 	public 	static HashMap<Integer,Oligo> oligo_map = new HashMap<Integer,Oligo>();
 

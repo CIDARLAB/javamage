@@ -175,7 +175,11 @@ public class Merlin{
 		return list;
 	}
 	
-	
+	/**
+	 * Returns a List of Objects of type PlotData, which contain 
+	 * 
+	 * @return A List of PlotData Objects
+	 */
 	public List<PlotData> generatePlotData(){
 		
 		ArrayList<PlotData> list = new ArrayList<PlotData>(pool.size());
@@ -233,7 +237,7 @@ public class Merlin{
 		this.pool = new ArrayList<Oligo>();
 				
 		// Turn verbose mode off.
-		this.verbose(false);
+		//this.verbose(false);
 	} 
 	
 	/**
@@ -254,7 +258,21 @@ public class Merlin{
 			Constants.MFOLD = configs[2].split("\\s+")[1];
 		}
 	}
-
+	
+	/**
+	 * Returns a list of with all the names of the oligos 
+	 * @return List of String
+	 */
+	public  List<String> generateNames()
+	{
+		ArrayList<String> list = new ArrayList<String>( this.pool.size());
+		for ( Oligo ol : pool)
+		{
+			list.add( ol.name);
+		}
+		return list;
+	}
+	
 	/**
 	 * Not all the parameters in optMage are relevant here,
 	 * Therefore the default is given 

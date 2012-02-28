@@ -104,10 +104,10 @@ public class GenbankWriter {
 		this.optMageBO = Double.toString(ol.boList().get(ol.getOptMagePosition()));
 		
 		return String.format("%5s%-17s%s..%s\n"+
-					"%22s%s%s\n" +
-					"%22s%s%s\n" +
-					"%22s%s%s\n" +
-					"%22s%s%s\n",
+					"%21s%s\"%s\"\n" +
+					"%21s%s%s\n" +
+					"%21s%s%s\n" +
+					"%21s%s%s\n",
 				"", GenbankWriter.OPTMAGE, this.optMageStart, this.optMageStop, 
 				"",	GenbankWriter.LABEL,GenbankWriter.OPTMAGE_SELECTION,
 				"", GenbankWriter.DG, this.optMageDG,
@@ -125,10 +125,10 @@ public class GenbankWriter {
 		this.merlinBO = Double.toString(ol.boList().get(ol.getOptimalPosition()));
 	
 		return String.format("%5s%-17s%s..%s\n"+
-					"%22s%s%s\n" +
-					"%22s%s%s\n" +
-					"%22s%s%s\n" +
-					"%22s%s%s\n",
+					"%21s%s\"%s\"\n" +
+					"%21s%s%s\n" +
+					"%21s%s%s\n" +
+					"%21s%s%s\n",
 				"", GenbankWriter.MERLIN, this.merlinStart, this.merlinStop, 
 				"",	GenbankWriter.LABEL,GenbankWriter.MERLIN_SELECTION,
 				"", GenbankWriter.DG, this.merlinDG,
@@ -148,7 +148,7 @@ public class GenbankWriter {
 			String start =Integer.toString(ol.target_position);
 			String stop  =Integer.toString(ol.target_position+ol.target_length-1);
 			return String.format("%5s%-17s%s..%s\n"+
-								 "%22s%s%s\n",
+								 "%21s%s\"%s\"\n",
 								 "",GenbankWriter.MUTATION, start,stop,
 								 "",GenbankWriter.LABEL, GenbankWriter.NEW );
 		}
