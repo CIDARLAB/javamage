@@ -19,7 +19,7 @@ public class Oligo {
 	 * 
 	 * @param g1	Reference Global Score
 	 * @param g2	New Global Score
-	 * @return		Returns 0 if they are the same. 1 if g1 is beter or -1 if g2 is better
+	 * @return		Returns 0 if the score is not better, or 1 if it is
 	 */
 	public static int compare(OligoScore g1,OligoScore g2){
 
@@ -30,18 +30,42 @@ public class Oligo {
 		default: ;
 		case 1: 
 			
-			// This scoring system gives priority to the DG, then BG, then BO
-			if (g2.BlastOligo() >g1.BlastOligo())
-				{better*=0;}
-			else {better++;}
+			// Tiered Lexicographic ordering system
+			if (g2.FreeEnergy() < g1.FreeEnergy()) 
+			{
+				better++;
+				
+			}
+			else if (g2.FreeEnergy().equals(g1.FreeEnergy()))
+			{
+				if (g2.BlastGenome() < g1.BlastGenome())
+				{
+					better++;
+				}
+				else if (g2.BlastGenome().equals(g1.BlastGenome()))
+				{
+					if (g2.BlastGenome() < g1.BlastGenome()) {
+						better++;
+					}
+					else
+					{
+						better=0;
+					}
+				}
+			}
 			
-			if (g2.BlastGenome() > g1.BlastOligo())
-				{better*=0;}
-			else {better++;}
-			
-			if (g2.FreeEnergy() > g1.FreeEnergy()) 
-				better*=0;
-			else better++;
+//			// This scoring system gives priority to the DG, then BG, then BO
+//			if (g2.BlastOligo() <= g1.BlastOligo())
+//				{better++;}
+//			else {better=0;}
+//			
+//			if (g2.BlastGenome() <= g1.BlastGenome())
+//				{better++;}
+//			else {better=0;}
+//			
+//			if (g2.FreeEnergy() < g1.FreeEnergy()) 
+//				{better++;}
+//			else {better*=0;}
 			
 			break;
 		case 2: 

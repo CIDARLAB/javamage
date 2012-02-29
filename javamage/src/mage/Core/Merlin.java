@@ -235,7 +235,8 @@ public class Merlin{
 		
 		// Create a Pool of oligos
 		this.pool = new ArrayList<Oligo>();
-				
+		Oligo.resetCount();
+		
 		// Turn verbose mode off.
 		//this.verbose(false);
 	} 

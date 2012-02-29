@@ -43,8 +43,8 @@ public class OligoScore {
 	 * @param newScore
 	 * @return
 	 */
-	public boolean isBetterThan(OligoScore newScore) {
-		return mage.Switches.Oligo.compare(this,newScore) <= 0 ? true : false ;
+	public boolean isBetterThan(OligoScore bestScore) {
+		return ( mage.Switches.Oligo.compare(bestScore,this) > 0 ) ? true : false ;
 	}
 	
 	

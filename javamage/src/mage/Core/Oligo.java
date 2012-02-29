@@ -949,4 +949,9 @@ public class Oligo extends DNASequence {
 	public int getOptimalPosition() {
 		return this.getGreedyChoice()-1;
 	}
+
+	public static void resetCount() {
+		// reset the oligo count
+		Oligo.oligo_count = 0;
+	}
 }

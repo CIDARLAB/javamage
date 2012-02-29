@@ -32,7 +32,7 @@ public class Optimize {
 		if (mage.Switches.Flags.plot) {
 
 			// Plot the BO Values over time
-			// plotBO();
+			plotBO();
 
 			for (Oligo ol: pool) {
 				plotBG_DG(ol); 
@@ -97,7 +97,7 @@ public class Optimize {
 				ol.calc_bo();
 
 				if (mage.Switches.Flags.plot)
-				//addPlot( ol.boList().toArray( new Double[ol.bgList().size()])	, iteration ,ol.getOligoId() );
+				addPlot( ol.boList().toArray( new Double[ol.bgList().size()])	, iteration ,ol.getOligoId() );
 
 				System.err.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
@@ -127,15 +127,15 @@ public class Optimize {
 
 
 
-//	private static void plotBO () {
-//		for (int ii = 0; ii<bo_plots.size() ;ii++){
-//			Plot pl = new Plot();
-//			pl.addGraph(bo_plots.get(ii), plot_names.get(ii));
-//			pl.setToLines();
-//			pl.title("Oligo " + ii );
-//			pl.draw("Oligo_" + (ii+1) +"_BO" );
-//		}
-//	}
+	private static void plotBO () {
+		for (int ii = 0; ii<bo_plots.size() ;ii++){
+			Plot pl = new Plot();
+			pl.addGraph(bo_plots.get(ii), plot_names.get(ii));
+			pl.setToLines();
+			pl.title("Oligo " + ii );
+			pl.draw("Oligo_" + (ii+1) +"_BO" );
+		}
+	}
 
 	/**
 	 *  Plot BO Scores for a given iteration as a function of position
@@ -176,20 +176,21 @@ public class Optimize {
 	}
 
 
-//	/**
-//	 * Helper function for capturing the plotting
-//	 * 
-//	 * @param array
-//	 * @param iteration
-//	 * @param oligoID
-//	 */
-//	private static void addPlot(Double[] array, int iteration, int oligoID) {
-//
-//		// Take array and create plot set and store
-//		String name = "Iteration "+iteration;
-//		int id = oligoID -1;
-//		//bo_plots.get(id).add(array);
-//		//plot_names.get(id).add(name);
-//
-//	}
+	/**
+	 * Helper function for capturing the plotting
+	 * 
+	 * @param array
+	 * @param iteration
+	 * @param oligoID
+	 */
+	private static void addPlot(Double[] array, int iteration, int oligoID) {
+
+		// Take array and create plot set and store
+		String name = "Iteration "+iteration;
+		int id = oligoID -1;
+		
+		bo_plots.get(id).add(array);
+		plot_names.get(id).add(name);
+
+	}
 }
