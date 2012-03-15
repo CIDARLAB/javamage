@@ -1,9 +1,28 @@
 package mage.Switches;
 
+
+/**
+ * Manages the Free Energy Scoring Methods
+ * 
+ * @author Samir Ahmed
+ *
+ */
 public class FreeEnergy {
 
 	public static int method = 1;
 	
+	/**
+	 * Given a Free Energy value, it may be scored in the following ways
+	 * <p>
+	 * 		1 -  Offsetting the score by the threshold
+	 * </p>
+	 * <p>
+	 * 		2 - Thresholding the score.  All value below threshold (good values) are set to zero. All other values are given a positive value
+	 * </p>
+	 * 
+	 * @param dg_value
+	 * @return
+	 */
 	public static Double score (Double dg_value){	
 
 		Double score = 0.0;				// Arbitary Score
@@ -23,7 +42,11 @@ public class FreeEnergy {
 		}
 		return score;
 	}
-
+	
+	/**
+	 *  Setter for the threshold
+	 * 
+	 */
 	public static boolean threshold(Double score) {
 			return (score<=0.0);
 	}

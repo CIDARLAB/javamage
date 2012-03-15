@@ -42,7 +42,12 @@ public class GenbankWriter {
 	private String merlinStart;
 	private String merlinStop;
 	private StringBuilder sb;
-	
+
+	/**
+	 * Given an oligo, a genbank file can made with specific parameters for passing back to mage-editor
+	 * 
+	 * @param ol Oligo for which to generate a genbank file
+	 */
 	public GenbankWriter(Oligo ol)
 	{
 		// Setup the data members
@@ -72,6 +77,11 @@ public class GenbankWriter {
 	    this.sb.append(GenbankWriter.ENDFILE);
 	}
 	
+	/**
+	 * Given a sequence, creates genbank formated sequence strings
+	 * @param sequence
+	 * @return	String with sequence in genbank form
+	 */
 	private String genbankSequenceFormat(String sequence)
 	{
 		// Get chunks of size 10
@@ -94,6 +104,7 @@ public class GenbankWriter {
 		return sb.toString();
 		
 	}
+	
 	
 	private String getOptMageInfo(Oligo ol)
 	{
@@ -156,6 +167,10 @@ public class GenbankWriter {
 	}
 	
 	
+	/**
+	 * Get the genbank file as a string
+	 * 
+	 */
 	public String toString() {
 		return this.sb.toString();
 	}

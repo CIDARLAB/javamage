@@ -107,6 +107,20 @@ public class Oligo extends DNASequence {
 
 	}
 
+	/**
+	 * Defines a mismatch on a surface.
+	 * @param genome 		The genome from which the oligo is being made
+	 * @param target		The target sequence that will be put onto the genome
+	 * @param left_position	The left position, indicating the point at which the mutation will be inserted into the genome
+	 * @param right_position The end position of where the oligo is to cut off
+	 * @param replichore	The replichore 1 or 2
+	 * @param sense			True if sense is postive and false if negative
+	 * @param name			The name of this target
+	 * @return				Returns a oligo defined by the input parameters
+	 * 
+	 * @throws Exception	In the event that oligo is incompletely/improperly specified
+	 */
+	
 	public static Oligo MismatchFactory(String genome, String target, int left_position, int right_position, int replichore, boolean sense, String name)  throws Exception { 
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) 
 		{
@@ -149,7 +163,17 @@ public class Oligo extends DNASequence {
 
 	}
 
-
+	/**
+	 * Deletion factory generates and an oligo that represents a deletion
+	 * @param genome 		The genome from which the oligo is being made
+	 * @param target		The target sequence that will be put onto the genome
+	 * @param left_position	The left position, indicating the point at which the mutation will be cut off
+	 * @param replichore	The replichore 1 or 2
+	 * @param right_position an Integer to specify the position at which the genome is to be cut out again.
+	 * @param name			The name of this target
+	 * @return				Returns a oligo defined by the input parameters
+	 * @throws Exception	In the event that oligo is incompletely/improperly specified
+	 */
 	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore, String name) throws Exception {
 
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) {
@@ -189,30 +213,33 @@ public class Oligo extends DNASequence {
 	}
 
 	/**
-	 *	This is a static Factory Method that creates an Oligo for Insertion Mutations
+	 * Generates an insertion oligo given a set of parameters
 	 * 
-	 * @param genome			A string containing the genome to be modified by MAGE
-	 * @param target			A string containing the target mutation to be inserted/mismatched
-	 * @param targetPosition	Integer containing the starting position
+	 * @param genome 		The genome from which the oligo is being made
+	 * @param target		The target sequence that will be put onto the genome
+	 * @param left_position	The left position, indicating the point at which the mutation will be inserted into the genome
+	 * @param replichore	The replichore 1 or 2
+	 * @param sense			True if sense is postive and false if negative
+	 * @param name			The name of this target
+	 * @return				Returns a oligo defined by the input parameters
 	 * 
-	 * @return
-	 * @throws Exception 
+	 * @throws Exception	In the event that oligo is incompletely/improperly specified
 	 */
-	public static Oligo InsertionFactory(String genome, String target, int targetPosition, int replichore, boolean sense, String name) throws Exception {
+	public static Oligo InsertionFactory(String genome, String target, int left_position, int replichore, boolean sense, String name) throws Exception {
 
-		if ( (genome.length() > (targetPosition+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (targetPosition > 60 ) ) {
+		if ( (genome.length() > (left_position+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (left_position > 60 ) ) {
 
-			// Define the Genome Starting Position
-			int genome_start = targetPosition+Oligo.buffer_3prime - Oligo.ideal_length + target.length() + 1 ;
+			// Define the starting pisition on the genome)
+			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
 
-			// Extract a Subsequence from that point - THIS FOR A STRING i.e INDEXED FROM ZERO
-			String preSequence = genome.substring( genome_start -1 ,targetPosition);
+			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
+			String preSequence =  genome.substring(genome_start-1, left_position);
 
-			// Define a Genome ending position
-			int genome_end = targetPosition +(Oligo.ideal_length-Oligo.buffer_5prime-target.length());
+			// Define the ending position on the gneome
+			int genome_end  = (left_position+1)+(Oligo.ideal_length - Oligo.buffer_5prime -1);
 
 			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
-			String postSequence = genome.substring(targetPosition , genome_end);
+			String postSequence = genome.substring(left_position , genome_end);
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){
@@ -221,14 +248,14 @@ public class Oligo extends DNASequence {
 				String reverseComp  = mage.Tools.SequenceTools.ReverseCompliment(preSequence+postSequence);
 
 				// Calculate index to split from and then reassign post and pre sequnence
-				int splitIndex 		= postSequence.length()	;
+				int splitIndex 		= postSequence.length();
 				postSequence 		= reverseComp.substring(splitIndex);
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
+
 			if ( ((replichore==2) && !sense) || ((replichore==1) && sense) ) {
 				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
 			}
-
 			// Return the new Oligo that was just made
 			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, name);	
 
@@ -296,24 +323,35 @@ public class Oligo extends DNASequence {
 	private String 			optimized;
 	private int 			primary_position;
 	private int				optMagePosition;
-	
+
 	// Immutable members
 	final 	public String 	sequence;
 	final 	public int 	span;
 	final 	public String 	target;
 	final 	public int 	target_length;
 	final   public int target_position;
-	
+
 	final public String 	name;
 
 	public final int x;
 	private ArrayList<OligoScore> scores;
 
+	/**
+	 * Makes an oligo defined by the genome starting and ending points
+	 * 
+	 * @param preSequence
+	 * @param targetSequence
+	 * @param postSequence
+	 * @param genome_start
+	 * @param genome_end
+	 * @param name
+	 * @throws Exception
+	 */
 	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end, String name) throws Exception{
 		super(preSequence+targetSequence+postSequence);
-		
+
 		this.name = name.replaceAll("\\s+", "");
-		
+
 		this.sequence = preSequence+targetSequence+postSequence;
 		// Store the genome start and end values
 		this.genome_start 	= genome_start;
@@ -921,7 +959,7 @@ public class Oligo extends DNASequence {
 	{
 		this.optMagePosition = position;
 	}
-	
+
 	/**
 	 * Returns the position that optMAGE selected
 	 * @return
@@ -930,7 +968,7 @@ public class Oligo extends DNASequence {
 	{
 		return this.optMagePosition;
 	}
-	
+
 	public List<String> getPossibleOligos() throws Exception{
 
 		ArrayList<String> poligos = new ArrayList<String> ();

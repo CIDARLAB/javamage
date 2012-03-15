@@ -5,6 +5,13 @@ import java.util.Stack;
 
 import utils.Plot;
 
+
+/**
+ * A class for optimizing the oligo, selecting a subsection on the span
+ * 
+ * @author mockingbird
+ */
+
 public class Optimize {
 
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 
@@ -29,6 +36,7 @@ public class Optimize {
 		// Optimize the pool
 		OptimizeHeuristic(pool);
 
+		// If plotting is enabled
 		if (mage.Switches.Flags.plot) {
 
 			// Plot the BO Values over time
@@ -126,7 +134,9 @@ public class Optimize {
 	} 
 
 
-
+	/**
+	 * Plotting helper function
+	 */
 	private static void plotBO () {
 		for (int ii = 0; ii<bo_plots.size() ;ii++){
 			Plot pl = new Plot();

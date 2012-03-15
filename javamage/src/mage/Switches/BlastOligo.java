@@ -11,6 +11,10 @@ public class BlastOligo {
 	/**
 	 * Calculates the Blast Oligo Weighted score for an optimized oligo
 	 * 
+	 *  Scoring works in the following way/s 
+	 *  <p>
+	 *  1 - Sum the mistarget scores  
+	 *  </p>
 	 * @param ol 	Oligo to be weighted
 	 * @return		Weighted Score of the Oligo based on BLAST OLIGO Mistargets
 	 */

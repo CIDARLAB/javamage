@@ -34,23 +34,43 @@ public class PlotData {
 		this.merlinPosition = ol.getOptimalPosition();
 	}
 	
+	/**
+	 * Get the free Energy score as a string
+	 * @return free energy score string
+	 */
 	public String getFreeEnergy()
 	{
 		return getArrayAsString(this.FreeEnergy);
 	}
 	
+	/**
+	 * Get the Blast Oligo score as a string
+	 * @return	BO Score as string
+	 */
 	public String getBlastOligo(){
 		return getArrayAsString(this.BlastOligo);
 	}
 	
+	/**
+	 * Get the bo score as a string
+	 * @return bo score
+	 */
 	public String getBlastGenome(){
 		return getArrayAsString(this.BlastGenome);
 	}
 	
+	/**
+	 * Get the shift position of the corresponding optimized oligo as calculated by optmage
+	 * @return	A number in the form of a string
+	 */
 	public String getOptMage(){
 		return Integer.toString(this.optMagePosition);
 	}
 	
+	/** Get the position that was selected by merlin
+	 * 
+	 * @return string with integer position of merlin selected
+	 */
 	public String getMerlin(){
 		return Integer.toString(this.merlinPosition);
 	}

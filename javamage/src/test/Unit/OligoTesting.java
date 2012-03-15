@@ -6,7 +6,7 @@ public class OligoTesting {
 
 	public static void main(String[] args)  {
 		mage.Switches.Blast.method = 2;
-		mage.Switches.FreeEnergy.method = 2;
+		mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.PrimaryScore.method =  2 ;
 		try {	
 			Oligo ol2 = new Oligo("CGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTAC",

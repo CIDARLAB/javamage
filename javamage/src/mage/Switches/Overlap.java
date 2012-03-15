@@ -2,6 +2,11 @@ package mage.Switches;
 
 import mage.Core.Mistarget;
 
+/** 
+ * 
+ * @author Samir Ahmed
+ *
+ */
 public class Overlap {
 
 	public static int method = 1;
