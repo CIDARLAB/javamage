@@ -20,7 +20,7 @@ public class Natural {
 
 
 		Natural.verbose(false);
-		mage.Switches.FreeEnergy.method = 1;
+		//mage.Switches.FreeEnergy.method = 1;
 		mage.Switches.Blast.method = 2;
 
 		// Create a collection of oligos and populate it

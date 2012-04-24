@@ -14,7 +14,7 @@ public class InsertionSet {
 		
 		// Create new instance of merlin object
 		mage.Core.Merlin merlin = new mage.Core.Merlin(merlin_test_dir, targetFileName, parametersFileName, genomeFileName);
-		//merlin.verbose(false);
+		merlin.verbose(false);
 		// Enable plotting
 		mage.Core.Merlin.plot = true;
 		

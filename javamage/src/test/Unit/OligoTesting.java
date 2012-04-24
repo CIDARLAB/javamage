@@ -21,8 +21,8 @@ public class OligoTesting {
 			System.out.println(ol2.getBGasString());
 			ol2.calc_dg();
 			System.out.println(ol2.getDGasString());
-			ol2.calc_primaryScore();
-			System.out.println("PRIMARY SCORES = " +  ol2.getPrimaryScoreAsString());
+			//ol2.calc_primaryScore();
+		//	System.out.println("PRIMARY SCORES = " +  ol2.getPrimaryScoreAsString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -58,8 +58,8 @@ public class Plot {
 		jplot.set("border", "3");
 		jplot.set("xtics", "nomirror");
 		jplot.set("ytics", "nomirror");
-		jplot.set("bmargin", "1");
-		jplot.set("tmargin", "2");
+		jplot.set("bmargin", "3");
+		jplot.set("tmargin", "3");
 	}
 
 	public void  addGraph(List<Double[]> Ydatas, List<String> titles){
