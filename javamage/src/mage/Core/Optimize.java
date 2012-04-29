@@ -11,7 +11,6 @@ import utils.Plot;
  * 
  * @author mockingbird
  */
-
 public class Optimize {
 
 	public static ArrayList< ArrayList<Double[]> > bo_plots; 

@@ -1,3 +1,0 @@
-makeblastdb /usr/local/ncbi/blast/bin/makeblastdb
-blastn /usr/local/ncbi/blast/bin/blastn
-MFOLD /usr/local/bin/hybrid-ss-min

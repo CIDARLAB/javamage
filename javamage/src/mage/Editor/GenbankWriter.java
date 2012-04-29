@@ -3,6 +3,15 @@ package mage.Editor;
 import utils.TextFile;
 import mage.Core.Oligo;
 
+
+/**
+ * 
+ * GenbankWriter is a wrapper for creating a genbank file from Merlin Results.
+ * The features are intended to be read by MageEditor
+ * 
+ * @author SamirAhmed
+ *
+ */
 public class GenbankWriter {
 
 	final public static String LOCUS = "LOCUS";
