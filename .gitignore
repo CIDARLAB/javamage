@@ -1,7 +1,9 @@
 
+
 # JAVA SPECIFIC #
 #################
 *.class
+javadoc/
 
 # ECLIPSE SPECIFIC #
 ####################
