@@ -152,7 +152,7 @@ public class Oligo extends DNASequence {
 			}
 
 			// Return the new Oligo that was just made
-			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, name);	
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, OligoType.MISMATCH, name);	
 
 		}
 		else {
@@ -202,7 +202,7 @@ public class Oligo extends DNASequence {
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
 
-			return new Oligo(preSequence,"",postSequence,genome_start,genome_end, name);
+			return new Oligo(preSequence,"",postSequence,genome_start,genome_end, OligoType.DELETION, name);
 		}
 		else {
 			//return null;
@@ -257,7 +257,7 @@ public class Oligo extends DNASequence {
 				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
 			}
 			// Return the new Oligo that was just made
-			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, name);	
+			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, OligoType.INSERTION,name);	
 
 
 		}
@@ -323,6 +323,9 @@ public class Oligo extends DNASequence {
 	private String 			optimized;
 	private int 			primary_position;
 	private int				optMagePosition;
+	
+	//is the oligo used for insertion, deletion, or mismatch?
+	private OligoType oligoType;
 
 	// Immutable members
 	final 	public String 	sequence;
@@ -347,7 +350,7 @@ public class Oligo extends DNASequence {
 	 * @param name
 	 * @throws Exception
 	 */
-	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end, String name) throws Exception{
+	public Oligo(String preSequence,  String targetSequence, String postSequence, int genome_start, int genome_end, OligoType oligoType, String name) throws Exception{
 		super(preSequence+targetSequence+postSequence);
 
 		this.name = name.replaceAll("\\s+", "");
@@ -404,6 +407,9 @@ public class Oligo extends DNASequence {
 		this.optMagePosition = -1;
 		//this.calcOptimizedBounds(this.oligo_min);
 
+		//set the OligoType to allow replacement efficiency calculation
+		this.oligoType = oligoType;
+		
 		// Add the oligo to the collection of all oligos
 		Oligo.all.add(this);
 
@@ -783,6 +789,13 @@ public class Oligo extends DNASequence {
 	 * @return	Integer with starting index
 	 */
 	public int getOligoMinimum() {return this.oligo_min;}
+
+	/**
+	 * @return the oligoType
+	 */
+	public OligoType getOligoType() {
+		return oligoType;
+	}
 
 	/**
 	 * Returns the optimized sequence as a string of length = Oligo.ideal_length;

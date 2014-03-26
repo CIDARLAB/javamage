@@ -11,7 +11,7 @@ import utils.TextFile;
 
 public class TestBlastGenome {
 
-	private final static String directory = "/Users/mockingbird/dropbox/research/optimization/testFiles/testBlastGenomeScores/";
+	private final static String directory = "C:/Users/mquintin/SkyDrive/github/javamage/testing/output/";
 	
 	
 	/**
