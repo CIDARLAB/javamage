@@ -10,9 +10,9 @@ package mage.Core;
  */
 public class OligoScore {
 
-	private	Double	BO; 
-	private	Double	DG;
-	private	Double	BG;
+	private	Double	BO; //Blast Oligo
+	private	Double	DG; //Free Energy
+	private	Double	BG; //Blast Genome
 	
 	
 	/**
