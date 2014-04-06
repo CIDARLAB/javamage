@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Build mage.JAR --> 
+<project name="JavaMage" default="CreateJar">
+  <target name="CreateJar" description="Create Jar file">
+        <jar jarfile="mage.jar" basedir="./bin/mage" includes="*.class" />
+  </target>
+</project>
