@@ -3,9 +3,9 @@ package mage.Tools;
 public final class Constants {
 
 	// Defaults
-	public static String makeblastdb = "/usr/local/ncbi/blast/bin/makeblastdb" ; 
-	public static String blastn = "/usr/local/ncbi/blast/bin/blastn";
-	public static String MFOLD = "/usr/local/bin/hybrid-ss-min";
+	public static String makeblastdb = "c:/Program Files/NCBI/blast-2.2.28+/bin/makeblastdb" ; 
+	public static String blastn = "c:/Program Files/NCBI/blast-2.2.28+/bin/blastn";
+	public static String MFOLD = "C:/cygwin64/usr/local/bin/mfold";
 	
 	public static String workingdirectory = System.getProperty("user.dir")+"/";
 	
