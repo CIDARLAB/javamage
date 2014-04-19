@@ -165,8 +165,9 @@ public class Oligo extends DNASequence {
 
 	/**
 	 * Deletion factory generates and an oligo that represents a deletion
+	 * The bases at left_position and right_position will remain in the sequence, with the bases between removed
+	 * For example, DeletionFactory("ABCDEFG", 2, 5,...) will generate "ABEFG"
 	 * @param genome 		The genome from which the oligo is being made
-	 * @param target		The target sequence that will be put onto the genome
 	 * @param left_position	The left position, indicating the point at which the mutation will be cut off
 	 * @param replichore	The replichore 1 or 2
 	 * @param right_position an Integer to specify the position at which the genome is to be cut out again.

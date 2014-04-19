@@ -39,11 +39,11 @@ public class OligoStats{
 		//See Wang and Church 2011, Optmage 0.9 Document
 		//ARE = alpha * e^(beta(len-1))
 		//where alpha and beta have been experimentally determined for
-		///and oligo with a 90bp span and len is the length of the change
+		//an oligo with a 90bp span and len is the length of the change
 		
 		OligoType type = oligo.getOligoType();
-		int olen = oligo.target_length; //TODO: is this right?
 		double val = 0;
+		int olen = oligo.target_length;
 
 		//ARE formula depends on mutation type
 		switch (type){
@@ -51,7 +51,8 @@ public class OligoStats{
 				val = 0.15 * Math.exp(-0.075 * (olen-1));
 				break;
 			case DELETION:
-				val = 0.23 * Math.exp(-0.075 * (olen-1));
+				olen = Math.abs(oligo.getGenomeEnd() - oligo.getGenomeStart()) - oligo.span;
+				val = 0.23 * Math.exp(-0.058 * (olen-1));
 				break;
 			case MISMATCH:
 				val = 0.26 * Math.exp(-0.135 * (olen-1));
@@ -88,10 +89,12 @@ public class OligoStats{
 	 */
 	public static double getAggregateAnyARE(ArrayList<Oligo> list){
 		int n = list.size();
-		double b = 2.5; //estimated
+		double b = 1.59;
 		double coef = Math.exp(b / n);
-		double p = 0;
+		System.out.println("Any coef: " + String.valueOf(coef));
+		double p = 1;
 		for (Oligo oligo : list){
+			System.out.println("ARE for " + oligo.name + ": " + String.valueOf(getARE(oligo)));
 			p = p * (1- (coef * getARE(oligo)));
 		}
 		return 1 - (p);
@@ -119,16 +122,39 @@ public class OligoStats{
 	 * 
 	 * @param n total loci = number of oligos
 	 * @param k  number of mutated loci
-	 * @param are allelic replacement efficiency for this locus
+	 * @param are allelic replacement efficiency for this locus (or the pool)
 	 * @param c cycle number
 	 * @return
 	 */
 	public static double lociProbability(int n, int k, double are, int c){
-		//(n choose k) * (1-(1-ARE)^c)^k * (1-ARE)^[c(k-n)]
 		long alpha = comboChoose(n,k);
-		double beta = Math.pow(Math.pow(1 - (1 - are),c),k);
-		double gamma = Math.pow(1 - are, c * (k - n));
+		double pn = 1 - Math.pow(1-are,c);
+		double beta = Math.pow(pn,k);
+		double subgamma = 1 - pn;
+		double gamma = Math.pow(subgamma, (n-k));
+		System.out.println("alpha,beta,gamma : " + alpha + ", "+beta +", " +gamma);
+				
+		//(n choose k) * (1-(1-ARE)^c)^k * (1-ARE)^[c(k-n)]
+		//long alpha = comboChoose(n,k);
+		//double bsub = Math.pow(1-are,c);
+		//double beta = Math.pow(1-bsub, k); 
+		//double beta = Math.pow(1 - Math.pow(1 - are,c),k);
+		//double gamma = Math.pow(1 - are, (c * (k - n)));
+		//System.out.println("n,k,ARE,c : "+n+", "+k+", "+are+", "+c);
+		//System.out.println("alpha,beta,gamma : " + alpha + ", "+beta +", " +gamma);
 		return (double)alpha * beta * gamma;
+	}
+
+	
+	//same as above, done slightly different as a sanity check
+	public static double lociProbability2(int k, int m, double are, int n){
+		long alpha = comboChoose(k,m);
+		double pn = 1 - Math.pow(1-are,n);
+		double beta = Math.pow(pn,m);
+		double subgamma = 1 - pn;
+		double gamma = Math.pow(subgamma, (k-m));
+		System.out.println("alpha2,beta2,gamma2 : " + alpha + ", "+beta +", " +gamma);
+		return alpha * beta * gamma;
 	}
 	
 	//the next two functions implement n choose k
@@ -156,10 +182,12 @@ public class OligoStats{
 	 public static String getDiversityTable(ArrayList<Oligo> oligos, int cycles){
 		 String s = "";
 		 double are = getAggregateAnyARE(oligos);
+		 //double are = getAggregateSumARE(oligos);
 		 int n = oligos.size();
 		 for (int c = 1; c <= cycles; c++){
 			 String row = "";
-			 for (int i = 0; i <= n; i++){
+			 for (int i = 0; i <= n; i++){//i = k = the number of mutated loci
+				 System.out.println("n,k,ARE,c: " + n + ","+i+","+are+","+c+"; "+lociProbability(n,i,are,c));
 				 row = row.concat(" " + lociProbability(n,i,are,c));
 			 }
 			 s = s.concat(row + "\n");
