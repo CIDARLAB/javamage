@@ -200,6 +200,21 @@ public class OligoStats{
 	//mean fraction of loci modified across whole population
 	//output table results
 	
+	 /** Generate the graph image for the diversity trend
+	  * 
+	  * @param oligos
+	  * @param cycles
+	  */
+	 public static void generateDiversityGraph(ArrayList<Oligo> oligos, int cycles){
+		 String data = getDiversityTable(oligos, cycles);
+		 generateDiversityGraph(data);
+	 }
 	 
-	 
+	 /** Generate the graph image for the diversity trend
+	  * 
+	  * @param data
+	  */
+	 public static void generateDiversityGraph(String data){
+		 
+	 }
 }

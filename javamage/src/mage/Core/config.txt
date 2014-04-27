@@ -1,3 +1,3 @@
 makeblastdb /c:/Program Files/NCBI/blast-2.2.28+/bin/makeblastdb
 blastn /c:/Program Files/NCBI/blast-2.2.28+/bin/blastn
-MFOLD /c:/Users/mquintin/SkyDrive/rotation2/mfold-3.6/scripts/mfold
+MFOLD /usr/bin/hybrid-ss-min
