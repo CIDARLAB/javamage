@@ -24,11 +24,11 @@ public class TestOligoStats {
 		try {
 			//testGetDiversityTable();
 			//testGetARE();
-			//testLociProbability();
+			testLociProbability();
 			//testGetAggregateAnyARE();
 			//testGetAggregateSumARE();
 			//testOligoLength();
-			checkOligoStructure();
+			//checkOligoStructure();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -116,36 +116,17 @@ public class TestOligoStats {
 	}
 	
 	public static void testLociProbability() throws Exception{
-		
-		//String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
-		
-		//System.out.println(genome.length());
-		
-		//ArrayList <Oligo> pool =  new ArrayList<Oligo>();
-
-		//pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
-		//pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
 
 		//1c1 * (1-(.9^1))^1 * (.9)^(1(1-2))
 		double p1 = OligoStats.lociProbability(2, 2, .2, 2);
 		System.out.println("Expected lociProcability(2,2,0.2,2) = .1296, got " + String.valueOf(p1));
-		//System.out.println("lociProbability1: " + OligoStats.lociProbability(1,1,.1,1));
-		//System.out.println("lociProbability2: " + OligoStats.lociProbability2(1,1,.1,1));
 		
 		double p2 = OligoStats.lociProbability(3,2,.05,2);
 		assert (p2 > .35911 && p2 < .35912): "Expected lociProbability(3,2,.05,2)";
 		System.out.println("Expected lociProcability(3,2,.05,2) = .0316, got " + String.valueOf(p2));
-		//System.out.println("lociProbability1: " + OligoStats.lociProbability(3, 2, .05, 2));
-		//System.out.println("lociProbability2: " + OligoStats.lociProbability2(3, 2, .05, 2));
+		
+		double p3 = OligoStats.lociProbability(5,5,.5,5);
+		System.out.println("Expected lociProcability(5,5,.5,5) = .8532, got " + String.valueOf(p3));
 	}
 	
 	public static void testGetDiversityTable() throws Exception{

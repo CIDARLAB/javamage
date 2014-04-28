@@ -1,5 +1,7 @@
 package test.Unit;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import test.Constants;
@@ -21,68 +23,22 @@ public class TestPCR {
 	//100 GTGAGTAAAT
 	//110 TAAAATTTTA
 
-	//TODO: align getReversPrimers() to find the start position the same way forward does
 	public static void main(String[] args) throws Exception{
 		//testGetUnmodifiedForwardPrimerFromOligo();
 		//testGetModifiedForwardPrimerFromOligo();
 		//testGetMASCPCRPrimersForOligo();
-		testPCRbyReplicatingResults();
+		//testPCRbyReplicatingResults();
+
 	}
-	
-	//deprecated
-	/*public static void testGetForwardPrimerFromString() throws Exception{
-		String genome = "AAAAACCCCCTTTTTGGGGGAAAACCCCTTTTGGGGAAACCCTTTGGG";
-		String primer = PCR.getForwardPrimer(genome, 5);
-		String expect = "GTTTTCCCCCAAAAAGGGGG";
-		System.out.println("Forward from String: " + primer);
-		System.out.println("Test getForwardPrimerFromString: " + (primer.equals(expect)));
-		
-	}*/
 	
 	public static void testGetUnmodifiedForwardPrimerFromOligo() throws Exception{
 		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
-		//System.out.println(genome.substring(0,10));
-		//System.out.println(genome.substring(10,20));
-		//System.out.println(genome.substring(20,30));
-		//System.out.println(genome.substring(30,40));
-		//System.out.println(genome.substring(40,50));
-		//System.out.println(genome.substring(50,60));
-		//System.out.println(genome.substring(60,70));
-		//System.out.println(genome.substring(70,80));
-		//System.out.println(genome.substring(80,90));
-		//System.out.println(genome.substring(90,100));
-		//System.out.println(genome.substring(100,110));
-		//System.out.println(genome.substring(110,120));
-		
 		Oligo insert = Oligo.InsertionFactory(genome, "CCCCCAAAAA", 90, 2,true, "in1");
 		String iexpect = "TTCTGAACTGGTTACCTGCC"; 
 		String iprimer = PCR.getUnmodifiedForwardPrimer(insert, genome);
-		//oligo.getGenomeStart() + oligo.target_position + oligo.target_length
-		//System.out.println("oligo.getGenomeStart(): " + insert.getGenomeStart());
-		//System.out.println("oligo.target_position: " + insert.target_position);
-		//System.out.println("oligo.target_length: " + insert.target_length);
 		System.out.println("Forward from insert oligo: " + iprimer);
 		System.out.println("Test getForwardPrimerFromOligo insert : " + (iprimer.equals(iexpect)));
-		/*
-		Oligo mismatch = Oligo.MismatchFactory(genome, "ATCGATCGAT", 90, 100, 2, true, "mis1");
-		String mexpect = "GTTACCTGCCGTGAGTAAAT"; //80-89, then the new seq
-		String mprimer = PCR.getUnmodifiedForwardPrimer(mismatch,genome);
-		System.out.println("Forward from mismatch oligo: " + mprimer);
-		System.out.println("Test getForwardPrimerFromOligo mismatch : " + (mprimer.equals(mexpect)));
-			
-		//awkward, but doing it this way makes it more clear
-		genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGGGGGGGGGCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		Oligo delete = Oligo.DeletionFactory(genome, 90, 101, 2, "del1");
-		String dexpect = "GGGGGGGGGGCCCCCCCCCC";
-		String dprimer = PCR.getUnmodifiedForwardPrimer(delete,genome);
-		//System.out.println("oligo.getGenomeStart(): " + delete.getGenomeStart());
-		//System.out.println("oligo.getGenomeEnd(): " + delete.getGenomeEnd());
-		//System.out.println("oligo.span: " + delete.span);
-		//System.out.println("oligo.target_position: " + delete.target_position);
-		//System.out.println("oligo.target_length: " + delete.target_length);
-		System.out.println("Forward from deletion oligo: " + dprimer);
-		System.out.println("Test getForwardPrimerFromOligo deletion : " + (dprimer.equals(dexpect)));
-		*/
+
 	}
 	
 	public static void testGetModifiedForwardPrimerFromOligo() throws Exception{
@@ -128,12 +84,6 @@ public class TestPCR {
 		System.out.println("Insertion Oligo: " + insert.getSequenceAsString());
 		System.out.println("Insertion Primers:");
 		System.out.println(primers);
-		/*
-		Oligo mismatch = Oligo.MismatchFactory(genome, "CCCCCAAAAA", 90, 100, 2, true, "mis1");
-		primers = PCR.getMASCPCRPrimers(mismatch,genome);
-		System.out.println("Mismatch Primers:");
-		System.out.println(primers);
-		*/
 		
 		Oligo delete = Oligo.DeletionFactory(genome, 89, 100, 2, "del1");
 		primers = PCR.getMASCPCRPrimers(delete,genome);
@@ -142,5 +92,7 @@ public class TestPCR {
 		System.out.println(primers);
 		
 	}
+	
+
 	
 }
