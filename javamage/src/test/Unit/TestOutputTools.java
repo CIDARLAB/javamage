@@ -24,7 +24,8 @@ public class TestOutputTools {
 		//testGenerateDSDNAPrimerFile();
 		//testWriteDSDNAPrimersToFile();
 		//testWriteDSDNAPrimersToFileWithLengthError();
-		testGenerateDiversityTableFile();
+		//testGenerateDiversityTableFile();
+		testGetMASCPCRPrimerFileContents();
 	}
 	
 	public static void testGenerateMASCPCRFile() throws Exception{
@@ -112,5 +113,19 @@ public class TestOutputTools {
 
 		OutputTools.generateDiversityTrendTableFile(pool, 10, outfile);
 
+	}
+	
+	public static void testGetMASCPCRPrimerFileContents() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		Oligo insert = Oligo.InsertionFactory(genome, "TTTTTAAAAA", 100, 2,true, "insertion");
+		Oligo mismatch = Oligo.MismatchFactory(genome, "A", 4730611, 4730612, 2, true, "TAG->TAA");
+		Oligo delete = Oligo.DeletionFactory(genome, 89, 100, 2, "deletion");
+		
+		List<Oligo> pool = new ArrayList<Oligo>();
+		pool.add(insert);
+		pool.add(mismatch);
+		pool.add(delete);
+
+		System.out.println(OutputTools.getMASCPCRPrimerFileContents(pool));		
 	}
 }

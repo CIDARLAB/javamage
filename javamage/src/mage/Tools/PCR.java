@@ -57,7 +57,6 @@ public abstract class PCR {
 	/**Get the forward PCR primer for the UNMODIFIED sequence, 
 	 * given a sequence and the start position
 	 * 
-	 * //TODO: change this to reflect the same region as the modified seq
 	 * 
 	 * @param oligo
 	 * @param genome unmodified reference genome

@@ -216,7 +216,7 @@ public class TestOligoStats {
 		
 		ArrayList<Oligo> pool = new ArrayList<Oligo>();
 		pool.add(insert);
-		mage.Core.Optimize.optimize(pool);  //TODO: GET THIS TO RUN!!
+		mage.Core.Optimize.optimize(pool);  
 		
 		System.out.println("Insertion oligo contents:");
 		List<String> keys = new ArrayList<String>(imap.keySet());

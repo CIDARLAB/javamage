@@ -19,7 +19,7 @@ import java.util.List;
  *
  */
 public abstract class DSDNA {
-	//TODO: this will break on deletions! allow for sequences less than 40bp
+	
 	static int genomeOverlap = 40;
 	static int insertOverlap = 20;
 	
