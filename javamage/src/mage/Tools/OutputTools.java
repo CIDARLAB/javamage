@@ -33,6 +33,33 @@ public class OutputTools {
 		writePrimerListsToFile(names, primers, dest);
 	}
 	
+	/**get the file contents for the MASCPCR file as a string, to be handled upstream
+	 * 
+	 * @param pool
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getMASCPCRPrimerFileContents(List<Oligo> pool) throws IOException{
+		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
+		List<String> names = new ArrayList<String>();
+		for (Oligo oligo : pool){
+			names.add(oligo.name);
+		}
+		String header = ("Oligo\tUnmodifiedForward\tModifiedForward");
+		for(int length : PCR.getAmpliconLengths()){
+			header = header + "\t" + "Rev" + String.valueOf(length);
+		}
+		String contents = header + System.getProperty("line.separator");
+		for (int i = 0; i < primers.size(); i++){
+			String str = names.get(i);
+			for (String primer : primers.get(i)){
+				str = str + "\t" + primer;
+			}
+			contents = contents + str + System.getProperty("line.separator");
+		}
+		return(contents);
+	}
+	
 	/**Given the list of lists of MASC PCR primers, write to file
 	 * 
 	 * @param names list of names for each oligo

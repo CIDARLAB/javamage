@@ -5,3 +5,4 @@
         <jar jarfile="mage.jar" basedir="./bin/mage" includes="*.class" />
   </target>
 </project>
+<!--jar cvf mage.jar -C ./bin/ mage -->
