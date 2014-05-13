@@ -72,8 +72,8 @@ public class TestPCR {
 		String expectModified = "AACTGGTTGTTAAGCAGTAA";
 		String unmodified = PCR.getUnmodifiedForwardPrimer(mismatch, genome);
 		String modified = PCR.getModifiedForwardPrimer(mismatch);
-		System.out.println("Successfully replcated unmodified primer: " + unmodified.equals(expectUnmodified));
-		System.out.println("Successfully replcated modified primer: " + modified.equals(expectModified));
+		System.out.println("Successfully replicated unmodified primer: " + unmodified.equals(expectUnmodified));
+		System.out.println("Successfully replicated modified primer: " + modified.equals(expectModified));
 	}
 	
 	public static void testGetMASCPCRPrimersForOligo() throws Exception{

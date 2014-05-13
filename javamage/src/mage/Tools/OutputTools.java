@@ -126,6 +126,30 @@ public class OutputTools {
 		writeDSDNAPrimersToFile(primers, dest);
 	}
 	
+	/**
+	 * Generate the two DSDNA primers for the given recombination. Note that the start and end
+	 * are indexed with 1 (not 0) being the first base on the genome
+	 * 
+	 * An error message will be generated instead if the size of the replacement is too small (not at least twice the size of the
+	 * overlap into the sequence to be inserted)
+	 * 
+	 * @param genome
+	 * @param sequence Sequence of the insertion
+	 * @param leftpos 1-indexed base position on the genome to begin the replacement
+	 * @param rightpos 1-indexed base position on the genome to end the replacement
+	 */
+	public static List<String> getDSDNAPrimers(String genome, String sequence, int leftpos, int rightpos){
+		//make sure the start and end are in the right order
+				int start = leftpos;
+				int end = rightpos;
+				if (leftpos > rightpos){
+					start = rightpos;
+					end = leftpos;
+				}
+				
+				return DSDNA.getDSDNAPrimers(genome, sequence, start, end);
+	}
+	
 	/**Write the DSDNA primers to the given location
 	 * 
 	 * @param primers
