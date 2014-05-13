@@ -2,7 +2,7 @@
 <!-- Build mage.JAR --> 
 <project name="JavaMage" default="CreateJar">
   <target name="CreateJar" description="Create Jar file">
-        <jar jarfile="mage.jar" basedir="./bin/mage" includes="*.class" />
+        <jar jarfile="mage.jar" basedir="./bin/" includes="*.class" />
   </target>
 </project>
-<!--jar cvf mage.jar -C ./bin/ mage -->
+<!--jar cvf mage.jar -C ./bin utils ./bin mage -->

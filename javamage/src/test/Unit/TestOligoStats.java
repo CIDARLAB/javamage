@@ -22,9 +22,9 @@ public class TestOligoStats {
 	
 	public static void main(String[] args){
 		try {
-			//testGetDiversityTable();
+			testGetDiversityTable();
 			//testGetARE();
-			testLociProbability();
+			//testLociProbability();
 			//testGetAggregateAnyARE();
 			//testGetAggregateSumARE();
 			//testOligoLength();

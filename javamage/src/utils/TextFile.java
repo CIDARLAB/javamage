@@ -28,6 +28,7 @@ public class TextFile{
 			stringBuilder.append( line );
 			stringBuilder.append( ls );
 		}
+		reader.close();
 		return stringBuilder.toString();
 	}
 
