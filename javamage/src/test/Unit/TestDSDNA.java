@@ -13,14 +13,17 @@ import mage.Tools.SequenceTools;
  * @author mquintin
  *
  */
+
+//TODO: Don't BOTH primers have to be reversed?
 public class TestDSDNA {
 	
 	static String gfp = "atgagcaaaggcgaagaactgtttaccggcgtggtgccgattctggtggaactggatggcgatgtgaacggccataaatttagcgtgagcggcgaaggcgaaggcgatgcgacctatggcaaactgaccctgaaatttatttgcaccaccggcaaactgccggtgccgtggccgaccctggtgaccacctttagctatggcgtgcagtgctttagccgctatccggatcatatgaaacagcatgatttttttaaaagcgcgatgccggaaggctatgtgcaggaacgcaccattttttttaaagatgatggcaactataaaacccgcgcggaagtgaaatttgaaggcgataccctggtgaaccgcattgaactgaaaggcattgattttaaagaagatggcaacattctgggccataaactggaatataactataacagccataacgtgtatattatggcggataaacagaaaaacggcattaaagtgaactttaaaattcgccataacattgaagatggcagcgtgcagctggcggatcattatcagcagaacaccccgattggcgatggcccggtgctgctgccggataaccattatctgagcacccagagcgcgctgagcaaagatccgaacgaaaaacgcgatcatatggtgctgctggaatttgtgaccgcggcgggcattacccatggcatggatgaactgtataaa";
 	
 	public static void main(String[] args) throws IOException{
-		//testInsert();
-		//testDelete();
-		testTooShortError();
+		testInsert();
+		//testInsert2();
+		//testDelete(); //TODO: not yet implemented
+		//testTooShortError();
 	}
 
 	//insert GFP into a specific arbitrarily chosen location
@@ -28,7 +31,8 @@ public class TestDSDNA {
 		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
 		List<String> primers = DSDNA.getDSDNAPrimers(genome, gfp, 1000, 2000);
 		String expectLeft = "GGACGCAACGGTTCCGACTACTCCGCGGCGGTGCTGGCTG" + "ATGAGCAAAGGCGAAGAACT";
-		String expectRight = "GGTCATTGTTGACTGCACCTCCAGCCAGGCAGTGGCGGAT" + "GCATGGATGAACTGTATAAA";
+		String expectRight = "GCATGGATGAACTGTATAAA" + "GGTCATTGTTGACTGCACCTCCAGCCAGGCAGTGGCGGAT";
+		expectLeft = SequenceTools.ReverseCompliment(expectLeft);
 		expectRight = SequenceTools.ReverseCompliment(expectRight);
 		boolean leftCorrect = primers.get(0).toUpperCase().equals(expectLeft);
 		boolean rightCorrect = primers.get(1).toUpperCase().equals(expectRight);
@@ -36,6 +40,21 @@ public class TestDSDNA {
 		System.out.println("Left insertion primer correct : " + leftCorrect);
 		System.out.println(primers.get(1));
 		System.out.println("Right insertion primer correct : " + rightCorrect);
+	}
+	
+	public static void testInsert2() throws IOException{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		//List<String> primers = DSDNA.getDSDNAPrimers(genome, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 1100, 1111);
+		List<String> primers = mage.Tools.OutputTools.getDSDNAPrimers(genome, "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", 1100, 1111);
+		//String expectLeft = "GGACGCAACGGTTCCGACTACTCCGCGGCGGTGCTGGCTG" + "ATGAGCAAAGGCGAAGAACT";
+		//String expectRight = "GGTCATTGTTGACTGCACCTCCAGCCAGGCAGTGGCGGAT" + "GCATGGATGAACTGTATAAA";
+		//expectRight = SequenceTools.ReverseCompliment(expectRight);
+		//boolean leftCorrect = primers.get(0).toUpperCase().equals(expectLeft);
+		//boolean rightCorrect = primers.get(1).toUpperCase().equals(expectRight);
+		System.out.println(primers.get(0));
+		//System.out.println("Left insertion primer correct : " + leftCorrect);
+		System.out.println(primers.get(1));
+		//System.out.println("Right insertion primer correct : " + rightCorrect);
 	}
 	
 	//delete 1000 bases- currently not implemented

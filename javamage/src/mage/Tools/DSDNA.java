@@ -32,6 +32,8 @@ public abstract class DSDNA {
 	 * @return
 	 */
 	public static List<String> getDSDNAPrimers(String genome, String sequence, int leftpos, int rightpos){
+		sequence = sequence.replaceAll("\\W","");
+		
 		//convert from 1-indexed to 0 indexed
 		int left = leftpos -1;
 		int right = rightpos -1;
@@ -48,14 +50,15 @@ public abstract class DSDNA {
 			//build the left primer
 			String genleft = genome.substring(left - genomeOverlap, left);
 			String insleft = sequence.substring(0,insertOverlap);
-			String lprimer = genleft + insleft;
+			String lprimer = SequenceTools.ReverseCompliment(genleft + insleft);
 			
 			//build the right primer
 			String genright = genome.substring(right,right + genomeOverlap);
 			int len = sequence.length();
 			String insright = sequence.substring(len - insertOverlap, len);
-			String rprimer = SequenceTools.ReverseCompliment(genright + insright);
-			
+			String unreversedRight = (insright + genright).replaceAll("\\W","");
+			//System.err.println("Reversing right primer: \"" + unreversedRight + "\"");
+			String rprimer = SequenceTools.ReverseCompliment(unreversedRight);
 			list.add(lprimer);
 			list.add(rprimer);
 		}

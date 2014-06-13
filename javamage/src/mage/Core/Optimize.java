@@ -56,18 +56,18 @@ public class Optimize {
 	 */
 	private static void OptimizeHeuristic(ArrayList<Oligo> pool) throws Exception {
 
-		System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
+		//System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
 		// For each oligo, calculate the Blast Genome and Free Energy Values
 		for ( Oligo ol : pool) {
 
 			ol.calc_bg();			// Calculate Blast Genome for all positions on margins
 			ol.calc_dg();			// Calculate Free Energy score for all positions on margins
 
-			System.out.print(ol.getOligoId()+" ");
+			//System.out.print(ol.getOligoId()+" ");
 		}
 
 		// Blast all the oligos against each other
-		System.out.println("\n\n# Calculating Oligo to Oligo Homology [BO]");
+		//System.out.println("\n\n# Calculating Oligo to Oligo Homology [BO]");
 		for (int ii = 0; ii<(pool.size()-1); ii++ ) {
 
 			// Create a list of query oligos
@@ -81,11 +81,11 @@ public class Optimize {
 			// Blast the queries against subject ii
 			Oligo.BlastOligo(pool.get(ii),queries);
 
-			System.out.print((ii+1)+" ");
+			//System.out.print((ii+1)+" ");
 		}
 
 		// Heuristic Optimization
-		System.out.println("\n\n# Heurisitic Approach\n##################");
+		//System.out.println("\n\n# Heurisitic Approach\n##################");
 
 
 		// Choose the oligo with the smallest mistarget score
@@ -97,7 +97,7 @@ public class Optimize {
 
 		while (stack.size() > 0) {
 
-			System.err.print("\n# Iteration "+ (iteration) +  "");
+			//System.err.print("\n# Iteration "+ (iteration) +  "");
 
 			// Re/Calculate BO for the entire stack
 			for (Oligo ol: stack){
@@ -106,7 +106,7 @@ public class Optimize {
 				if (mage.Switches.Flags.plot)
 				addPlot( ol.boList().toArray( new Double[ol.bgList().size()])	, iteration ,ol.getOligoId() );
 
-				System.err.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
+				//System.err.println("Oligo " + ol.getOligoId() + ":\t"+ol.scoreAt(ol.getGreedyChoice()).toString());
 			}
 
 			// Sort by whatever greedy-score
@@ -114,20 +114,20 @@ public class Optimize {
 
 			// Select the best choice and the repeat until the stack is empty
 			Oligo greedyChoice = stack.pop();
-			System.out.println("Oligo "+ greedyChoice.getOligoId() + ":\t"+greedyChoice.scoreAt(greedyChoice.getGreedyChoice()).toString() ); 
+			//System.out.println("Oligo "+ greedyChoice.getOligoId() + ":\t"+greedyChoice.scoreAt(greedyChoice.getGreedyChoice()).toString() ); 
 			greedyChoice.select();
 			iteration++;
 		}
 
 		// Print the final configuration
-		System.out.println("\n# Heuristic Choice");
+		//System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
 
 			// Re-calculates the overlapping BO scores for the final configuration
 			ol.finalize();
 
 			// Print out the results
-			System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
+			//System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
 
 	} 
