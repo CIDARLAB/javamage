@@ -178,7 +178,7 @@ public class OutputTools {
 	
 	public static void generateDiversityTrendTableFile(List<Oligo> oligos, int cycles, String dest) throws IOException{
 		String table = OligoStats.getDiversityTable(oligos, cycles);
-		System.out.println(table);
+		//System.out.println(table);
 		writeDiversityTableToFile(table, dest);		
 	}
 	

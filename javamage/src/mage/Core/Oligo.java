@@ -419,7 +419,7 @@ public class Oligo extends DNASequence {
 		this.currentScore		= new OligoScore();
 
 		// Notify when Oligo Is Recorded
-		System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
+		//System.out.println("Oligo ID: " + this.oligo_id + "; Span : "+this.span+"; Margin: "+this.margin+"; Target : " + this.target );
 	}
 
 	public void addMistarget(Mistarget mt) {
@@ -459,7 +459,7 @@ public class Oligo extends DNASequence {
 
 				// Extract an oligo for every posible position and put it in the map
 				queries.put(ii,SequenceTools.ReverseCompliment(this.getOligo(ii)) );
-				System.err.println(this.getOligo(ii));
+				//System.err.println(this.getOligo(ii));
 				score_list.add(new ArrayList<Double>());
 			}
 

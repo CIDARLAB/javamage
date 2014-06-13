@@ -22,7 +22,7 @@ public class TestOligoStats {
 	
 	public static void main(String[] args){
 		try {
-			testGetDiversityTable();
+			testGetDiversityTable2();
 			//testGetARE();
 			//testLociProbability();
 			//testGetAggregateAnyARE();
@@ -134,22 +134,58 @@ public class TestOligoStats {
 		
 		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
 
-		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "GACGATATGAAC", 7900, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "ATTTGACCT", 15426, 2,true, "oligo") );
-		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );//.036
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );//.045
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );//.071
+		pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );//.096
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );//.071
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo"));//.018
+		pool.add(Oligo.InsertionFactory(genome, "GACGATATGAAC", 7900, 2,true, "oligo") );//.066
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );//.082
+		pool.add(Oligo.InsertionFactory(genome, "ATTTGACCT", 15426, 2,true, "oligo") );//.082
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );//.027
 		//pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
 
 		String res = OligoStats.getDiversityTable(pool, 10);
 		System.out.println("Diversity table 1:");
 		System.out.println(res);
 		System.out.println();
+		
+		System.out.println("Any ARE: " + OligoStats.getAggregateAnyARE(pool));
+		System.out.println("Sum ARE: " + OligoStats.getAggregateSumARE(pool));
+	}
+	
+	public static void testGetDiversityTable2() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 5000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 15000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 25000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 35000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 45000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 55000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 65000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 75000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 85000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 95000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 105000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 115000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 125000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 135000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 145000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 155000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 165000, 5003, 2, true, "oligo"));
+		pool.add(Oligo.MismatchFactory(genome, "TAG", 175000, 5003, 2, true, "oligo"));
+		
+		String res = OligoStats.getDiversityTable(pool, 10);
+		System.out.println("Diversity table 1:");
+		System.out.println(res);
+		System.out.println();
+		
+		System.out.println("Any ARE: " + OligoStats.getAggregateAnyARE(pool));
+		System.out.println("Sum ARE: " + OligoStats.getAggregateSumARE(pool));
+
 	}
 	
 	//confirm that Oligos are in fact 90bp long

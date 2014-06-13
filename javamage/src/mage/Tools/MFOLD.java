@@ -88,7 +88,7 @@ public class MFOLD {
 		MFOLD mf =  new MFOLD(list);
 		
 		for ( Double score : mf.run() ) {
-			System.out.println(score);
+			//System.out.println(score);
 		} 
 	}
 

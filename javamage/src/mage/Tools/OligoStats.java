@@ -116,8 +116,8 @@ public class OligoStats{
 		double beta = Math.pow(pn,k);
 		//double subgamma = 1 - are;
 		double gamma = Math.pow((1 - are), (c * (n-k)));
-		System.out.println("n,k,are,c : " + n + ", " + k + ", " + are + ", " + c);
-		System.out.println("alpha,beta,gamma : " + alpha + ", "+beta +", " +gamma);
+		//System.out.println("n,k,are,c : " + n + ", " + k + ", " + are + ", " + c);
+		//System.out.println("alpha,beta,gamma : " + alpha + ", "+beta +", " +gamma);
 				
 		return (double)alpha * beta * gamma;
 	}
@@ -159,7 +159,7 @@ public class OligoStats{
 	 public static String getDiversityTable(List<Oligo> oligos, int cycles){
 		 String s = "";
 		 double are = getAggregateAnyARE(oligos);
-		 System.out.println("Aggregate ARE : " + are);
+		 //System.out.println("Aggregate ARE : " + are);
 		 //double are = getAggregateSumARE(oligos);
 		 int n = oligos.size();
 		 for (int c = 1; c <= cycles; c++){
