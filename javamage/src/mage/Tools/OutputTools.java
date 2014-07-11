@@ -177,8 +177,16 @@ public class OutputTools {
 	}
 	
 	public static void generateDiversityTrendTableFile(List<Oligo> oligos, int cycles, String dest) throws IOException{
-		String table = OligoStats.getDiversityTable(oligos, cycles);
+		//String table = OligoStats.getDiversityTable(oligos, cycles);
+		String table = "";
+		List<List<Double>> olist = OligoStats.getDiscreteDiversityTable(oligos, cycles);
 		//System.out.println(table);
+		for (List<Double> list : olist){
+			for (Double d : list){
+				table = table.concat(d.toString()) + "\t";
+			}
+			table = table.trim().concat(System.getProperty("line.separator"));
+		}
 		writeDiversityTableToFile(table, dest);		
 	}
 	
@@ -194,8 +202,34 @@ public class OutputTools {
 		BufferedWriter bw = new BufferedWriter(fw);
 		//table is already formatted
 		bw.write(table);
-		bw.close();
+		bw.close();	
+	}
+	
+	public static void generateAREFile(List<Oligo> oligos, String dest) throws IOException{
+		String table = "";
+		for (Oligo oligo : oligos){
+			table.concat(oligo.name + ": " + OligoStats.getARE(oligo)+"\n");
+			//System.err.println(oligo.name + ": " + OligoStats.getARE(oligo));
+		}
+		//table.concat("getAggregateAnyARE: " + OligoStats.getAggregateAnyARE(oligos)+"\n");
+		//table.concat("getAggregateSumARE: " + OligoStats.getAggregateSumARE(oligos)+"\n");
+		//System.err.println("getAggregateAnyARE: " + OligoStats.getAggregateAnyARE(oligos));
+		//System.err.println("getAggregateSumARE: " + OligoStats.getAggregateSumARE(oligos)+"\n");
+		writeARETableToFile(table,dest);
+	}
+	
+	public static void writeARETableToFile(String table, String dest) throws IOException{
+		File file = new File(dest);
 		
+		// if file doesn't exists, then create it
+		if (!file.exists()) {
+			file.createNewFile();
+		}
 		
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		//table is already formatted
+		bw.write(table);
+		bw.close();	
 	}
 }
