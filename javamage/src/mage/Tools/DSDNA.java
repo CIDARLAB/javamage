@@ -50,13 +50,13 @@ public abstract class DSDNA {
 			//build the left primer
 			String genleft = genome.substring(left - genomeOverlap, left);
 			String insleft = sequence.substring(0,insertOverlap);
-			String lprimer = SequenceTools.ReverseCompliment(genleft + insleft);
+			String lprimer = SequenceTools.ReverseCompliment(genleft.concat(insleft));
 			
 			//build the right primer
 			String genright = genome.substring(right,right + genomeOverlap);
 			int len = sequence.length();
 			String insright = sequence.substring(len - insertOverlap, len);
-			String unreversedRight = (insright + genright).replaceAll("\\W","");
+			String unreversedRight = insright.concat(genright).replaceAll("\\W","");
 			//System.err.println("Reversing right primer: \"" + unreversedRight + "\"");
 			String rprimer = SequenceTools.ReverseCompliment(unreversedRight);
 			list.add(lprimer);

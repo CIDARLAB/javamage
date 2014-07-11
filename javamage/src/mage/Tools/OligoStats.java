@@ -3,8 +3,10 @@ package mage.Tools;
 import mage.Core.Oligo;
 import mage.Core.OligoType;
 
+import java.awt.font.NumericShaper.Range;
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -88,7 +90,7 @@ public class OligoStats{
 	 * @param list List of Oligos
 	 * @return
 	 */
-	public static double getAggregateSumARE(ArrayList<Oligo> list){
+	public static double getAggregateSumARE(List<Oligo> list){
 		int n = list.size();
 		double b = 1.59; //empirically determined
 		double coef = Math.exp(b / n);
@@ -191,4 +193,116 @@ public class OligoStats{
 	 /*public static void generateDiversityGraph(String data){
 		 
 	 }*/
+	 
+	 //########################################
+	 //these methods are an alternate take on replacement prediction, and avoid using the 
+	 //aggregate estimation
+	 //TODO: where does the pooling factor get used?
+	 
+	 /**find the probability that a cell carries a modification after the given number
+	  * of cycles. Returns a list for the probability of each oligo in the input list, in
+	  * the same order
+	  * 
+	  * @param pool
+	  * @param cycle
+	  * @return
+	  */
+	 public static ArrayList<Double> probabilitiesAfterCycles(List<Oligo> pool,int cycle){
+		 ArrayList<Double> res = new ArrayList<Double>();
+		 
+		 int n = pool.size();
+		 double b = 1.59; //empirically determined
+		 double pf = Math.exp(b / n);//pooling factor
+		 
+		 for (Oligo oligo:pool){
+			 Double are = Double.valueOf(getARE(oligo));
+			 are = are * pf; //include the pooling factor
+			 Double val = 1-(Math.pow(1-are, cycle));
+			 res.add(val);
+		 }
+		 return res;
+	 }
+	 
+	 /**generate a table of probabilities that describes the odds of a cell having each oligo after
+	  * each cycle up to the input maximum. Each outer list represents one cycle (from 1...cycle_max)
+	  * each inner list is the probability for each oligo, in the same order they appear in the input list
+	  *
+ 	  * In the original Python script for OptMAGE, this correlates to p_out
+	  * @param pool
+	  * @param cycle_max
+	  * @return
+	  */
+	 public static List<List<Double>> probabilitiesForAllCycles(List<Oligo> pool, int cycle_max){
+		 ArrayList<List<Double>> table = new ArrayList<List<Double>>();
+		 for (int cycle = 1; cycle <= cycle_max; cycle++){
+			 ArrayList<Double> row = probabilitiesAfterCycles(pool, cycle);
+			 table.add(row);
+		 }
+		 return table;
+	 }
+	 
+	 /**generate a table of probabilities for the number of transformations per cycle,
+	  * or the Poisson binomial probability mass function
+	  * These will be the height of discrete sections in a bar graph depicting the 
+	  * diversification trend
+	  * The outer list index is the number of completed cycles
+	  * The inner list index is the number of transformations (from 0...nOligo)
+	  * The value is the expected fraction of the population to have exactly that number
+	  *  of transformations
+	  * 
+	  * 
+	  * @param pool
+	  * @param cycles
+	  * @return
+	  */
+	 public static List<List<Double>> getDiscreteDiversityTable(List<Oligo> pool, int cycles){
+		 List<List<Double>> p_table = probabilitiesForAllCycles(pool, cycles);
+		 List<List<Double>> res = new ArrayList<List<Double>>();
+		 for (List<Double> row : p_table){ ///row=p_list
+			 //ArrayList<Double> resrow = new ArrayList<Double>();
+			 Double[] resrow = new Double[pool.size()+1]; ///resrow=q_list
+			 Arrays.fill(resrow, 0.0);
+			 resrow[0] = 1.0;
+
+			 int i = 0;
+			 for (Double p : row){
+				 int k = i + 1;
+				 for (int j = 0; j < i + 1; j++){
+					 resrow[k] = (1-p)*resrow[k] + p*resrow[k-1];
+					 k -=1;
+				 }
+				 resrow[0] *= (1-p);
+				 i += 1;
+			 }
+			 List<Double> list = Arrays.asList(resrow);
+			 res.add(list);
+		 }
+		 return res;
+	 }
+
+	 /**generate a table of the cumulative distribution function for the number of
+	  * transformations per cycle. These will be the step points in a bar graph showing
+	  * the diversification trend 
+	  * 
+	  * @param pool
+	  * @param cycles
+	  * @return
+	  */
+	 public static List<List<Double>> getCumulativeDiversityTable(List<Oligo> pool, int cycles){
+		 List<List<Double>> pdf_table = getDiscreteDiversityTable(pool, cycles);
+		 List<List<Double>> res = new ArrayList<List<Double>>();
+		 for (List<Double> row : pdf_table){
+			 Double[] resrow = new Double[pool.size()+1];
+			 Double val = 0.0;
+			 for (int i = 0; i < resrow.length; i++){
+				 val += row.get(i);
+				 resrow[i] = val;
+			 }
+			 List<Double> list = Arrays.asList(resrow);
+			 res.add(list);
+		 }
+		 return res;
+	 }
+	 
+	 //TODO: pooling factor: multiply the individual input AREs by the pooling factor before any combinatorial statistics
 }

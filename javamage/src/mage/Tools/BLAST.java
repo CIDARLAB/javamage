@@ -116,7 +116,7 @@ public class BLAST {
 				
 				int counter = 0;
 				for( BlastResult br : parse(output) ) { results.add(counter++, br) ;
-				System.err.println(br);
+				//System.err.println(br);
 				
 				}
 

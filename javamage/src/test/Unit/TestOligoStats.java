@@ -29,6 +29,11 @@ public class TestOligoStats {
 			//testGetAggregateSumARE();
 			//testOligoLength();
 			//checkOligoStructure();
+			//testGetARE2();
+			testGetCumulativeDiversityTable();
+			testGetDiscreteDiversityTable();
+			//testProbabilitiesForAllCycles();
+			//testProbabilitiesAfterCycles();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,6 +81,36 @@ public class TestOligoStats {
 			//System.out.println(String.valueOf(delete.span));
 			//System.out.println(String.valueOf(mismatch.span));
 		}
+	}
+	
+	public static void testGetARE2() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+		
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1785136, 2, false, "pps"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 3079657, 2, false, "tktA"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 2739172, 2, false, "aroF"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 784855, 1, true, "aroG"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1786458, 2, true, "aroH"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1772709, 2, true, "aroD"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 3428860, 2, false, "aroE"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1771812, 2, true, "ydiB"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 3517086, 2, false, "aroK"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 405628, 1, true, "aroL"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 958034, 1, true, "aroA"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 2445495, 2, false, "aroC"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1320970, 1, false, "trpE"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1319408, 1, false, "trpD"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1317809, 1, false, "trpC"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1315246, 1, false, "trpA"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 1316439, 1, false, "trpB"));
+		pool.add(Oligo.InsertionFactory(genome, "TAG", 3484141, 2, true, "crp"));
+		
+		for (Oligo oligo : pool){
+			System.out.println(oligo.name + ": " + OligoStats.getARE(oligo));
+		}
+		System.out.println("getAggregateAnyARE: " + OligoStats.getAggregateAnyARE(pool));
+		System.out.println("getAggregateSumARE: " + OligoStats.getAggregateSumARE(pool));
 	}
 	
 	public static void testGetCyclesForFrequency(){
@@ -162,7 +197,7 @@ public class TestOligoStats {
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 5000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 15000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 25000, 5003, 2, true, "oligo"));
-		pool.add(Oligo.MismatchFactory(genome, "TAG", 35000, 5003, 2, true, "oligo"));
+		/*pool.add(Oligo.MismatchFactory(genome, "TAG", 35000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 45000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 55000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 65000, 5003, 2, true, "oligo"));
@@ -177,7 +212,7 @@ public class TestOligoStats {
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 155000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 165000, 5003, 2, true, "oligo"));
 		pool.add(Oligo.MismatchFactory(genome, "TAG", 175000, 5003, 2, true, "oligo"));
-		
+		*/
 		String res = OligoStats.getDiversityTable(pool, 10);
 		System.out.println("Diversity table 1:");
 		System.out.println(res);
@@ -261,5 +296,88 @@ public class TestOligoStats {
 			System.out.println(key + " : " + imap.get(key).toString());
 		}
 		
+	}
+	
+	private static void testGetCumulativeDiversityTable() throws Exception {
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
+		/*pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
+		*/
+		
+		System.out.println("Cumulative Diversity");
+		System.out.println(OligoStats.getCumulativeDiversityTable(pool, 10));
+	}
+	
+	private static void testGetDiscreteDiversityTable() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
+		/*pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
+		*/
+		System.out.println("Discrete Diversity");
+		System.out.println(OligoStats.getDiscreteDiversityTable(pool, 10));
+	}
+	
+	private static void testProbabilitiesForAllCycles() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
+		/*pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
+		*/
+		System.out.println("Probability For All Cycles");
+		System.out.println(OligoStats.probabilitiesForAllCycles(pool, 10));
+	}
+	
+	private static void testProbabilitiesAfterCycles() throws Exception{
+		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
+		ArrayList <Oligo> pool =  new ArrayList<Oligo>();
+
+		pool.add(Oligo.InsertionFactory(genome, "GCCGCTTTCGCTGTATCCCT", 190, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AGACAGTCAACAGTAAG", 458, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATCGGCTCGAG", 1408, 2,true, "oligo") );
+		/*pool.add(Oligo.InsertionFactory(genome, "GGCCGGA", 2349, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GTCGATAAGCT", 3599, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GCTAGAGGAGCGATACGGGATTTAGGAT", 5658, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACG", 7900, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GACTATATA", 14029, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "AT", 15426, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2,true, "oligo") );
+		pool.add(Oligo.InsertionFactory(genome, "GATTACGACCAGT", 1514925, 2,true, "oligo") );
+		*/
+		System.out.println("Probability After 1 Cycle");
+		System.out.println(OligoStats.probabilitiesAfterCycles(pool, 1));
+		System.out.println("Probability After 2 Cycles");
+		System.out.println(OligoStats.probabilitiesAfterCycles(pool, 2));
 	}
 }

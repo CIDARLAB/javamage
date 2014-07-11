@@ -21,9 +21,9 @@ public class TestDSDNA {
 	
 	public static void main(String[] args) throws IOException{
 		testInsert();
-		//testInsert2();
+		testInsert2();
 		//testDelete(); //TODO: not yet implemented
-		//testTooShortError();
+		testTooShortError();
 	}
 
 	//insert GFP into a specific arbitrarily chosen location

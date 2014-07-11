@@ -24,8 +24,8 @@ public class TestOutputTools {
 		//testGenerateDSDNAPrimerFile();
 		//testWriteDSDNAPrimersToFile();
 		//testWriteDSDNAPrimersToFileWithLengthError();
-		//testGenerateDiversityTableFile();
-		testGetMASCPCRPrimerFileContents();
+		testGenerateDiversityTableFile();
+		//testGetMASCPCRPrimerFileContents();
 	}
 	
 	public static void testGenerateMASCPCRFile() throws Exception{

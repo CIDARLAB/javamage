@@ -57,7 +57,7 @@ public class MFOLD {
 				// Create and run mfold process
 				ProcessBuilder pb = new ProcessBuilder(
 						Constants.MFOLD,"--NA=DNA","--energyOnly","-q",seq.toString());
-				System.out.println(pb.command());
+				//System.out.println(pb.command());
 				Process mfold = pb.start();
 
 				// Extract result from stdout, and Store as a Double
