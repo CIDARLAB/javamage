@@ -40,6 +40,8 @@ public abstract class DSDNA {
 		
 		List<String> list = new ArrayList<String>();
 		
+		genome = genome.replace(System.getProperty("line.separator"), "").replaceAll("\\s","");
+		
 		//if the insert sequence is blank or too short
 		//currently displaying an error message- should look into how deletions/point mutations are generally done
 		if (sequence.length() < 2 * insertOverlap){

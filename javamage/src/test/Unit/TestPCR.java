@@ -1,14 +1,11 @@
 package test.Unit;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import test.Constants;
 import mage.Core.Oligo;
 import mage.Tools.FASTA;
 import mage.Tools.PCR;
-import mage.Tools.SequenceTools;
 
 public class TestPCR {
 

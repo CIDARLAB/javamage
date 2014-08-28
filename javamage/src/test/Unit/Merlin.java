@@ -9,7 +9,7 @@ public class Merlin {
 	public static void main(String[] args) throws Exception {
 		
 		// Create a test environment for MERLIN
-		String merlin_test_dir =  "C:/Users/mquintin/SkyDrive/github/javamage/testing";
+		String merlin_test_dir =  "C:/Users/Mike/SkyDrive/github/javamage/testing/";
 		String parametersFileName = "inputParam.txt"; 
 		String targetFileName = "inputTarg.txt";
 		String genomeFileName = "ecoli.fasta";
@@ -27,7 +27,7 @@ public class Merlin {
 		merlin.optimize();
 		
 		merlin.compareToOptMage("OUToligos.txt");
-		
+		System.out.println(merlin.generateGenbank());
 	}
 
 }
