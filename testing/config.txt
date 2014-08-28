@@ -1,3 +1,4 @@
 makeblastdb /c/Program Files/NCBI/blast-2.2.28+/bin/makeblastdb
 blastn /c/Program Files/NCBI/blast-2.2.28+/bin/blastn
 MFOLD /usr/local/bin/MFOLD
+melt /usr/local/bin/melt.pl

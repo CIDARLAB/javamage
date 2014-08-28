@@ -6,6 +6,7 @@ public final class Constants {
 	public static String makeblastdb = "c:/Program Files/NCBI/blast-2.2.28+/bin/makeblastdb" ; 
 	public static String blastn = "c:/Program Files/NCBI/blast-2.2.28+/bin/blastn";
 	public static String MFOLD = "C:/cygwin64/usr/local/bin/mfold";
+	public static String melt = "C:/cygwin64/usr/local/bin/melt.pl";
 	
 	public static String workingdirectory = System.getProperty("user.dir")+"/";
 	

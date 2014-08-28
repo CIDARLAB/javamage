@@ -197,7 +197,6 @@ public class OligoStats{
 	 //########################################
 	 //these methods are an alternate take on replacement prediction, and avoid using the 
 	 //aggregate estimation
-	 //TODO: where does the pooling factor get used?
 	 
 	 /**find the probability that a cell carries a modification after the given number
 	  * of cycles. Returns a list for the probability of each oligo in the input list, in
@@ -304,5 +303,4 @@ public class OligoStats{
 		 return res;
 	 }
 	 
-	 //TODO: pooling factor: multiply the individual input AREs by the pooling factor before any combinatorial statistics
 }
