@@ -34,6 +34,9 @@ public class Merlin{
 	
 	public ArrayList<Oligo> pool ;
 	
+	public String targetfile = ""; //target file
+	public String parameterfile = ""; //parameter file
+	
 	final static private String configFileName= "config.txt";
 	
 	/**
@@ -87,7 +90,7 @@ public class Merlin{
 		String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 		
 		// Then we read and parse the parameters
-		loadParameters(Constants.parameters);
+		loadParameters(parameterfile);
 		
 		// The switches are public and can be turned on and off at any time
 		// So there is no need to load a file
@@ -97,7 +100,7 @@ public class Merlin{
 		 * ***********************************************/
 		
 		// Create a list of targets from by parsing the targets file
-		List<Target> targets = Target.loadTarget(Constants.targets);
+		List<Target> targets = Target.loadTarget(targetfile);
 		
 		// Add each target in the pool to factory and push that into the pool
 		for ( Target tt : targets) {
@@ -225,10 +228,16 @@ public class Merlin{
 		if ( isValidFilePath( genomeFileName )) { Oligo.Genome = genomeFileName; }
 		
 		// Test if the parameters file exists	
-		if ( isValidFilePath( targetsFileName)) { Constants.targets = Constants.workingdirectory+ targetsFileName; }
+		if ( isValidFilePath( targetsFileName)) { 
+			//Constants.targets = Constants.workingdirectory+ targetsFileName; 
+			targetfile = directory+ targetsFileName;
+			}
 		
 		// Test if the targets file exists
-		if ( isValidFilePath( parametersFileName)) { Constants.parameters = Constants.workingdirectory + parametersFileName; }	
+		if ( isValidFilePath( parametersFileName)) { 
+			//Constants.parameters = Constants.workingdirectory + parametersFileName; 
+			parameterfile = directory + parametersFileName;
+			}	
 		
 		// Load the configuration files
 		loadConfig(Constants.workingdirectory);
@@ -247,6 +256,7 @@ public class Merlin{
 	 * <p>blastn < binary_path > </p>
 	 * <p>makeblastdb  < binary_path ></p>
 	 * <p>MFOLD < binary_path > </p>
+	 * <p>melt < binary_path ></p>
 	 * 
 	 * @param workingdirectory	Constants.workingdirectory
 	 * @throws IOException		If the file cannot be read and parsed correctly
@@ -257,6 +267,7 @@ public class Merlin{
 			Constants.blastn = configs[1].split("\\s+")[1];
 			Constants.makeblastdb = configs[0].split("\\s+")[1];
 			Constants.MFOLD = configs[2].split("\\s+")[1];
+			Constants.melt = configs[3].split("\\s+")[1];
 		}
 	}
 	

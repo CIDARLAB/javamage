@@ -3,7 +3,6 @@ package mage.Tools;
 import mage.Core.Oligo;
 import mage.Core.OligoType;
 
-import java.awt.font.NumericShaper.Range;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;

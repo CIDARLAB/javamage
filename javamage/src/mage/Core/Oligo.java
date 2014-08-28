@@ -90,12 +90,15 @@ public class Oligo extends DNASequence {
 	 * @throws Exception
 	 */
 	public static Oligo OligoFactory(String genome, Target tt) throws Exception {
-
+		//remove whitespace
+		genome = genome.replaceAll("\\s", "");
+		String sequence = tt.sequence.replaceAll("\\s","");
+		
 		if ( tt.type.startsWith("I") ){
-			return Oligo.InsertionFactory(genome, tt.sequence, tt.left_position, tt.replichore , tt.sense , tt.gene_name);
+			return Oligo.InsertionFactory(genome, sequence, tt.left_position, tt.replichore , tt.sense , tt.gene_name);
 		}
 		else if (tt.type.startsWith("M")) {
-			return Oligo.MismatchFactory(genome, tt.sequence, tt.left_position, tt.right_position, tt.replichore, tt.sense, tt.gene_name) ;
+			return Oligo.MismatchFactory(genome, sequence, tt.left_position, tt.right_position, tt.replichore, tt.sense, tt.gene_name) ;
 		}
 		else if (tt.type.startsWith("D")) {
 			return Oligo.DeletionFactory(genome, tt.left_position, tt.right_position, tt.replichore, tt.gene_name) ;
