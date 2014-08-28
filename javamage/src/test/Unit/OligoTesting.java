@@ -1,6 +1,5 @@
 package test.Unit;
 
-import mage.Core.Oligo;
 
 public class OligoTesting {
 

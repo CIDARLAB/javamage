@@ -7,7 +7,6 @@ import java.util.List;
 import mage.Core.Oligo;
 import mage.Tools.DSDNA;
 import mage.Tools.FASTA;
-import mage.Tools.OligoStats;
 import mage.Tools.OutputTools;
 import mage.Tools.PCR;
 import test.Constants;

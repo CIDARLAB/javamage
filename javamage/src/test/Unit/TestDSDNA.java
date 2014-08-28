@@ -20,10 +20,10 @@ public class TestDSDNA {
 	static String gfp = "atgagcaaaggcgaagaactgtttaccggcgtggtgccgattctggtggaactggatggcgatgtgaacggccataaatttagcgtgagcggcgaaggcgaaggcgatgcgacctatggcaaactgaccctgaaatttatttgcaccaccggcaaactgccggtgccgtggccgaccctggtgaccacctttagctatggcgtgcagtgctttagccgctatccggatcatatgaaacagcatgatttttttaaaagcgcgatgccggaaggctatgtgcaggaacgcaccattttttttaaagatgatggcaactataaaacccgcgcggaagtgaaatttgaaggcgataccctggtgaaccgcattgaactgaaaggcattgattttaaagaagatggcaacattctgggccataaactggaatataactataacagccataacgtgtatattatggcggataaacagaaaaacggcattaaagtgaactttaaaattcgccataacattgaagatggcagcgtgcagctggcggatcattatcagcagaacaccccgattggcgatggcccggtgctgctgccggataaccattatctgagcacccagagcgcgctgagcaaagatccgaacgaaaaacgcgatcatatggtgctgctggaatttgtgaccgcggcgggcattacccatggcatggatgaactgtataaa";
 	
 	public static void main(String[] args) throws IOException{
-		testInsert();
+		//testInsert();
 		testInsert2();
 		//testDelete(); //TODO: not yet implemented
-		testTooShortError();
+		//testTooShortError();
 	}
 
 	//insert GFP into a specific arbitrarily chosen location
@@ -45,7 +45,7 @@ public class TestDSDNA {
 	public static void testInsert2() throws IOException{
 		String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
 		//List<String> primers = DSDNA.getDSDNAPrimers(genome, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 1100, 1111);
-		List<String> primers = mage.Tools.OutputTools.getDSDNAPrimers(genome, "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", 1100, 1111);
+		List<String> primers = mage.Tools.OutputTools.getDSDNAPrimers(genome, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 1100, 1200);
 		//String expectLeft = "GGACGCAACGGTTCCGACTACTCCGCGGCGGTGCTGGCTG" + "ATGAGCAAAGGCGAAGAACT";
 		//String expectRight = "GGTCATTGTTGACTGCACCTCCAGCCAGGCAGTGGCGGAT" + "GCATGGATGAACTGTATAAA";
 		//expectRight = SequenceTools.ReverseCompliment(expectRight);
