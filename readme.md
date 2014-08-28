@@ -26,6 +26,7 @@ Merlin has requires the follow EXTERNAL dependencies
 * `makeblastdb`:  , comes with NCBI Blast+ Standalone
 * `blastn`:  , comes with NCBI Blast+ Standalone
 * `MFOLD` : This requires UNAFOLD, available at `http://mfold.rna.albany.edu/?q=DINAMelt/software`
+* `melt.pl` : Also from the RNA Institute at U of Albany `http://mfold.rna.albany.edu/?q=unafold-man-pages/melt.pl`
 
 after installing these three dependencies.
 

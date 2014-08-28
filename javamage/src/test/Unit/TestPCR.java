@@ -24,7 +24,7 @@ public class TestPCR {
 		//testGetUnmodifiedForwardPrimerFromOligo();
 		//testGetModifiedForwardPrimerFromOligo();
 		//testGetMASCPCRPrimersForOligo();
-		//testPCRbyReplicatingResults();
+		testPCRbyReplicatingResults();
 
 	}
 	
