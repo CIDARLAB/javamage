@@ -27,7 +27,8 @@ public class TestReplacementPrediction {
 	
 	public static void main(String[] args) throws Exception{
 		populateOligos();
-		getStats();
+		//getStats();
+		getSingleARE();
 	}
 
 	private static void populateOligos() throws Exception{
@@ -50,7 +51,7 @@ public class TestReplacementPrediction {
 	}
 	
 	private static void getStats(){
-		System.out.println(OligoStats.getCumulativeDiversityTable(oligos, 18));
+		System.out.println(OligoStats.getDiscreteDiversityTable(oligos, 18));
 	}
 	
 	/*all oligos in the validation set are 90bp, and contain a single base mismatch
@@ -63,6 +64,11 @@ public class TestReplacementPrediction {
 		Oligo oligo = Oligo.MismatchFactory(genome, "T", 100, 101, 1, true, "oligo".concat(String.valueOf(oligoID)));
 		oligoID++;
 		return oligo;
+	}
+	
+	private static void getSingleARE() throws Exception{
+		Oligo oligo = getTestOligo();
+		System.out.println(OligoStats.getARE(oligo));
 	}
 	
 }

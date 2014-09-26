@@ -73,7 +73,7 @@ public class OligoStats{
 	public static double getAggregateAnyARE(List<Oligo> oligos){
 		int n = oligos.size();
 		double b = 1.59; //empirically determined
-		double coef = Math.exp(b / n);
+		double coef = Math.exp(-b / n);
 		//System.out.println("Any coef: " + String.valueOf(coef));
 		double p = 1;
 		for (Oligo oligo : oligos){
@@ -210,7 +210,7 @@ public class OligoStats{
 		 
 		 int n = pool.size();
 		 double b = 1.59; //empirically determined
-		 double pf = Math.exp(b / n);//pooling factor
+		 double pf = Math.exp(-b / n);//pooling factor
 		 
 		 for (Oligo oligo:pool){
 			 Double are = Double.valueOf(getARE(oligo));

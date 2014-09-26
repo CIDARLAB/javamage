@@ -100,6 +100,7 @@ public class Merlin{
 		 * ***********************************************/
 		
 		// Create a list of targets from by parsing the targets file
+		System.out.println("Loading target file: " + targetfile);
 		List<Target> targets = Target.loadTarget(targetfile);
 		
 		// Add each target in the pool to factory and push that into the pool
@@ -231,12 +232,14 @@ public class Merlin{
 		if ( isValidFilePath( targetsFileName)) { 
 			//Constants.targets = Constants.workingdirectory+ targetsFileName; 
 			targetfile = directory+ targetsFileName;
+			Constants.targets = targetfile;
 			}
 		
 		// Test if the targets file exists
 		if ( isValidFilePath( parametersFileName)) { 
 			//Constants.parameters = Constants.workingdirectory + parametersFileName; 
 			parameterfile = directory + parametersFileName;
+			Constants.parameters = parameterfile;
 			}	
 		
 		// Load the configuration files
@@ -267,7 +270,7 @@ public class Merlin{
 			Constants.blastn = configs[1].split("\\s+")[1];
 			Constants.makeblastdb = configs[0].split("\\s+")[1];
 			Constants.MFOLD = configs[2].split("\\s+")[1];
-			Constants.melt = configs[3].split("\\s+")[1];
+			//Constants.melt = configs[3].split("\\s+")[1];
 		}
 	}
 	
