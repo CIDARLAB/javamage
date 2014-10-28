@@ -29,9 +29,7 @@ import mage.Core.OligoType;
  * 		which can produce clearly distinguishable bands on a 1.5% agarose gel
  * 		-How to handle more than 10 oligos?
  * 	
- * ignore free energy/melt temp FOR NOW	
- * 	What scoring can we use to call primers acceptable? (free energy, melt temp, etc)
- * 		How do you calculate melt temp? Free energy is obtained from MFOLD
+ * Melting temperatures are determined by the melt.pl script.	
  * 
  * 
  * Confirm method for forward unmodified deletion primer: is currently only including 5 bases into the cut
@@ -43,7 +41,9 @@ import mage.Core.OligoType;
 public abstract class PCR {
 	private static List<Integer> ampliconLengths = Arrays.asList(100,150,200,250,300,400,500,700,850);
 	private static int primerlength = 20; //generally 18-30
-		
+	//number of valid primers to explore, keeping the first modified base in the 3' half
+	private static double maxshift = Math.floor(primerlength/2); 
+	
 	/**
 	 * @return the ampliconLengths
 	 */

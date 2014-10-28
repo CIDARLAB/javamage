@@ -234,7 +234,7 @@ public class Oligo extends DNASequence {
 		if ( (genome.length() > (left_position+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (left_position > 60 ) ) {
 
 			// Define the starting pisition on the genome)
-			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
+			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1)+target.length();
 
 			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
 			String preSequence =  genome.substring(genome_start-1, left_position);
@@ -267,6 +267,7 @@ public class Oligo extends DNASequence {
 		}
 		else {
 			//return null;
+			//TODO: handle the case where insertion is near the start of the sequence
 			System.out.println("Could Not Create Oligo");
 			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
 		}
@@ -319,8 +320,8 @@ public class Oligo extends DNASequence {
 	public 	ArrayList< Mistarget> 	valid_mt;
 
 	final 	private	int		oligo_id;
-	final 	private int		oligo_max;
-	final 	private int		oligo_min;
+	public final 	 int		oligo_max;
+	public final 	 int		oligo_min;
 
 	private	int				opt_end;
 	private int				opt_start;
@@ -452,7 +453,7 @@ public class Oligo extends DNASequence {
 	 */
 	public void calc_bg(){
 		try{
-			BLAST blast = new BLAST(Oligo.Directory,Oligo.Genome);
+			BLAST blast = new BLAST(Oligo.Directory,Oligo.Genome) ;
 			HashMap<Integer,String> queries = new HashMap<Integer,String>(); 
 
 			ArrayList< ArrayList<Double>> score_list = new ArrayList< ArrayList<Double> > (this.margin) ;
@@ -504,13 +505,35 @@ public class Oligo extends DNASequence {
 					return (int) ( (bg_scores.get(ii-1))- (bg_scores.get(jj-1)));
 				}
 			});
-
-
-
 		}
-		catch (Exception ee){ee.printStackTrace();}
+		catch (Exception ee){
+			System.err.println("Error calculating BLAST scores");
+			ee.printStackTrace();
+			populate_blank_bg();
+		}
+		
 	}
 
+	/**If an error was thrown populating the bg scores, populate the list with all scores set to 0
+	 */
+	private void populate_blank_bg(){
+		try{
+			ArrayList< ArrayList<Double>> score_list = new ArrayList< ArrayList<Double> > (this.margin) ;
+			
+			int count = 0;
+			
+			for (ArrayList<Double> position : score_list){
+				bg_scores.add( count ,0.0);
+				count ++;
+				bg_sorted.add(count);
+			}
+			
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Calculates the Blast Oligo scores for every oligo on the genome given the current valid set
 	 * @throws Exception
@@ -983,6 +1006,7 @@ public class Oligo extends DNASequence {
 	 */
 	public int  getOptMagePosition( )
 	{
+		System.err.println("[DEBUG getOptMagePosition] " + this.optMagePosition);
 		return this.optMagePosition;
 	}
 
