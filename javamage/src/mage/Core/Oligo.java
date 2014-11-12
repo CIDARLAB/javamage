@@ -125,16 +125,18 @@ public class Oligo extends DNASequence {
 	 */
 	
 	public static Oligo MismatchFactory(String genome, String target, int left_position, int right_position, int replichore, boolean sense, String name)  throws Exception { 
-		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) 
+		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) 
 		{
-			// Define the starting pisition on the genome)
-			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
+			// Define the starting position on the genome)
+			
+		//TODO: Should this include subtracting target length? think about the implications for the span/where changes are allowed
+			int genome_start = left_position - Oligo.ideal_length + target.length() + Oligo.buffer_3prime -1;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
 			String preSequence =  genome.substring(genome_start-1, left_position);
 
-			// Define the ending position on the gneome
-			int genome_end  = right_position+(Oligo.ideal_length - Oligo.buffer_5prime -1);
+			// Define the ending position on the genome
+			int genome_end  = right_position + Oligo.ideal_length - target.length() - Oligo.buffer_5prime -1;
 
 			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
 			String postSequence = genome.substring(right_position-1, genome_end ); 
@@ -153,7 +155,7 @@ public class Oligo extends DNASequence {
 			if ( ((replichore==2) && !sense) || ((replichore==1) && sense) ) {
 				target = mage.Tools.SequenceTools.ReverseCompliment(target);	
 			}
-
+			
 			// Return the new Oligo that was just made
 			return new Oligo(preSequence, target, postSequence, genome_start, genome_end, OligoType.MISMATCH, name);	
 
@@ -161,38 +163,41 @@ public class Oligo extends DNASequence {
 		else {
 			//return null;
 			System.out.println("Could Not Create Oligo");
-			throw new Exception("[Insertion Factory] Oligo not defined on correct range" );			
+			throw new Exception("[Mismatch Factory] Oligo not defined on correct range" );			
 		}
 
 	}
 
 	/**
 	 * Deletion factory generates and an oligo that represents a deletion
-	 * The bases at left_position and right_position will remain in the sequence, with the bases between removed
-	 * For example, DeletionFactory("ABCDEFG", 2, 5,...) will generate "ABEFG"
+	 * The base at left_position will be removed, and right_postion will remain, with the bases between removed
+	 * For example, DeletionFactory("ABCDEFG", 3, 5,...) will generate "ABEFG"
 	 * @param genome 		The genome from which the oligo is being made
-	 * @param left_position	The left position, indicating the point at which the mutation will be cut off
+	 * @param left_position	The left position, indicating the point at which the mutation will start
 	 * @param replichore	The replichore 1 or 2
-	 * @param right_position an Integer to specify the position at which the genome is to be cut out again.
-	 * @param name			The name of this target
+	 * @param right_position an Integer to specify the position at which the genome is to resume
+	 * @param name			The name of this oligo
 	 * @return				Returns a oligo defined by the input parameters
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified
 	 */
+	//TODO: Confirm that the indexing on left and right positions is intuitive.
+	//Consider subtracting 1 from each so left is the last base kept, and right is the last base cut
+	//or cutting both
+	//Get someone else to use the method, and see what the instinct is.
 	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore, String name) throws Exception {
+		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) {
 
-		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > 60) ) {
-
-			// Define the starting pisition on the genome)
-			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1);
+			// Define the starting position on the genome)
+			int genome_start = left_position - Oligo.ideal_length + Oligo.buffer_3prime -1;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position);
+			String preSequence =  genome.substring(genome_start-1, left_position-1);
 
-			// Define the ending position on the gneome
-			int genome_end  = right_position+(Oligo.ideal_length - Oligo.buffer_5prime -1);
+			// Define the ending position on the genome
+			int genome_end  = right_position + Oligo.ideal_length - Oligo.buffer_5prime -1;
 
 			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
-			String postSequence = genome.substring(right_position-1, genome_end ); 
+			String postSequence = genome.substring(right_position, genome_end ); 
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){
@@ -205,7 +210,6 @@ public class Oligo extends DNASequence {
 				postSequence 		= reverseComp.substring(splitIndex);
 				preSequence 		= reverseComp.substring(0,splitIndex);
 			}
-
 			return new Oligo(preSequence,"",postSequence,genome_start,genome_end, OligoType.DELETION, name);
 		}
 		else {
@@ -230,17 +234,16 @@ public class Oligo extends DNASequence {
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified
 	 */
 	public static Oligo InsertionFactory(String genome, String target, int left_position, int replichore, boolean sense, String name) throws Exception {
-
 		if ( (genome.length() > (left_position+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (left_position > 60 ) ) {
 
 			// Define the starting pisition on the genome)
-			int genome_start = left_position-(Oligo.ideal_length - Oligo.buffer_3prime -1)+target.length();
+			int genome_start = left_position + target.length() - Oligo.ideal_length + Oligo.buffer_3prime -1;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
 			String preSequence =  genome.substring(genome_start-1, left_position);
 
 			// Define the ending position on the gneome
-			int genome_end  = (left_position+1)+(Oligo.ideal_length - Oligo.buffer_5prime -1);
+			int genome_end  = left_position + Oligo.ideal_length - Oligo.buffer_5prime -target.length();
 
 			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
 			String postSequence = genome.substring(left_position , genome_end);
@@ -341,7 +344,7 @@ public class Oligo extends DNASequence {
 
 	final public String 	name;
 
-	public final int x;
+	//public final int x; //not used, and incorrectly calculated if the oligo is reversed
 	private ArrayList<OligoScore> scores;
 
 	/**
@@ -367,7 +370,8 @@ public class Oligo extends DNASequence {
 
 		// Calculate the span of the oligo
 		this.span 			= super.getLength();
-		this.x 				= preSequence.length()+genome_start;
+
+		//this.x 				= preSequence.length()+genome_start;
 
 		// Store the target sequence and length
 		this.target 		= targetSequence;
@@ -375,7 +379,7 @@ public class Oligo extends DNASequence {
 		this.target_position= preSequence.length();
 		// The margin for variation is given by L - 5'Buffer - 3-Buffer - t
 		this.margin 		= Oligo.ideal_length - Oligo.buffer_3prime - Oligo.buffer_5prime - this.target_length +1;
-
+		
 		// Get the index number for the first possible oligo.
 		this.oligo_min 		= 1;
 		this.oligo_max 		= this.oligo_min + this.margin;
@@ -755,6 +759,7 @@ public class Oligo extends DNASequence {
 	 * Returns the greedyscore
 	 * @return
 	 */
+	//TODO: Switch to dg_scores?
 	private double getGreedyScore() { return bo_scores.get(this.greedy_choice-1); }
 
 	/**
@@ -1006,10 +1011,22 @@ public class Oligo extends DNASequence {
 	 */
 	public int  getOptMagePosition( )
 	{
-		System.err.println("[DEBUG getOptMagePosition] " + this.optMagePosition);
+		//System.err.println("[DEBUG getOptMagePosition] " + this.optMagePosition);
 		return this.optMagePosition;
 	}
+	
+	/**
+	 * @return the margin
+	 */
+	public int getMargin() {
+		return margin;
+	}
 
+	/**
+	 * Get a List of all possible oligos covering the valid span
+	 * @return
+	 * @throws Exception
+	 */
 	public List<String> getPossibleOligos() throws Exception{
 
 		ArrayList<String> poligos = new ArrayList<String> ();

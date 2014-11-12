@@ -60,12 +60,12 @@ public class GenbankWriter {
 	public GenbankWriter(Oligo ol)
 	{
 		// Setup the data members
-		System.err.println("[DEBUG GENBANK] setup the data members");
+		//System.err.println("[DEBUG GENBANK] setup the data members");
 		this.name = ol.name;
 		this.length = Integer.toString(ol.span);
 		
 		// Generate the first 5 rows
-		System.err.println("[DEBUG GENBANK] generate the first five rows");
+		//System.err.println("[DEBUG GENBANK] generate the first five rows");
 		this.sb = new StringBuilder();
 	    this.sb.append(String.format("%-12s%s %s %s %s %s\n",GenbankWriter.LOCUS,this.name,this.length,GenbankWriter.BP,GenbankWriter.LINEAR,GenbankWriter.Date));
 	    this.sb.append(String.format("%-12s%s\n",GenbankWriter.ACCESSION,GenbankWriter.UNKNOWN));
@@ -74,23 +74,23 @@ public class GenbankWriter {
 	    this.sb.append(String.format("%-12s%9s%s\n", GenbankWriter.FEATUES,"",GenbankWriter.LOCATION_TAG));
 	    
 	    // Now add merlin Tags, optmage Tag and mutationTags
-		System.err.println("[DEBUG GENBANK] now add merlin tags, optmage tag and mutation tags");
-		System.err.println("[DEBUG GENBANK] getOptMageInfo");
+		//System.err.println("[DEBUG GENBANK] now add merlin tags, optmage tag and mutation tags");
+		//System.err.println("[DEBUG GENBANK] getOptMageInfo");
 	    this.sb.append( getOptMageInfo(ol) );
-	    System.err.println("[DEBUG GENBANK] getMerlinInfo");
+	    //System.err.println("[DEBUG GENBANK] getMerlinInfo");
 	    this.sb.append( getMerlinInfo(ol) );
 	    
 	    // Add a feature to denote any new basepairs in hte sequence.
-		System.err.println("[DEBUG GENBANK] add a feature to denote any new basepairs in the sequence");
+		//System.err.println("[DEBUG GENBANK] add a feature to denote any new basepairs in the sequence");
 	    this.sb.append(getMutationInfo(ol));
 	    
 	    // Final Add the sequence
-		System.err.println("[DEBUG GENBANK] add the sequence");
+		//System.err.println("[DEBUG GENBANK] add the sequence");
 	    this.sb.append(String.format("%-12s\n",GenbankWriter.ORIGIN));
 	    this.sb.append(genbankSequenceFormat(ol.sequence));
 	    
 	    // Append the ENDFILE Mark
-		System.err.println("[DEBUG GENBANK] append the endfile mark");
+		//System.err.println("[DEBUG GENBANK] append the endfile mark");
 	    this.sb.append(GenbankWriter.ENDFILE);
 	}
 	

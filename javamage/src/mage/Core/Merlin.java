@@ -70,6 +70,7 @@ public class Merlin{
 		this( directory, targetsFileName, parametersFileName, "genome.ffn" ,false);
 	}
 	
+	//something upstream of this throws the indexoutofboundsexception.
 	public void optimize() throws Exception {
 		
 		/* 
@@ -168,14 +169,16 @@ public class Merlin{
 	 * @return Genbank string
 	 */
 	public List<String> generateGenbank(){
-		
 		ArrayList<String > list = new ArrayList<String>(pool.size());
-		for ( Oligo ol : pool)
-		{
+
+		for ( Oligo ol : pool){
+			//System.err.println("[DEBUG] Generating genbank for " + ol.name);
 			GenbankWriter gw = new GenbankWriter(ol);
+
+			
 			list.add(gw.toString());
+
 		}
-		
 		return list;
 	}
 	
@@ -291,6 +294,15 @@ public class Merlin{
 	/**
 	 * Not all the parameters in optMage are relevant here,
 	 * Therefore the default is given 
+	 * 
+	 * Parameter file requires a header (which is ignored)
+	 * Parameters should be
+	 * 	oligo size
+	 * 	dG threshold
+	 *  mloc_dft: (not used) "distance of mismatch to the 3' end of the oligo" 
+	 * 	mloc_max: "max amount of basepair shift in the oligo"
+	 * 	cmod: number of terminal 5' phosphorothioate bonds
+	 * 	calcreplicore: automatically calculate replicore info (0=no,1=yes)
 	 * @param filepath
 	 * @throws IOException
 	 */
@@ -301,7 +313,8 @@ public class Merlin{
 		params = params[1].split("\\s+");
 		
 		Oligo.ideal_length = Integer.parseInt(params[0]);
-		Oligo.buffer_3prime = Integer.parseInt(params[1]);
+		Oligo.buffer_3prime = Integer.parseInt(params[3]);
+		Oligo.buffer_5prime = Integer.parseInt(params[3]);
 		
 		//params[2] = Oligo.Oligo.buffer_5prime; 
 		

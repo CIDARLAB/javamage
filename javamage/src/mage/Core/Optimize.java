@@ -34,13 +34,13 @@ public class Optimize {
 
 		// Optimize the pool
 		OptimizeHeuristic(pool);
-
+		
 		// If plotting is enabled
 		if (mage.Switches.Flags.plot) {
 
 			// Plot the BO Values over time
 			plotBO();
-
+			
 			for (Oligo ol: pool) {
 				plotBG_DG(ol); 
 			}
@@ -56,7 +56,6 @@ public class Optimize {
 	 */
 	private static void OptimizeHeuristic(ArrayList<Oligo> pool) throws Exception {
 
-		//System.out.println("\n# Calculating Genome Homology and Free Energy Calculation [BG & DG]");
 		// For each oligo, calculate the Blast Genome and Free Energy Values
 		for ( Oligo ol : pool) {
 
@@ -123,13 +122,12 @@ public class Optimize {
 		//System.out.println("\n# Heuristic Choice");
 		for (Oligo ol: pool) {
 
-			// Re-calculates the overlapping BO scores for the final configuration
+		// Re-calculates the overlapping BO scores for the final configuration
 			ol.finalize();
 
 			// Print out the results
 			//System.out.println("Oligo "+ ol.getOligoId() + ":\t"+ ol.currentScore().toString() );
 		}
-
 	} 
 
 

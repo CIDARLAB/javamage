@@ -34,12 +34,15 @@ public class GenbankTester {
 		
 		merlin.compareToOptMage("OUToligos.txt");
 		
-		List<String> list = merlin.generateGenbank();
+		try{
+			List<String> list = merlin.generateGenbank();
 		
-		for ( String ss : list )
-		{
-			System.out.println("\n----------\n"+ss);
+			for ( String ss : list )
+			{
+				System.out.println("\n----------\n"+ss);
+			}
 		}
+		catch(Exception e){System.err.println("Error encountered generating Genbank file");}
 		
 		
 	}

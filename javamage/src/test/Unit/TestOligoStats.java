@@ -260,7 +260,7 @@ public class TestOligoStats {
 		imap.put("target", insert.target);
 		imap.put("target_length", insert.target_length);
 		imap.put("target_position", insert.target_position);
-		imap.put("x", insert.x);
+		//imap.put("x", insert.x);
 		imap.put("valid_mt", insert.valid_mt);
 		imap.put("getBioBegin()", insert.getBioBegin());
 		imap.put("getBioEnd()", insert.getBioEnd());

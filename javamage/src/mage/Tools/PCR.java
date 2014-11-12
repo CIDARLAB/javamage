@@ -38,6 +38,8 @@ import mage.Core.OligoType;
  * @author mquintin
  *
  */
+
+//TODO: Account for cases where the primers may extend past the start/end of the genome 
 public abstract class PCR {
 	private static List<Integer> ampliconLengths = Arrays.asList(100,150,200,250,300,400,500,700,850);
 	private static int primerlength = 20; //generally 18-30
