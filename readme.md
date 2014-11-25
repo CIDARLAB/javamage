@@ -69,3 +69,7 @@ Then on the last commented line is allows you to compare merlin results to optma
 Java Analysis Tool with optMAGEv0.9
 Created by Samir Ahmed 2011-2012
 ```
+
+###	License
+
+Javamage is available under the BSD 3-Clause License (http://opensource.org/licenses/BSD-3-Clause)
