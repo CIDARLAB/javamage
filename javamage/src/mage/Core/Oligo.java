@@ -132,14 +132,14 @@ public class Oligo extends DNASequence {
 		//TODO: Should this include subtracting target length? think about the implications for the span/where changes are allowed
 			int genome_start = left_position - Oligo.ideal_length + target.length() + Oligo.buffer_3prime -1;
 
-			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position);
+			// Pulls from the genome string, this start position -1 up to left position -1 (not inclusive)
+			String preSequence =  genome.substring(genome_start-1, left_position -1);
 
 			// Define the ending position on the genome
-			int genome_end  = right_position + Oligo.ideal_length - target.length() - Oligo.buffer_5prime -1;
+			int genome_end  = right_position + Oligo.ideal_length - target.length() - Oligo.buffer_5prime;
 
 			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
-			String postSequence = genome.substring(right_position-1, genome_end ); 
+			String postSequence = genome.substring(right_position, genome_end ); 
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){
@@ -181,9 +181,7 @@ public class Oligo extends DNASequence {
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified
 	 */
 	//TODO: Confirm that the indexing on left and right positions is intuitive.
-	//Consider subtracting 1 from each so left is the last base kept, and right is the last base cut
-	//or cutting both
-	//Get someone else to use the method, and see what the instinct is.
+	//Currently, both coordinates are INCLUSIVE- the change will affect the bases at both indicated indexes
 	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore, String name) throws Exception {
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) {
 
@@ -194,10 +192,10 @@ public class Oligo extends DNASequence {
 			String preSequence =  genome.substring(genome_start-1, left_position-1);
 
 			// Define the ending position on the genome
-			int genome_end  = right_position + Oligo.ideal_length - Oligo.buffer_5prime -1;
+			int genome_end  = right_position + Oligo.ideal_length - Oligo.buffer_5prime;
 
-			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
-			String postSequence = genome.substring(right_position, genome_end ); 
+			// Pulls the genome string, from right_position (-1 due to 0 indexing, genome_end (non-inclusive)
+			String postSequence = genome.substring(right_position, genome_end); 
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){
@@ -239,14 +237,14 @@ public class Oligo extends DNASequence {
 			// Define the starting pisition on the genome)
 			int genome_start = left_position + target.length() - Oligo.ideal_length + Oligo.buffer_3prime -1;
 
-			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position);
+			// Pulls from the genome string, this start position -1 up to left position -1 (not inclusive)
+			String preSequence =  genome.substring(genome_start-1, left_position-1);
 
 			// Define the ending position on the gneome
 			int genome_end  = left_position + Oligo.ideal_length - Oligo.buffer_5prime -target.length();
 
 			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
-			String postSequence = genome.substring(left_position , genome_end);
+			String postSequence = genome.substring(left_position -1, genome_end);
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){

@@ -36,7 +36,7 @@ public class GenbankWriter {
 	final public static String OPTMAGE_SELECTION = "Optmage";
 	private static final int CHUNK_COUNT = 6;
 	private static final String MUTATION = "mutation";
-	private static final String NEW = "New BasePairs";
+	private static final String NEW = "New Base Pairs";
 	
 	private String name ;  
 	private String length ;
@@ -180,8 +180,8 @@ public class GenbankWriter {
 		}
 		else
 		{
-			String start =Integer.toString(ol.target_position);
-			String stop  =Integer.toString(ol.target_position+ol.target_length-1);
+			String start =Integer.toString(ol.target_position+1);
+			String stop  =Integer.toString(ol.target_position+ol.target_length);
 			return String.format("%5s%-17s%s..%s\n"+
 								 "%21s%s\"%s\"\n",
 								 "",GenbankWriter.MUTATION, start,stop,

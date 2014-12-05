@@ -17,10 +17,10 @@ public class OligoTesting {
 
 
 		try {
-			testSpan();
+			//testSpan();
 			//testScores;
 			//testPossibleOligos();
-			//testOneOffError();
+			testOneOffError();
 			//testReplichoreLogic();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -117,9 +117,12 @@ public class OligoTesting {
 	
 	//edit for debugging
 	private static void testOneOffError() throws Exception{
-		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		Oligo o1 = Oligo.MismatchFactory(genome, "CCC", 100, 103, 1, true, "mismatch");
-		//Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 100, 1, false, "ins");
+		//99 A's, T, 10 G's, 100 T's
+		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
+		
+		//Oligo o1 = Oligo.MismatchFactory(genome, "CCC", 101, 103, 2, true, "mismatch");
+		//Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 101, 2, true, "ins");
+		Oligo o1 = Oligo.DeletionFactory(genome, 101, 103, 2, "del");
 		
 		System.out.println(o1.name + " span: " + o1.span);
 		System.out.println("min: " + o1.oligo_min);
@@ -131,8 +134,9 @@ public class OligoTesting {
 		//System.out.println("target position on genome: " + o1.x);
 		System.out.println(o1.sequence);
 		
-		String preSequence =  genome.substring(o1.getGenomeStart()-1, 100);
-		System.out.println(preSequence);
+		//String preSequence =  genome.substring(o1.getGenomeStart()-1, 99);
+		//System.out.println(preSequence);
+
 	}
 	
 	private static void testReplichoreLogic() throws IOException{
