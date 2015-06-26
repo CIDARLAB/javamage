@@ -16,18 +16,18 @@ public class TestOligoStats {
 	
 	public static void main(String[] args){
 		try {
-			testGetDiversityTable2();
-			testGetARE();
-			testLociProbability();
-			testGetAggregateAnyARE();
-			testGetAggregateSumARE();
+			//testGetDiversityTable2();
+			//testGetARE();
+			//testLociProbability();
+			//testGetAggregateAnyARE();
+			//testGetAggregateSumARE();
 			testOligoLength();
-			checkOligoStructure();
-			testGetARE2();
-			testGetCumulativeDiversityTable();
-			testGetDiscreteDiversityTable();
-			testProbabilitiesForAllCycles();
-			testProbabilitiesAfterCycles();
+			//checkOligoStructure();
+			//testGetARE2();
+			//testGetCumulativeDiversityTable();
+			//testGetDiscreteDiversityTable();
+			//testProbabilitiesForAllCycles();
+			//testProbabilitiesAfterCycles();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

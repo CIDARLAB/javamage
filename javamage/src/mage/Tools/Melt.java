@@ -1,140 +1,78 @@
 package mage.Tools;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A wrapper for melt.pl on a oligo and collecting the results 
- * See http://mfold.rna.albany.edu/?q=unafold-man-pages/melt.pl
+ * A wrapper for merlinmelt.py on a list of oligos and collecting 
+ * the results. The script uses on BioPython to calculate Tm_NN
  * @author Michael Quintin, adapted from code by Samir Ahmed
  *
  */
-public class Melt {
+public abstract class Melt {
+    
+    protected static String result = "";
+    protected static String script = "merlinmelt.py";
+    //private static final String separator = java.io.File.separator;
+    //protected static String scriptpath = "\\.." + separator;
 
-	private List<String> list;
-	private ArrayList<Double> results;
+    /**
+     * 
+     * @param args
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static String execute(String args) throws IOException, InterruptedException {   
+        //find the script
+        ClassLoader loader = Melt.class.getClassLoader();
+        URL url = loader.getResource(script);
+        System.out.println(url.toExternalForm());
+        System.out.println(url.toString());
+        String scriptPath = url.getFile();
+        if (scriptPath.startsWith("/") | scriptPath.startsWith("\\")){
+            scriptPath = scriptPath.substring(1);
+        }
+        
+        args = Constants.python + " " +  scriptPath +  " " + args;
+        String[] argarr = args.split(" ");
+        ProcessBuilder pb = new ProcessBuilder(argarr); //yes, I know we merged
+            //the args into one string earlier. Consider this whitespace handling
+        Process p = pb.start();
+        p.waitFor();
 
-	//default parameters
-	public static double tmin = 37; //temperature for energy minimization
-	public static double na = 1; //molar sodium ion concentration
-	public static double mg = 0; //molar magnesium ion concentration
-	public static double ct = .0000002; //total molar strand concentration
-
-	
-	
-	/**
-	 * Create a new wrapper object
-	 * @param list	A List of sequences to be run through the melt script
-	 */
-	public Melt (List<String> list) {
-		setOligos(list);
-		this.results = new ArrayList<Double>(list.size());
-	}
-
-	/**
-	 * Returns the list of oligos
-	 * @return
-	 */
-	public List<String> getOligo() {
-		return this.list;
-	}
-
-	/**
-	 * Sets the the list of sequences to run through melt
-	 * 
-	 * @param list An array list of sequences
-	 */
-	public void setOligos(List<String> list) {
-		this.list =  list;
-
-	}
-
-	/**
-	 * Will take the set of oligos and run them through the melt script
-	 * 
-	 * @returns a list of scores that correspond to the melting temperature results
-	 */
-	public ArrayList<Double> run() {
-				
-		for ( String seq: list)
-		{
-			BufferedReader input;
-			try{
-				// Create and run mfold process
-				ProcessBuilder pb = new ProcessBuilder(
-						//Constants.MFOLD,"--NA=DNA","--energyOnly","-q",seq.toString());
-						Constants.melt,"--NA=DNA","--Ct="+String.valueOf(ct),"--sodium="+String.valueOf(na),
-						"--magnesium="+String.valueOf(mg),seq.toString()); //TODO: inputting the sequence strings
-				
-				//System.out.println(pb.command());
-				Process mfold = pb.start();
-
-				// Extract result from stdout, and Store as a Double
-				input = new BufferedReader(new InputStreamReader(mfold.getInputStream()));
-				String dg = input.readLine();
-				results.add(Double.parseDouble(dg));
-				
-				// Close the input stream
-				input.close();
-			}
-			catch (Exception ee) {
-				ee.printStackTrace();
-				System.err.println("[MFOLD] Fatal Error Executing MFOLD");
-			}
-		}
-		return this.results;
-	}
-
-	/** Test function
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		ArrayList<String> list = new ArrayList<String>();
-		list.add(new String("atcgatcggctaggtaacagattaatctctcggagctgatacgac"));
-		list.add(new String("TTATCGATCCGGTCGAAAAACTGCTGGCAGTGGGGCATTACGGGATTATTATTGGGCTCGAATCTACCGTCGATATTGCTGAGTCCACCC"));		
-		MFOLD mf =  new MFOLD(list);
-		
-		/*for ( Double score : mf.run() ) {
-			//System.out.println(score);
-		} */
-	}
-
-	public static double getTmin() {
-		return tmin;
-	}
-
-	public static void setTmin(double tmin) {
-		Melt.tmin = tmin;
-	}
-
-	public static double getNa() {
-		return na;
-	}
-
-	public static void setNa(double na) {
-		Melt.na = na;
-	}
-
-	public static double getMg() {
-		return mg;
-	}
-
-	public static void setMg(double mg) {
-		Melt.mg = mg;
-	}
-
-	public static double getCt() {
-		return ct;
-	}
-
-	public static void setCt(double ct) {
-		Melt.ct = ct;
-	}
-
-
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(p.getInputStream()));
+        StringBuilder builder = new StringBuilder();
+        String line = null;
+        while ( (line = reader.readLine()) != null) {
+           builder.append(line);
+           builder.append('\t');
+        }
+        result = builder.toString();
+        return result;
+    }
+    
+    //convert the arguments into a more friendly format to be passed to the script
+    public static String execute(String[] args) throws IOException, InterruptedException{
+        String s = "";
+        for (String arg : args){
+            s = s.concat(arg).concat(" ");
+        }
+        return execute(s);
+    }
+    public static String execute(List<String> args) throws IOException, InterruptedException{
+        String[] s = args.toArray(new String[args.size()]);
+        return execute(s);
+    }
+    
+    
 }

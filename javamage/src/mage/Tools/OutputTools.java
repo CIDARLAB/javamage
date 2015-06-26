@@ -23,7 +23,8 @@ public class OutputTools {
 	 * @param dest
 	 * @throws IOException 
 	 */
-	public static void generateMASCPCRFile(List<Oligo> pool, String dest) throws IOException{
+	/*TODO: decomment
+    public static void generateMASCPCRFile(List<Oligo> pool, String dest) throws IOException{
 		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
 		List<String> names = new ArrayList<String>();
 		for (Oligo oligo : pool){
@@ -39,6 +40,7 @@ public class OutputTools {
 	 * @return
 	 * @throws IOException
 	 */
+    /*TODO: decomment
 	public static String getMASCPCRPrimerFileContents(List<Oligo> pool) throws IOException{
 		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
 		List<String> names = new ArrayList<String>();

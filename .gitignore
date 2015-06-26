@@ -5,11 +5,13 @@
 *.class
 javadoc/
 
-# ECLIPSE SPECIFIC #
+# IDE SPECIFIC #
 ####################
 .metadata/
 .settings/
 bin/
+nbproject/
+javamage/nbproject/
 
 # Package Files #
 #################
@@ -52,3 +54,5 @@ bin/
 ehthumbs.db
 Icon?
 Thumbs.db
+/javamage/build/
+/javamage/dist/
