@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mage.Core.Primer;
 
 /**
  * A wrapper for merlinmelt.py on a list of oligos and collecting 
@@ -35,8 +37,6 @@ public abstract class Melt {
         //find the script
         ClassLoader loader = Melt.class.getClassLoader();
         URL url = loader.getResource(script);
-        System.out.println(url.toExternalForm());
-        System.out.println(url.toString());
         String scriptPath = url.getFile();
         if (scriptPath.startsWith("/") | scriptPath.startsWith("\\")){
             scriptPath = scriptPath.substring(1);
@@ -58,6 +58,7 @@ public abstract class Melt {
            builder.append('\t');
         }
         result = builder.toString();
+        reader.close();
         return result;
     }
     
@@ -74,5 +75,45 @@ public abstract class Melt {
         return execute(s);
     }
     
+    public static Double[] parseResults(String res){
+        res = res.trim().replaceAll("\\s+", " ");
+        String[] sarr = res.split(" ");
+        Double[] darr = new Double[sarr.length];
+        for (int i = 0; i < darr.length; i++){
+            darr[i] = Double.valueOf(sarr[i]);
+        }
+        return darr;
+    }
     
+    public static Double[] getMT(String[] primers) throws IOException, InterruptedException{
+        String res = execute(primers);
+        return parseResults(res);
+    }
+    public static Double[] getMT(List<String> primers) throws IOException, InterruptedException{
+        String res = execute(primers);
+        return parseResults(res);
+    }
+    
+    /**for each primer, set its mt property. Then return the list of melting temps
+     * 
+     * @param primers
+     * @return 
+     */
+    public static Double[] getMT(ArrayList<Primer> primers){
+        try {
+            String[] seqs = new String[primers.size()];
+            for (int i = 0; i < primers.size(); i++){
+                seqs[i] = primers.get(i).seq;
+            }
+            Double[] mts = getMT(Arrays.asList(seqs));
+            for (int i = 0; i < primers.size(); i++){
+                primers.get(i).setMt(mts[i]);
+            }
+            return mts;
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(Melt.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
 }

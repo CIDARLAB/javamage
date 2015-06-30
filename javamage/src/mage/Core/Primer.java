@@ -18,14 +18,40 @@ public class Primer {
     public Oligo oligo;
     //the size of the amplicon created by this primer, if it's reverse
     public int amplicon;
-    
-    public Primer(String seq, Oligo oligo, int amplicon, boolean forward, boolean sense){
+    //first position this primer falls on the genome
+    public int start;
+    //melting temperature. This is not set at creation to simplify error handling
+    public Double mt;
+    //is this the modified primer?
+    public boolean modified;
+
+    public Primer(String seq, Oligo oligo, int amplicon, int start, boolean forward, boolean sense, boolean modified){
         this.forward = forward;
         this.sense = sense;
         this.seq = seq;
         this.oligo = oligo;
         this.amplicon = amplicon;
+        this.start = start;
+        this.modified = modified;
     }
+        
+        
+    public Primer(String seq, Oligo oligo, int amplicon, int start, boolean forward, boolean sense){
+        this(seq,oligo,amplicon,start,forward,sense,false);
+    }
+
+    public void setMt(Double mt) {
+        this.mt = mt;
+    }
+
+    public Double getMt() {
+        return mt;
+    }
+    
+    
+
+
+    
 
     
 }
