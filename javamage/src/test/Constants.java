@@ -15,11 +15,11 @@ public class Constants {
 	final public static String blastdirectory = "C:/Users/Mike/SkyDrive/github/javamage/testing/";
 	final public static String optMagedirectory = "C:/Users/Mike/SkyDrive/github/javamage/testing/";
 */
-	final public static String ioDirectory = "C:/Users/mquintin/SkyDrive/github/javamage/testing/";
-	final public static String naturalTestDirectory = "C:/Users/mquintin/OneDrive/github/javamage/testing/";
-	final public static String bodirectory = "C:/Users/mquintin/SkyDrive/github/javamage/testing/";
-	final public static String bo_testing= "C:/Users/mquintin/SkyDrive/github/javamage/testing/";
-	final public static String blastdirectory = "C:/Users/mquintin/OneDrive/github/javamage/testing/";
-	final public static String optMagedirectory = "C:/Users/mquintin/SkyDrive/github/javamage/testing/";
+	final public static String ioDirectory = "C:/sync/code/Javamage/testing/";
+	final public static String naturalTestDirectory = "C:/sync/code/Javamage/testing/";
+	final public static String bodirectory = "C:/sync/code/Javamage/testing/";
+	final public static String bo_testing= "C:/sync/code/Javamage/testing/";
+	final public static String blastdirectory = "C:/sync/code/Javamage/testing/";
+	final public static String optMagedirectory = "C:/sync/code/Javamage/testing/";
 	
 }

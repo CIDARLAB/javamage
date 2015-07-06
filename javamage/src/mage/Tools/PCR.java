@@ -53,14 +53,16 @@ import mage.Core.Primer;
 public class PCR {
 	
     private String genome;
+    private int primerlength;
     private static List<Integer> ampliconLengths = Arrays.asList(100,150,200,250,300,400,500,700,850);
-    private static int primerlength = 20; //generally 18-30
+    private static int defaultPrimerLength = 20; //generally 18-30
     //number of valid primers to explore, keeping the first modified base in the 3' half
-    private static double maxshift = Math.floor(primerlength/2);
+    private static double maxshift = Math.floor(defaultPrimerLength/2.0);
     private static double mtrange = 0.5;//how far from the final temp is OK?
 
     public PCR(String genome){
         this.genome = genome;
+        this.primerlength = defaultPrimerLength;
     }
     
     /**
@@ -110,7 +112,7 @@ public class PCR {
      * @param start
      * @return
      */
-    public static Primer getModifiedForwardPrimer(Oligo oligo){
+    public Primer getModifiedForwardPrimer(Oligo oligo){
             String sequence = oligo.getSequenceAsString();
 
             int start = primerlength; //just initializing this here, it will change 
@@ -141,7 +143,7 @@ public class PCR {
     /**get the primer in the opposite direction. In this case, the last modified
     *base in the oligo will be the first base in the primer
     */
-    public static Primer getModifiedAntisenseForwardPrimer(Oligo oligo){
+    public Primer getModifiedAntisenseForwardPrimer(Oligo oligo){
             String sequence = oligo.getSequenceAsString();
 
             int start = primerlength; //just initializing this here, it will change 
@@ -206,6 +208,10 @@ public class PCR {
             if (gen.length() - s < amplength){
                     gen = gen.concat(gen.substring(0,amplength));
             }
+            if (s < 0){ //handle spanning the origin
+                gen = gen.substring(gen.length()+s) + gen.substring(0,amplength);
+                s = 0;
+            }
             String seq = gen.substring(s, s + primerlength);
             //seq = SequenceTools.ReverseCompliment(seq);
 
@@ -223,7 +229,7 @@ public class PCR {
      * @param genome
      * @return
      */
-    public static List<String> getMASCPCRPrimers(Oligo oligo,String genome){
+    public List<String> getMASCPCRPrimers(Oligo oligo,String genome){
             List<String> primers = new ArrayList<String>();
 
             //forward
@@ -277,7 +283,7 @@ public class PCR {
         return primer;
     }
 
-    public static Primer getAntisenseReversePrimer(Oligo oligo, int len, int baselength){
+    public Primer getAntisenseReversePrimer(Oligo oligo, int len, int baselength){
         //calculate the start location
         int start = oligo.getGenomeStart() + oligo.target_position + oligo.target_length;
         //deletions are a special case- put the gap 3/4 of the way into the sequence
@@ -309,7 +315,7 @@ public class PCR {
      * @return PCR primers as List of Lists of Strings
      * @throws IOException 
      */
-    public static List<List<String>> getMASCPCRPrimersV0(List<Oligo> pool) throws IOException{
+    public List<List<String>> getMASCPCRPrimersV0(List<Oligo> pool) throws IOException{
             // First we read in the genome
             String genome = FASTA.readFFN(Oligo.Directory,Oligo.Genome);
 
@@ -457,13 +463,88 @@ public class PCR {
     }
     
     private ArrayList<Primer> correctOutlyingPrimers(ArrayList<Primer> primers, double targetTemp){
-        
+        //TODO
         return primers;
+    }
+    
+    //create a Primer that's one base longer
+    public Primer extend(Primer p, double targetTemp){
+            int newlen = p.seq.length() +1;
+        return changeLength(p, targetTemp, newlen);  
+    }
+    
+    //create a Primer that's one base shorter
+    public Primer shorten(Primer p, double targetTemp){
+        int newlen = p.seq.length() -1;
+        return changeLength(p, targetTemp, newlen);        
+    }
+    
+    private Primer changeLength(Primer p, double targetTemp, int newlen){
+        if ((newlen > defaultPrimerLength + maxshift) || newlen < defaultPrimerLength - maxshift){
+            //don't change anything
+            return p;
+        }
+        else{
+            primerlength = newlen;
+            if (p.forward){//only valid to extend these from the end
+                if (p.sense){
+                    if (p.modified){
+                        return getModifiedForwardPrimer(p.oligo);
+                    }
+                    else{
+                        return getUnmodifiedForwardPrimer(p.oligo);
+                    }
+                }
+                else{
+                    if (p.modified){
+                        return getModifiedAntisenseForwardPrimer(p.oligo);
+                    }
+                    else{
+                        return getUnmodifiedAntisenseForwardPrimer(p.oligo);
+                    }
+                }
+            }
+            else{
+                Primer fromEnd = null;
+                Primer fromStart = null;
+                if (p.sense){
+                    fromEnd = getDownstreamReversePrimer(p.oligo, p.start, p.amplicon);
+                    fromStart = getDownstreamReversePrimer(p.oligo, p.start-1, p.amplicon);
+                }
+                else{
+                    fromEnd = getUpstreamReversePrimer(p.oligo, p.start, p.amplicon);
+                    fromStart = getUpstreamReversePrimer(p.oligo, p.start-1, p.amplicon);
+                }
+                //compare the MTs, get the one closest to the target temp
+                String[] seqs = new String[2];
+                seqs[0] = fromEnd.seq;
+                seqs[1] = fromStart.seq;
+                Double[] mts = new Double[2];
+                try {
+                    mts = Melt.getMT(seqs);
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(PCR.class.getName()).log(Level.SEVERE, null, ex);
+                    mts[0] = 0.0;
+                    mts[1] = 0.0;
+                }
+                Double dend = Math.abs(targetTemp - mts[0]);
+                Double dstart = Math.abs(targetTemp - mts[1]);
+                if (dstart < dend){
+                    return fromStart;
+                }
+                else{
+                    return fromEnd;
+                }
+            }
+        }
     }
     
     private ArrayList<ArrayList<Primer>> populateReverseSets(ArrayList<Primer> reversePrimers, 
             List<Oligo> pool,  double targetTemp){
         ArrayList<ArrayList<Primer>> sets = new ArrayList();
+        for (int i = 0; i < Math.ceil(pool.size()/ampliconLengths.size()); i++){
+            sets.add(new ArrayList());
+        }
         //store wether an oligo is represented in the final reverse primer sets
         HashMap<Oligo,Boolean> isPresent = new HashMap<>();
         for (Oligo o : pool){

@@ -40,10 +40,10 @@ public class TestOutputTools {
 		pool.add(delete);
 		
 		System.out.println("generating primers");
-		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
+//		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
 		
 		System.out.println("writing file");
-		OutputTools.generateMASCPCRFile(pool, outfile);
+//		OutputTools.generateMASCPCRFile(pool, outfile);
 		System.out.println("wrote file " + outfile);
 	}
 
@@ -60,7 +60,7 @@ public class TestOutputTools {
 		pool.add(delete);
 		
 		System.out.println("generating primers");
-		List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
+		//List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
 		
 		System.out.println("writing file");
 		List<String> names = new ArrayList<String>();
@@ -68,7 +68,7 @@ public class TestOutputTools {
 		names.add("mismatch");
 		names.add("delete");
 		
-		OutputTools.writePrimerListsToFile(names, primers, outfile);
+		//OutputTools.writePrimerListsToFile(names, primers, outfile);
 		System.out.println("wrote file " + outfile);
 	}
 	
@@ -125,6 +125,6 @@ public class TestOutputTools {
 		pool.add(mismatch);
 		pool.add(delete);
 
-		System.out.println(OutputTools.getMASCPCRPrimerFileContents(pool));		
+		//System.out.println(OutputTools.getMASCPCRPrimerFileContents(pool));		
 	}
 }
