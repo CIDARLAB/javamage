@@ -20,12 +20,27 @@ import mage.Core.Primer;
  *
  */
 public abstract class Melt {
+    protected static int calls = 0;
     
     protected static String result = "";
     protected static String script = "merlinmelt.py";
     //private static final String separator = java.io.File.separator;
     //protected static String scriptpath = "\\.." + separator;
 
+    //command-line parameters to pass to the script
+    protected static String nn_table;
+    protected static String tmm_table;
+    protected static String imm_table;
+    protected static String de_table;
+    protected static Double dnac1 = 25.0; //nM
+    protected static Double dnac2 = 25.0;
+    protected static Double na = 50.0; //ions are mM
+    protected static Double k = 0.0;
+    protected static Double tris = 0.0;
+    protected static Double mg = 3.0; //TODO: reset to 0
+    protected static Double dntps = 0.8; //mM //TODO: reset to 0
+    protected static Double saltcorr;
+    
     /**
      * 
      * @param args
@@ -34,7 +49,11 @@ public abstract class Melt {
      * @throws InterruptedException
      */
     public static String execute(String args) throws IOException, InterruptedException {   
-        //find the script
+        //DEBUG
+        calls++;
+        System.out.println("Melt execution # " + calls + "\tArgs: " + args);
+
+//find the script
         ClassLoader loader = Melt.class.getClassLoader();
         URL url = loader.getResource(script);
         String scriptPath = url.getFile();
@@ -42,7 +61,7 @@ public abstract class Melt {
             scriptPath = scriptPath.substring(1);
         }
         
-        args = Constants.python + " " +  scriptPath +  " " + args;
+        args = Constants.python + " " +  scriptPath + " " + args + getCmdArgs();
         String[] argarr = args.split(" ");
         ProcessBuilder pb = new ProcessBuilder(argarr); //yes, I know we merged
             //the args into one string earlier. Consider this whitespace handling
@@ -94,26 +113,111 @@ public abstract class Melt {
         return parseResults(res);
     }
     
-    /**for each primer, set its mt property. Then return the list of melting temps
+    /**for each primer, set its mt property.
      * 
      * @param primers
      * @return 
      */
-    public static Double[] getMT(ArrayList<Primer> primers){
+    public static void setMTs(ArrayList<Primer> primers){
         try {
-            String[] seqs = new String[primers.size()];
-            for (int i = 0; i < primers.size(); i++){
-                seqs[i] = primers.get(i).seq;
+            ArrayList<Primer> hasMT = new ArrayList();
+            ArrayList<Primer> needsMT = new ArrayList();
+            for (Primer p : primers){
+                if (p.mt == null){
+                    needsMT.add(p);
+                }
+                else{
+                    hasMT.add(p);
+                }
+            }
+                        
+            String[] seqs = new String[needsMT.size()];
+            for (int i = 0; i < needsMT.size(); i++){
+                seqs[i] = needsMT.get(i).seq;
             }
             Double[] mts = getMT(Arrays.asList(seqs));
-            for (int i = 0; i < primers.size(); i++){
-                primers.get(i).setMt(mts[i]);
+            for (int i = 0; i < needsMT.size(); i++){
+                needsMT.get(i).setMt(mts[i]);
             }
-            return mts;
+            
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(Melt.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
     }
-
+    
+    public static void setMTs(Primer[] primers){
+            ArrayList<Primer> arr = new ArrayList(Arrays.asList(primers));
+            setMTs(arr);
+    }
+    
+    public static void setCmdArg(String name, String value) {
+        switch (name.toLowerCase()) {
+            case "nn_table":
+                nn_table = value;
+                break;
+            case "tmm_table":
+                tmm_table = value;
+                break;
+            case "imm_table":
+                imm_table = value;
+                break;
+            case "de_table":
+                de_table = value;
+                break;
+            case "dnac1":
+                dnac1 = Double.parseDouble(value);
+                break;
+            case "dnac2":
+                dnac2 = Double.parseDouble(value);
+            case "na":
+                na = Double.parseDouble(value);
+                break;
+            case "k":
+                k = Double.parseDouble(value);
+                break;
+            case "tris":
+                tris = Double.parseDouble(value);
+                break;
+            case "mg":
+                mg = Double.parseDouble(value);
+                break;
+            case "dntps":
+                dntps = Double.parseDouble(value);
+                break;
+            case "saltcorr":
+                saltcorr = Double.parseDouble(value);
+                break;
+        }
+        //the script wants the primer to have a higher concentration than the template
+        if (dnac2 > dnac1){
+            Double c = dnac2;
+            dnac2 = dnac1;
+            dnac1 = c;
+        }
+    }
+  
+    public static String getCmdArgs(){
+        //the script wants the primer to have a higher concentration than the template
+        if (dnac2 > dnac1){
+            Double c = dnac2;
+            dnac2 = dnac1;
+            dnac1 = c;
+        }
+        String s = "";
+        String[] spar = {nn_table,tmm_table,imm_table,de_table};
+        String[] sparnames = {"nn_table","tmm_table","imm_table","de_table"};
+        Double[] dpar = {dnac1,dnac2,na,k,tris,mg,dntps,saltcorr};
+        String[] dparnames = {"dnac1","dnac2","Na","K","Tris","Mg","dNTPs","saltcorr"};
+        for (int i = 0; i < spar.length; i++){
+            if (spar[i] != null){
+                s = s + " " + sparnames[i] + "=" + spar[i];
+            }
+        }
+        for (int i = 0; i < dpar.length; i++){
+            if (dpar[i] != null){
+                s = s + " " + dparnames[i] + "=" + dpar[i];
+            }
+        }
+        return s;
+    }
 }

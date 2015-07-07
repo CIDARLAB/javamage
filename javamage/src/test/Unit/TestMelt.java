@@ -21,8 +21,8 @@ import mage.Tools.Melt;
 public class TestMelt {
     public static void main(String[] args) throws IOException, InterruptedException{
         //try {
-            //callScript();
-            parse();
+            callScript();
+            //parse();
         //} catch (Exception ex) {
         //    System.out.print(ex.getMessage());
         //}
