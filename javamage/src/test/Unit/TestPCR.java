@@ -1,6 +1,10 @@
 package test.Unit;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +12,7 @@ import test.Constants;
 import mage.Core.Oligo;
 import mage.Core.Primer;
 import mage.Tools.FASTA;
+import mage.Tools.Melt;
 import mage.Tools.PCR;
 
 public class TestPCR {
@@ -15,19 +20,19 @@ public class TestPCR {
 	//Isaacs et al supplement put the modified base at the end (3') of the forward primer.
     //Should fix forward primer design to put modified bases towards the back of the sequence, not the start
     //confirmed from same paper that the forward primer is not reversed or complementary
-	//here's a chunk of sequence we use from the E coli genome
+    //here's a chunk of sequence we use from the E coli genome
     //remember substrings are built with 0 at the first index
     //80 TTCTGAACTG
     //90 GTTACCTGCC
     //100 GTGAGTAAAT
     //110 TAAAATTTTA
     public static void main(String[] args) throws Exception {
-		//testGetUnmodifiedForwardPrimerFromOligo();
+        //testGetUnmodifiedForwardPrimerFromOligo();
         //testGetModifiedForwardPrimerFromOligo();
         //testGetMASCPCRPrimersForOligo();
         //testPCRbyReplicatingResults();
         testGeneratePrimerSets();
-            //testGetForwardPrimers();
+        //testGetForwardPrimers();
         //testOptimizePrimer();
     }
 
@@ -55,7 +60,7 @@ public class TestPCR {
         pool.add(Oligo.InsertionFactory(genome, "ATAGCTTTAGGAACCAGACAATGC", 827592, 2, true, "oligo10"));
 
         ArrayList<Primer> arr = pcr.generateForwardSet(pool);
-            //System.out.println(res);
+        //System.out.println(res);
 
         for (Primer p : arr) {
             String s = "";
@@ -79,7 +84,7 @@ public class TestPCR {
         String genome = FASTA.readFFN(Constants.blastdirectory, "ecoli.ffn");
         Oligo insert = Oligo.InsertionFactory(genome, "CCCCCAAAAA", 90, 2, true, "in1");
         String expect = "GGTTACCTGCCGTGAGTAAA";
-		//String iprimer = PCR.getUnmodifiedForwardPrimer(insert, genome);
+        //String iprimer = PCR.getUnmodifiedForwardPrimer(insert, genome);
         //System.out.println("Forward from insert oligo: " + iprimer);
         //System.out.println("Test getForwardPrimerFromOligo insert : " + (iprimer.equals(iexpect)));
         PCR pcr = new PCR(genome);
@@ -177,22 +182,4 @@ public class TestPCR {
         }
     }
 
-    /*
-     public static void testGetMASCPCRPrimersForOligo() throws Exception{
-     String genome = FASTA.readFFN(Constants.blastdirectory,"ecoli.ffn");
-     Oligo insert = Oligo.InsertionFactory(genome, "TTTTTAAAAA", 100, 2,true, "in1");
-     System.out.println("Generating primers. This may take a minute...");
-     List<String> primers = PCR.getMASCPCRPrimers(insert,genome);
-     System.out.println("Insertion Oligo: " + insert.getSequenceAsString());
-     System.out.println("Insertion Primers:");
-     System.out.println(primers);
-		
-     Oligo delete = Oligo.DeletionFactory(genome, 89, 100, 2, "del1");
-     primers = PCR.getMASCPCRPrimers(delete,genome);
-     System.out.println("Deletion Oligo: " + delete.getSequenceAsString());
-     System.out.println("Deletion Primers:");
-     System.out.println(primers);
-		
-     }
-     */
 }

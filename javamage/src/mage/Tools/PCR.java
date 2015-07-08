@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.DoubleStream;
-import java.util.stream.DoubleStream.Builder;
-
 import mage.Core.Oligo;
 import mage.Core.OligoType;
 import mage.Core.Primer;
@@ -77,9 +74,21 @@ public class PCR {
         PCR.targetTemp = targetTemp;
     }
 
+    //defaults to loading the genome file in the working directory
+    public PCR() throws IOException {
+        this("");
+        System.err.println("Merlin-DEBUG: defaulting to oligo file " + Oligo.Directory + "/" + Oligo.Genome);
+        this.genome = FASTA.readFFN(Oligo.Directory, Oligo.Genome);
+        if (Melt.directory == null) {
+            Melt.directory = Oligo.Directory;
+        }
+    }
+
+    //this constructor's only useful by itself for testing
     public PCR(String genome) {
         this.genome = genome;
-        this.primerlength = defaultPrimerLength;
+        this.primerlength = defaultPrimerLength; //when making primers, don't 
+        //refer to the default since the value can change
     }
 
     /**
@@ -145,10 +154,10 @@ public class PCR {
         } //find the last modified base
         else {
             start = oligo.target_position + oligo.target_length - primerlength;
-                    //this is the end of the target, which is fine for insertion. 
+            //this is the end of the target, which is fine for insertion. 
             //assuming the last indicated base is changed for mismatch
         }
-            //primer start site
+        //primer start site
         //start = start + 1; //+1 b/c we'll want the base at index pos included
 
         String seq = sequence.substring(start, start + primerlength);
@@ -175,10 +184,10 @@ public class PCR {
         } //find the last modified base
         else {
             start = oligo.target_position + oligo.target_length - primerlength;
-                    //this is the end of the target, which is fine for insertion. 
+            //this is the end of the target, which is fine for insertion. 
             //assuming the last indicated base is changed for mismatch
         }
-            //primer start site
+        //primer start site
         //start = start + 1; //+1 b/c we'll want the base at index pos included
 
         String seq = sequence.substring(start, start + primerlength);
@@ -198,10 +207,10 @@ public class PCR {
      */
     public Primer getDownstreamReversePrimer(Oligo oligo, int start, int amplength) {
         String gen = genome;
-            //gen = new StringBuffer(gen).reverse().toString();
+        //gen = new StringBuffer(gen).reverse().toString();
         //int s = gen.length()-start; //where to start this primer
         int s = start + amplength;
-            //if the primer is too close to the end, it will run off
+        //if the primer is too close to the end, it will run off
         //take enough bases from the start, paste them onto the end
         if (gen.length() - s < amplength) {
             gen = gen.concat(gen.substring(0, amplength));
@@ -216,10 +225,10 @@ public class PCR {
 
     public Primer getUpstreamReversePrimer(Oligo oligo, int start, int amplength) {
         String gen = genome;
-            //gen = new StringBuffer(gen).reverse().toString();
+        //gen = new StringBuffer(gen).reverse().toString();
         //int s = gen.length()-start; //where to start this primer
         int s = start + oligo.target_length - amplength;
-            //if the primer is too close to the end, it will run off
+        //if the primer is too close to the end, it will run off
         //take enough bases from the start, paste them onto the end
         if (gen.length() - s < amplength) {
             gen = gen.concat(gen.substring(0, amplength));
@@ -247,21 +256,11 @@ public class PCR {
     public List<String> getMASCPCRPrimers(Oligo oligo, String genome) {
         List<String> primers = new ArrayList<String>();
 
-            //forward
-        //String ufp = getUnmodifiedForwardPrimer(oligo, genome);
-        //primers.add(ufp);
-            //String mfp = getModifiedForwardPrimer(oligo);
-        //primers.add(mfp);
-            //reverse
         //find the first modified base
         int start = oligo.getGenomeStart() + oligo.target_position;
         //deletions are a special case- put the gap 3/4 of the way into the sequence
         if (oligo.getOligoType().equals(OligoType.DELETION)) {
             start = (int) (start - Math.floor(primerlength * 3 / 4));
-        }
-
-        for (int alen : ampliconLengths) {
-            //primers.add(getReversePrimer(genome,start, alen));
         }
 
         return primers;
@@ -318,32 +317,6 @@ public class PCR {
     }
 
     /**
-     * Get all MASC PCR primers for the oligo pool as a list of lists. Each of
-     * the interior lists represents the primers for a single oligo, beginning
-     * with the forward unmodified and modified primers and followed by reverse
-     * primers for each length in PCR.ampliconLengths
-     *
-     * See Wang and Church 2011, Multiplexed Genome Engineering and Genotyping
-     * Methods: Applications for Synthetic Biology and Metabolic Engineering,
-     * Methods in Enzymology vol 498
-     * http://wanglab.c2b2.columbia.edu/publications/2011_MIE_Wang.pdf
-     *
-     * @param pool List of Oligos
-     * @return PCR primers as List of Lists of Strings
-     * @throws IOException
-     */
-    public List<List<String>> getMASCPCRPrimersV0(List<Oligo> pool) throws IOException {
-        // First we read in the genome
-        String genome = FASTA.readFFN(Oligo.Directory, Oligo.Genome);
-
-        List<List<String>> primerset = new ArrayList<List<String>>();
-        for (Oligo oligo : pool) {
-            primerset.add(getMASCPCRPrimers(oligo, genome));
-        }
-        return primerset;
-    }
-
-    /**
      * get a list of lists of primers. The first list is the forward primers,
      * each subsequent list is a set of reverse primers that is grouped together
      * for one MASC PCR reaction. The forward primers should be paired with
@@ -369,26 +342,8 @@ public class PCR {
                 }
             }
         }
-        ArrayList<Primer> acceptedReverse = correctOutlyingPrimers(reversePrimers,true);
-
-        //remove any reverse primer that is still unacceptable
-        /*for(Primer p : reversePrimers){
-         double delta = Math.abs(targetTemp-p.getMt());
-         if (delta > mtrange){
-         //check that there's one better primer for this oligo
-         for (Primer p2 : reversePrimers){
-         if (!p2.equals(p) && p2.oligo.equals(p.oligo)){
-         double delta2 = Math.abs(targetTemp-p2.getMt());
-         if (delta > delta2){
-         reversePrimers.remove(p);
-         break;
-         }
-         }
-         }
-         }
-         }*/
+        ArrayList<Primer> acceptedReverse = correctOutlyingPrimers(reversePrimers, true);
         ArrayList<ArrayList<Primer>> sets = populateReverseSets(acceptedReverse, pool);
-
         sets.add(0, acceptedForward);//put the forward primers in the first position
         return sets;
     }
@@ -514,9 +469,9 @@ public class PCR {
                     fromStart = getUpstreamReversePrimer(p.oligo, p.start - 1, p.amplicon);
                 }
                 //compare the MTs, get the one closest to the target temp
-                Melt.setMTs(new Primer[]{fromEnd,fromStart});
-                
-                Double dend = Math.abs(targetTemp -fromEnd.getMt());
+                Melt.setMTs(new Primer[]{fromEnd, fromStart});
+
+                Double dend = Math.abs(targetTemp - fromEnd.getMt());
                 Double dstart = Math.abs(targetTemp - fromStart.getMt());
                 if (dstart < dend) {
                     return fromStart;
@@ -555,7 +510,7 @@ public class PCR {
         //primer. If it gets to the end of all sets, create a new set.
         int counter = 0;
         while ((isPresent.values().contains((Boolean) false)) && (counter < Math.pow(pool.size(), 2))) {
-            System.out.println("DEBUG: " + counter);
+            //System.out.println("DEBUG: " + counter);
             boolean unaltered = true; //no changes have been made during this loop
             //this will result in another set being added
             for (Integer priority = 0; priority < ampOrder.size(); priority++) {
@@ -626,22 +581,6 @@ public class PCR {
             }
             counter++;
         }
-        //DEBUG
-        /*for (int i = 0; i < sets.size(); i++){
-         Primer[] arr = sets.get(i);
-         String s = "";
-         for (Primer p: arr){
-         //System.out.println(p);
-         if (p != null){
-         s = s.concat(p.oligo.name + "." + p.amplicon + " " );
-         }
-         else{
-         s = s.concat("null ");
-         }
-         }
-         System.out.println(s);
-         }*/
-
         //convert to ArrayLists
         ArrayList<ArrayList<Primer>> arr = new ArrayList();
         for (Primer[] set : sets) {
@@ -666,10 +605,9 @@ public class PCR {
         Double[] res = new Double[0];
         try {
             res = Melt.getMT(seqs);
-        } catch (IOException ex) {
-            Logger.getLogger(PCR.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(PCR.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            System.err.println(ex.getStackTrace());
         }
         return res;
     }
@@ -761,22 +699,6 @@ public class PCR {
                     Primer longer = extend(p);
                     double longDelta = Math.abs(targetTemp - longer.getMt());
 
-                                //DEBUG
-                    /*ArrayList<Primer> debugging = new ArrayList(3);
-                     debugging.add(p);
-                     debugging.add(shorter);
-                     debugging.add(longer);
-                     for (Primer d : debugging){
-                     String s = "";
-                     s = s.concat(d.oligo.name + "\t");
-                     s = s.concat("Fwd: " + d.forward + "\t");
-                     s = s.concat("Sense: " + d.sense + "\t");
-                     s = s.concat("Mod: " + d.modified + "\t");
-                     s = s.concat("Mt: " + d.getMt() + "\t");
-                     s = s.concat("Len: " + d.seq.length() +"\t");
-                     s = s.concat(d.seq);
-                     System.out.println(s);
-                     }*/
                     //pick the alternate that did best
                     Primer candidate = longer;
                     if (Math.min(shortDelta, longDelta) == shortDelta) {
@@ -796,20 +718,10 @@ public class PCR {
         return allAccepted;
     }
 
-    /**
-     * determines the ideal temperature for a pool of primers using one primer
-     * per oligo, determined by least means squared
-     *
-     * @param list
-     * @return
-     */
-    //public static double lmsTemp(ArrayList<Primer> list){
-    //  Double[] mts = getMeltingTemps(list);
-    //}
     //convenience method to make a forward primer
     public static Primer forwardPrimer(String seq, Oligo oligo, int start, boolean sense, boolean modified) {
         Primer p = new Primer(seq, oligo, 0, start, true, sense, modified);
-        
+
         return p;
     }
 

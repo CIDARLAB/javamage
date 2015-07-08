@@ -23,25 +23,25 @@ public class OutputTools {
 
     /**
      * Generate the MASC PCR primers from the given oligos, and output them to
-     * the given file
+     * the given file This is the function called by the servlet
      *
      * @param pool
      * @param dest
      * @throws IOException
      */
-    /*TODO: decomment
-     public static void generateMASCPCRFile(List<Oligo> pool, String dest) throws IOException{
-     List<List<String>> primers = PCR.getMASCPCRPrimers(pool);
-     List<String> names = new ArrayList<String>();
-     for (Oligo oligo : pool){
-     names.add(oligo.name);
-     }
-		
-     writePrimersToFile(names, primers, dest);
-     }
-	
-     /**get the file contents for the MASCPCR file as a string, to be handled upstream
-     * 
+    public static void generateMASCPCRFile(List<Oligo> pool, String dest) throws IOException {
+        File f = new File(dest);
+        if (!f.isFile()) { //only bother if the file hasn't been made
+            PCR pcr = new PCR();
+            ArrayList<ArrayList<Primer>> primers = pcr.generateAllPrimers(pool);
+            writePrimersToFile(primers, dest);
+        }
+    }
+
+    /**
+     * get the file contents for the MASCPCR file as a string, to be handled
+     * upstream
+     *
      * @param pool
      * @return
      * @throws IOException
