@@ -4,12 +4,16 @@
 #################
 *.class
 javadoc/
+build/
+dist/
 
-# ECLIPSE SPECIFIC #
+# IDE SPECIFIC #
 ####################
 .metadata/
 .settings/
 bin/
+nbproject/
+nbbuild.xml
 
 # Package Files #
 #################
