@@ -4,7 +4,6 @@ import java.util.List;
 
 import mage.Tools.Constants;
 
-import com.panayotis.*;
 import com.panayotis.gnuplot.GNUPlot;
 import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.layout.AutoGraphLayout;

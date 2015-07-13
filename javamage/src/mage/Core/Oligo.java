@@ -134,14 +134,14 @@ public class Oligo extends DNASequence {
 
 			// Pulls from the genome string, this start position -1 up to left position -1 (not inclusive)
 			String preSequence =  genome.substring(genome_start-1, left_position -1);
-
+                        
 			// Define the ending position on the genome
 			int genome_end  = right_position + Oligo.ideal_length - target.length() - Oligo.buffer_5prime;
 
 			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
 			String postSequence = genome.substring(right_position, genome_end ); 
 
-			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
+                        // Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){
 
 				// Get RC

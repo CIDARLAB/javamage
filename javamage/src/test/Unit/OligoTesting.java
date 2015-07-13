@@ -18,7 +18,7 @@ public class OligoTesting {
 
 		try {
 			//testSpan();
-			//testScores;
+			//testScores();
 			//testPossibleOligos();
 			testOneOffError();
 			//testReplichoreLogic();
@@ -121,8 +121,8 @@ public class OligoTesting {
 		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
 		
 		//Oligo o1 = Oligo.MismatchFactory(genome, "CCC", 101, 103, 2, true, "mismatch");
-		//Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 101, 2, true, "ins");
-		Oligo o1 = Oligo.DeletionFactory(genome, 101, 103, 2, "del");
+		Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 101, 2, true, "ins");
+		//Oligo o1 = Oligo.DeletionFactory(genome, 101, 103, 2, "del");
 		
 		System.out.println(o1.name + " span: " + o1.span);
 		System.out.println("min: " + o1.oligo_min);

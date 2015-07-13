@@ -19,8 +19,8 @@ import mage.Tools.OligoStats;
 public class TestReplacementPrediction {
 
 	static ArrayList<Oligo> oligos;
-	static String oligoFile = "C:/Users/mquintin/SkyDrive/github/javamage/testing/validationOligos.txt";
-	static String genomeDir = "C:/Users/mquintin/SkyDrive/github/javamage/testing/";
+	static String oligoFile = "C:/Users/mquintin/OneDrive/github/javamage/testing/validationOligos.txt";
+	static String genomeDir = "C:/Users/mquintin/OneDrive/github/javamage/testing/";
 	static String genomeFile = "MG1655.FASTA";
 	
 	static int oligoID = 1;

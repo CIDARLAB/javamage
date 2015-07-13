@@ -29,6 +29,7 @@ public class FASTA {
 		
 		// Generate new genome as String
 		String genome = sb.toString();
+                genome = genome.replaceAll("\\s", ""); //remove whitespace/newlines
 		if (genome.isEmpty()) throw new IOException("[FASTA] Unable to parse genome");
 		return genome;
 	}
