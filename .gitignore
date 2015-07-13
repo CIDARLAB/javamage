@@ -13,6 +13,7 @@ dist/
 .settings/
 bin/
 nbproject/
+javamage/nbproject/
 nbbuild.xml
 
 # Package Files #
@@ -56,3 +57,5 @@ nbbuild.xml
 ehthumbs.db
 Icon?
 Thumbs.db
+/javamage/build/
+/javamage/dist/
