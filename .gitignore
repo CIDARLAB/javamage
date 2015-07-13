@@ -12,6 +12,7 @@ javadoc/
 bin/
 nbproject/
 javamage/nbproject/
+nbbuild.xml
 
 # Package Files #
 #################
