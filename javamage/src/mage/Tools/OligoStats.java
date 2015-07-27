@@ -1,12 +1,10 @@
 package mage.Tools;
 
-import mage.Core.Oligo;
-import mage.Core.OligoType;
-
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import mage.Core.Oligo;
+import mage.Core.OligoType;
 
 
 public class OligoStats{
@@ -26,25 +24,105 @@ public class OligoStats{
 		
 		OligoType type = oligo.getOligoType();
 		double val = 0;
-		int olen = oligo.target_length;
+		int tlen = oligo.target_length;
 
 		//ARE formula depends on mutation type
 		switch (type){
 			case INSERTION:
-				val = 0.15 * Math.exp(-0.075 * (olen-1));
+				val = 0.15 * Math.exp(-0.075 * (tlen-1));
 				break;
 			case DELETION:
-				olen = Math.abs(oligo.getGenomeEnd() - oligo.getGenomeStart()) - oligo.span;
-				val = 0.23 * Math.exp(-0.058 * (olen-1));
+				tlen = Math.abs(oligo.getGenomeEnd() - oligo.getGenomeStart()) - oligo.span;
+				val = 0.23 * Math.exp(-0.058 * (tlen-1));
 				break;
 			case MISMATCH:
-				val = 0.26 * Math.exp(-0.135 * (olen-1));
-				break;
+                            //val = 0.26 * Math.exp(-0.135 * (tlen - 1));
+                            
+                            //determine the number of altered base pairs
+                            int targetStart = oligo.getGenomeStart() + oligo.target_position;
+                            int targetEnd = oligo.getGenomeEnd() - 
+                                    (oligo.span - oligo.target_position - tlen);
+                            //TODO: if targetEnd-targetStart > ideal length, treat it as a deletion
+                            
+                            String original = genome.substring(targetStart,targetEnd);//TODO: Load the genome somewhere accessible!
+                            int[] altered = nwAlign(oligo.target, original); //should check both orientations of one of these strings
+                            double nMismatch = altered[0];
+                            double nInsert = altered[1];
+                            double nDelete = altered[2];
+                            //we can't guarantee the mismatch is the same length
+                            //as the target, so we use a weighted average of the
+                            //three formulae
+                            double changedBases = nMismatch + nInsert + nDelete;
+                            //double alpha = ((0.26 * nMismatch) + (0.15 * nInsert) +
+                             //       (0.23 * nDelete))/changedBases;
+                            val = 1.0/changedBases;
+                            val = nMismatch * 0.26 * Math.exp(-0.135 * (nMismatch - 1));
+                            if (nInsert > 0){
+                                val *= nInsert * 0.15 * Math.exp(-0.075 * (tlen-1));
+                            }
+                            if (nDelete > 0){
+                                val *= nDelete * 0.23 * Math.exp(-0.058 * (tlen-1));
+                            }
+                            
+                            break;
 			default:
 				throw new RuntimeException("Oligo does not have a legal OligoType");
 		}
 		return val;
 	}
+        
+        /**simple version of Needleman-Wunsch algorithm to find how many mismatches
+         * insertions or deletions are used to go from sequence s1 to s2
+         * All non-matches are given a score penalty of 1
+         * @param s1
+         * @param s2
+         * @return three-member int array, listing number of mismatches, insertions, and deletions
+         */
+        private int[] nwAlign(String s1, String s2){
+            s1 = s1.toUpperCase();
+            s2 = s2.toUpperCase();
+            //s1 position, s2 position, number of each move type
+            int[][][] scores = new int[s1.length()+1][s2.length()+1][3];
+            
+            for (int i = 1; i <= s1.length(); i++){
+                //s1 can start anywhere in s2 for no penalty
+                //if s2 starts after the start of s1, that's an insertion
+                scores[i][0][1] = i;
+                for (int j = 1; j <= s2.length(); j++){
+                    int[] diag = scores[i-1][j-1];
+                    int sdiag = sumArray(diag);
+                    int[] up = scores[i-1][j];
+                    int sup = sumArray(up);
+                    int[] left = scores[i][j-1];
+                    int sleft = sumArray(left);
+                    
+                    if (sdiag <= sup && sdiag <= sleft){ //mismatch or match
+                        scores[i][j] = diag;
+                        if (! SequenceTools.baseMatch(s1.charAt(i), s2.charAt(j))){
+                            scores[i][j][0] += 1; //mismatch
+                        }
+                    }
+                    else if (sup <= sleft){ //insertion
+                        scores[i][j] = up;
+                        scores[i][j][1] += 1;
+                    }
+                    else { //deletion
+                        scores[i][j] = left;
+                        scores[i][j][2] += 1;
+                    }
+                }
+            }
+            return scores[s1.length()][s2.length()];
+        }
+        
+        private int sumArray(int[] arr){
+           int t = 0;
+           for (int i : arr) {
+               t+= i;
+           }
+           return t;
+        }
+        
 	
 	/**Get the number of cycles necessary for the given oligo to be expressed at a given
 	 * frequency in the population

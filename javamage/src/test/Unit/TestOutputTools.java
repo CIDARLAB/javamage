@@ -9,7 +9,7 @@ import mage.Core.Primer;
 import mage.Tools.DSDNA;
 import mage.Tools.FASTA;
 import mage.Tools.OutputTools;
-import mage.Tools.PCR;
+import mage.Tools.Pcr.PCR;
 import test.Constants;
 
 public class TestOutputTools {
