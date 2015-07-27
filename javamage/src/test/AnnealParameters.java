@@ -5,7 +5,6 @@ import mage.Core.Oligo;
 import mage.Core.Primer;
 import mage.Tools.FASTA;
 import mage.Tools.Pcr.Anneal;
-import static test.TestingSandbox.genome;
 
 /** Class to examine performance of the annealing algorithm to determine ideal
  * parameters.
@@ -57,7 +56,8 @@ public class AnnealParameters {
      * @param o 
      */
     public static void deceleratingCooling(Oligo o) throws IOException{
-        Anneal anneal = new Anneal(60.0, o, 400, 0.05, 16, 30, false, true, false);
+        String genome = FASTA.readFFN(Constants.blastdirectory, "ecoli.ffn");
+        Anneal anneal = new Anneal(genome, 60.0, o, 400, 0.05, 16, 30, false, true, false);
         anneal.setLenMin(16);
         anneal.setLenMax(30);
         anneal.setShiftRange(0.1);

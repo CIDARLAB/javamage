@@ -47,7 +47,7 @@ public class TestAnneal extends Anneal {
         }
 
         //test Cool
-        if (false) {
+        if (true) {
             //Slowdown
             Anneal.setCoolingType(CoolingType.SLOWDOWN);
             TestAnneal ta = new TestAnneal(60.0, o, 400, .05, 16, 30, false, true, false);
@@ -96,7 +96,7 @@ public class TestAnneal extends Anneal {
     }
 
     public TestAnneal(double targetTemp, Oligo oligo, int amplicon, double shiftRange, int lenMin, int lenMax, boolean forward, boolean sense, boolean modified) throws IOException {
-        super(targetTemp, oligo, amplicon, shiftRange, lenMin, lenMax, forward, sense, modified);
+        super(mage.Tools.FASTA.readFFN(Constants.blastdirectory, "genome.ffn"), targetTemp, oligo, amplicon, shiftRange, lenMin, lenMax, forward, sense, modified);
         //creationTracker = new int[matrix.length][matrix[0].length];
         epochTracker = new Integer[matrix.length][matrix[0].length];
         mcsTracker = new Integer[matrix.length][matrix[0].length];

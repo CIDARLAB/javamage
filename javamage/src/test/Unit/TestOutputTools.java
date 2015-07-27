@@ -3,13 +3,12 @@ package test.Unit;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import mage.Core.Oligo;
 import mage.Core.Primer;
 import mage.Tools.DSDNA;
 import mage.Tools.FASTA;
 import mage.Tools.OutputTools;
-import mage.Tools.PCR;
+import mage.Tools.Pcr.PCR;
 import test.Constants;
 
 public class TestOutputTools {
@@ -19,12 +18,12 @@ public class TestOutputTools {
 
     public static void main(String[] args) throws Exception {
         testGenerateMASCPCRFile();
-		//testWritePrimerListsToFile();
-        //testGenerateDSDNAPrimerFile();
-        //testWriteDSDNAPrimersToFile();
-        //testWriteDSDNAPrimersToFileWithLengthError();
-        //testGenerateDiversityTableFile();
-        //testGetMASCPCRPrimerFileContents();
+        testWritePrimerListsToFile();
+        testGenerateDSDNAPrimerFile();
+        testWriteDSDNAPrimersToFile();
+        testWriteDSDNAPrimersToFileWithLengthError();
+        testGenerateDiversityTableFile();
+        testGetMASCPCRPrimerFileContents();
     }
 
     public static void testGenerateMASCPCRFile() throws Exception {

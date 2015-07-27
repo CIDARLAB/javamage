@@ -129,16 +129,29 @@ public class Anneal {
             int[] adjacency = {-1,1};
             for (int j : adjacency){
                 for (int k : adjacency){
-                    Primer p2 = getPrimer(x+j,y+k);
-                    score -= Math.abs(score(p1)-score(p2));
-                    nPairs++;
+                    //one dimensional- y only
+                    if ((x == 0 | x == maxShift) & (y != lenMin & y != lenMin)){
+                        Primer p2 = getPrimer(x,y+k);
+                        score -= Math.abs(score(p1)-score(p2))/2;
+                        nPairs += 0.5;
+                    }
+                    //one dimensional- x only
+                    else if ((x != 0 | x != maxShift) & (y == lenMin & y == lenMin)){
+                        Primer p2 = getPrimer(x+j,y);
+                        score -= Math.abs(score(p1)-score(p2))/2;
+                        nPairs += 0.5;
+                    }
+                    else{
+                        Primer p2 = getPrimer(x+j,y+k);
+                        score -= Math.abs(score(p1)-score(p2));
+                        nPairs++;
+                    }
                 }
             }
         }
         score = score/nPairs;
         initialT = (float) (score/(Math.log(pAccept)));
     }
-    
 
     /**
      * Run the algorithm. See the constructor for the Primer class for more
@@ -163,8 +176,9 @@ public class Anneal {
         int meanLen = (int) (lenMin + lenMax) / 2;
         int[] idx = {0, meanLen}; //index passed to getPrimer() to lookup in the matrix
         Primer current = getPrimer(idx);
+        Primer best = getPrimer(idx);
 
-        while (t > 0 & epoch < epochMax & mcs < mcsMax & score(current) <= 0.5) {
+        while ((t > 0) && (epoch < epochMax) && (mcs < mcsMax) && score(current) >= 0.5) {
             //find the next candidate
             int[] move = getMove(t);
             int[] challengerIdx = {idx[0] + move[0], idx[1] + move[1]};
@@ -188,6 +202,7 @@ public class Anneal {
             if (accept(challenger, current, t)) {
                 idx = challengerIdx;
                 current = challenger;
+                if(score(challenger) < score(best)) best = getPrimer(challengerIdx);
             }
             mcs++;
             if (mcs % epochLength == 0) {
@@ -199,46 +214,47 @@ public class Anneal {
         t = finalT;
         int neighborsChecked = 0;
         while (neighborsChecked < 4) {
-            int[] challengerIdx = idx;
+            int[] challengerIdx = new int[2];
+            challengerIdx[0] = idx[0];
+            challengerIdx[1] = idx[1];
             switch (neighborsChecked) {
                 case 0:
                     if (idx[0] == -maxShift) {//already at the edge
-                        neighborsChecked += 1;
                         break;
                     }
-                    challengerIdx[0] -= 1;
+                    challengerIdx[0] = challengerIdx[0] - 1;
                     break;
                 case 1:
                     if (idx[0] == -maxShift) {
-                        neighborsChecked += 1;
                         break;
                     }
-                    challengerIdx[0] += 1;
+                    challengerIdx[0] = challengerIdx[0] + 1;
                     break;
                 case 2:
                     if (idx[1] == lenMin) {
-                        neighborsChecked += 1;
                         break;
                     }
-                    challengerIdx[1] -= 1;
+                    challengerIdx[1] = challengerIdx[1] - 1;
                     break;
                 case 3:
                     if (idx[1] == lenMax) {
-                        neighborsChecked += 1;
                         break;
                     }
-                    challengerIdx[1] += 1;
+                    challengerIdx[1] = challengerIdx[1] + 1;
                     break;
             }
+            neighborsChecked += 1;
             Primer challenger = getPrimer(challengerIdx);
-            if (accept(challenger, current, t)){
-                current = challenger;
-                idx = challengerIdx;
-                neighborsChecked = 0;
+            if (idx[0] != challengerIdx[0] || idx[1] != challengerIdx[1]){
+                if (accept(challenger, current, t)){
+                    current = challenger;
+                    idx = challengerIdx;
+                    neighborsChecked = 0;
+                    if(score(challenger) < score(best)) best = getPrimer(challengerIdx);
+                }
             }
-            mcs++;
         }
-        return current;
+        return best;
     }
 
     /**
@@ -337,7 +353,12 @@ public class Anneal {
     protected Primer getPrimer(int shift, int len) {
         int sidx = shift + maxShift;
         int lenidx = len - lenMin;
-        Primer p = matrix[sidx][lenidx];
+        Primer p = null;
+        if (sidx < matrix.length){ //watch out for null pointer exception
+            if (lenidx < matrix[sidx].length){
+                p = matrix[sidx][lenidx];
+            }
+        }
         if (p != null) {
             return p;
         } else {

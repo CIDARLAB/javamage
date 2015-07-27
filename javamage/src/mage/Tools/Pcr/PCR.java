@@ -46,7 +46,7 @@ public class PCR {
     
     private PrimerFactory pf;
 
-    private static List<Integer> ampliconLengths = Arrays.asList(100, 150, 200, 250, 300, 400, 500, 700, 850);
+    private List<Integer> ampliconLengths = Arrays.asList(100, 150, 200, 250, 300, 400, 500, 700, 850);
     //legal range of primer lengths
     private static double mtrange = 1.5;//how far from the final temp is OK?
 
@@ -67,6 +67,10 @@ public class PCR {
         this(defaultShiftRange, defaultLenMin, defaultLenMax);
     }
     
+    public PCR(String genome){
+        this(genome, defaultShiftRange, defaultLenMin, defaultLenMax, null);
+    }
+    
     //defaults to loading the genome file in the working directory
     public PCR(double shiftRange, int lenMin, int lenMax) throws IOException{
         this(FASTA.readFFN(Oligo.Directory, Oligo.Genome), shiftRange, lenMin, lenMax, null);
@@ -80,13 +84,8 @@ public class PCR {
         }
         this.genome = genome;
         this.pf = new PrimerFactory(genome);
-    }
-
-    /**
-     * @return the ampliconLengths
-     */
-    public static List<Integer> getAmpliconLengths() {
-        return ampliconLengths;
+        this.lenMin = lenMin;
+        this.lenMax = lenMax;
     }
 
     /**
@@ -591,4 +590,57 @@ public class PCR {
     public static void setTargetTemp(double targetTemp) {
         PCR.targetTemp = targetTemp;
     }
+    
+    public String getGenome() {
+        return genome;
+    }
+
+    public void setGenome(String genome) {
+        this.genome = genome;
+    }
+
+    public PrimerFactory getPf() {
+        return pf;
+    }
+
+    public void setPf(PrimerFactory pf) {
+        this.pf = pf;
+    }
+
+    public int getPrimerLength() {
+        return primerLength;
+    }
+
+    public void setPrimerLength(int primerLength) {
+        this.primerLength = primerLength;
+    }
+
+    public double getShiftRange() {
+        return shiftRange;
+    }
+
+    public void setShiftRange(double shiftRange) {
+        this.shiftRange = shiftRange;
+    }
+
+    public int getLenMin() {
+        return lenMin;
+    }
+
+    public void setLenMin(int lenMin) {
+        this.lenMin = lenMin;
+    }
+
+    public int getLenMax() {
+        return lenMax;
+    }
+
+    public void setLenMax(int lenMax) {
+        this.lenMax = lenMax;
+    }
+    
+    public List<Integer> getAmpliconLengths() {
+        return ampliconLengths;
+    }
+
 }

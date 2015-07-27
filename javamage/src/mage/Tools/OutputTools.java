@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import mage.Core.Oligo;
 import mage.Core.Primer;
+import mage.Tools.Pcr.Melt;
+import mage.Tools.Pcr.PCR;
 
 /**
  * Class to handle writing to files. This is the entry point for software (eg
