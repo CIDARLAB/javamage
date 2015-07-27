@@ -117,8 +117,8 @@ public class OligoTesting {
 	
 	//edit for debugging
 	private static void testOneOffError() throws Exception{
-		//99 A's, T, 10 G's, 100 T's
-		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
+		//99 A's, TT, 10 G's, 100 T's
+		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
 		
 		//Oligo o1 = Oligo.MismatchFactory(genome, "CCC", 101, 103, 2, true, "mismatch");
 		Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 101, 2, true, "ins");
@@ -132,10 +132,21 @@ public class OligoTesting {
 		System.out.println("genome end: " + o1.getGenomeEnd());
 		System.out.println("target position: " + o1.target_position);
 		//System.out.println("target position on genome: " + o1.x);
-		System.out.println(o1.sequence);
+		System.out.println("Insert to AAATCCCTGGG");
+                System.out.println(o1.sequence);
 		
 		//String preSequence =  genome.substring(o1.getGenomeStart()-1, 99);
 		//System.out.println(preSequence);
+                
+                //replace the T with a C
+                System.out.println("Mismatch to AAACTGGG");
+                Oligo o2 = Oligo.MismatchFactory(genome, "C", 100, 101, 2, true, "mismatch");
+                System.out.println(o2.sequence);
+                
+                //delete the T
+                System.out.println("Delete to AAAGGG");
+                Oligo o3 = Oligo.DeletionFactory(genome, 100, 101, 2, "delete");
+                System.out.println(o3.sequence);
 
 	}
 	

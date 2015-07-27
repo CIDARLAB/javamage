@@ -115,7 +115,7 @@ public class Oligo extends DNASequence {
 	 * @param genome 		The genome from which the oligo is being made
 	 * @param target		The target sequence that will be put onto the genome
 	 * @param left_position	The left position, indicating the point at which the mutation will be inserted into the genome
-	 * @param right_position The end position of where the oligo is to cut off
+	 * @param right_position The end position of where the oligo is to cut off (inclusive)
 	 * @param replichore	The replichore 1 or 2
 	 * @param sense			True if sense is postive and false if negative
 	 * @param name			The name of this target
@@ -170,12 +170,12 @@ public class Oligo extends DNASequence {
 
 	/**
 	 * Deletion factory generates and an oligo that represents a deletion
-	 * The base at left_position will be removed, and right_postion will remain, with the bases between removed
+	 * The bases from left_position to right_postion (inclusive) will be removed
 	 * For example, DeletionFactory("ABCDEFG", 3, 5,...) will generate "ABEFG"
 	 * @param genome 		The genome from which the oligo is being made
-	 * @param left_position	The left position, indicating the point at which the mutation will start
+	 * @param left_position	1-indexed left position, indicating the point at which the mutation will start
 	 * @param replichore	The replichore 1 or 2
-	 * @param right_position an Integer to specify the position at which the genome is to resume
+	 * @param right_position 1-indexed, an Integer to specify the position after which the genome is to resume
 	 * @param name			The name of this oligo
 	 * @return				Returns a oligo defined by the input parameters
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified

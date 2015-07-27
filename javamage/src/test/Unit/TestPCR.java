@@ -12,8 +12,8 @@ import test.Constants;
 import mage.Core.Oligo;
 import mage.Core.Primer;
 import mage.Tools.FASTA;
-import mage.Tools.Melt;
-import mage.Tools.PCR;
+import mage.Tools.Pcr.Melt;
+import mage.Tools.Pcr.PCR;
 
 public class TestPCR {
 
@@ -31,11 +31,12 @@ public class TestPCR {
         //testGetModifiedForwardPrimerFromOligo();
         //testGetMASCPCRPrimersForOligo();
         //testPCRbyReplicatingResults();
-        testGeneratePrimerSets();
+        //testGeneratePrimerSets();
         //testGetForwardPrimers();
         //testOptimizePrimer();
     }
 
+/*
     public static void testOptimizePrimer() throws IOException, Exception {
         String genome = FASTA.readFFN(Constants.blastdirectory, "ecoli.ffn");
         PCR pcr = new PCR(genome);
@@ -181,5 +182,5 @@ public class TestPCR {
             System.out.println(s);
         }
     }
-
+*/
 }
