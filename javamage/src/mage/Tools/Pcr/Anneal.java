@@ -41,7 +41,7 @@ public class Anneal {
 
     protected float initialT; //starting temp for the algorithm
     protected float finalT = (float) 0.1; //final temp for the algorithm, used by some cooling methods
-                                //must be greater than 0
+                                //must be greater than 0. When the difference is one degree
                                 //probability of accepting at this temp is e^-10 = 4.5*10^-5
     protected int mcs = 0; //number of Monte Carlo steps completed
     protected int mcsMax = 10000;
@@ -331,12 +331,16 @@ public class Anneal {
      * @return
      */
     public boolean accept(Primer challenger, Primer incumbent, float t) {
-        double diff = score(challenger) - score(incumbent);
+        Double diff = score(challenger) - score(incumbent);
         if (diff < 0) {
             return true;
-        } else {
+        } 
+        else {
             double rand = Math.random();
             double odds = Math.exp((-1 * diff) / t);
+            //a temp difference of 0.03 degrees replaces about at about 75%
+            //smaller temp differences may make the greedy optimization run too long
+            odds = Math.min(odds, Math.exp((-1 * 0.03) / t));  
             return rand < odds;
         }
     }
