@@ -29,15 +29,6 @@ import mage.Tools.FASTA;
  *
  * Melting temperatures are determined by the melt.pl script.
  *
- *
- * TODO: Confirm method for forward unmodified deletion primer: is currently
- * only including 5 bases into the cut This should be redone to put the leftmost
- * deleted base at the end
- *
- * TODO: Confirm method for modified antisense forward primer. If the 3' buffer
- * length is shorter than the primer length, primer may run off the oligo span.
- * Need to add part of the genome seq to cover this case.
- *
  * @author mquintin
  *
  */
@@ -88,49 +79,6 @@ public class PCR {
         this.lenMax = lenMax;
     }
 
-    /**
-     * Get the unmodified forward (first element), modified forward (second),
-     * and reverse (third through eleventh elements) PCR primers for this oligo
-     *
-     * @param oligo
-     * @param genome
-     * @return
-     */
-    /*DEPRECATED
-    public List<String> getMASCPCRPrimers(Oligo oligo, String genome) {
-        List<String> primers = new ArrayList<String>();
-
-        //find the first modified base
-        int start = oligo.getGenomeStart() + oligo.target_position;
-        //deletions are a special case- put the gap 3/4 of the way into the sequence
-        if (oligo.getOligoType().equals(OligoType.DELETION)) {
-            start = (int) (start - Math.floor(primerLength * 3 / 4));
-        }
-
-        return primers;
-    }
-    */
-
-    //relocated to PrimerFactory
-    /*public Primer getAntisenseReversePrimer(Oligo oligo, int len, int baselength) {
-     //calculate the start location
-     int start = oligo.getGenomeStart() + oligo.target_position + oligo.target_length;
-     //deletions are a special case- put the gap 3/4 of the way into the sequence
-     if (oligo.getOligoType().equals(OligoType.DELETION)) {
-     start = (int) (start + Math.floor(primerLength * 3 / 4));
-     }
-
-     start -= len;
-     String gen = genome;
-     if (0 > start - primerLength) {
-     gen = gen.concat(gen.substring(0, len + primerLength));
-     }
-     String seq = gen.substring(start, start + primerLength);
-
-     Primer primer = new Primer(seq, oligo, baselength, start, false, false);
-
-     return primer;
-     }
 
      /**
      * get a list of lists of primers. The first list is the forward primers,
@@ -152,13 +100,12 @@ public class PCR {
             for (Primer p : acceptedForward) {
                 Oligo o = p.oligo;
                 if (p.sense) {
-                    reversePrimers.add(pf.getDownstreamReversePrimer(o, p.genome_start, amp));
+                    reversePrimers.add(pf.getDownstreamReversePrimer(o, amp));
                 } else {
-                    reversePrimers.add(pf.getUpstreamReversePrimer(o, p.genome_start, amp));
+                    reversePrimers.add(pf.getUpstreamReversePrimer(o, amp));
                 }
             }
         }
-        //ArrayList<Primer> acceptedReverse = correctOutlyingPrimers(reversePrimers, true);
         ArrayList<Primer> acceptedReverse = optimizePrimers(reversePrimers);
         ArrayList<ArrayList<Primer>> sets = populateReverseSets(acceptedReverse, pool);
         sets.add(0, acceptedForward);//put the forward primers in the first position
@@ -217,88 +164,26 @@ public class PCR {
                     }
                 }
             }
-            //choose the best unmodified forward primer
-            if (wtanti == null && wtsense != null) {
-                acceptedWT.add(wtsense);
-            } else if (wtanti != null && wtsense == null) {
-                acceptedWT.add(wtanti);
-            } else if (Math.abs(targetTemp - wtsense.getMt()) <= Math.abs(targetTemp - wtanti.getMt())) {
-                acceptedWT.add(wtsense);
-            } else {
-                acceptedWT.add(wtanti);
-            }
-            //choose the best mutant forward primer
+            //choose the best mutant forward primer and its corresponding unmodified primer
             if (manti == null && msense != null) {
                 acceptedMod.add(msense);
+                acceptedWT.add(wtsense);
             } else if (manti != null && msense == null) {
                 acceptedMod.add(manti);
+                acceptedWT.add(wtanti);
             } else if (Math.abs(targetTemp - msense.getMt()) <= Math.abs(targetTemp - manti.getMt())) {
                 acceptedMod.add(msense);
+                acceptedWT.add(wtsense);
             } else {
                 acceptedMod.add(manti);
+                acceptedWT.add(wtanti);
             }
         }
         //correct the primers that are too far away from the target
         acceptedWT.addAll(acceptedMod);
         return acceptedWT;
     }
-/*
-    //create a Primer that's one base longer
-    public Primer extend(Primer p) {
-        int newlen = p.seq.length() + 1;
-        return changeLength(p, newlen);
-    }
 
-    //create a Primer that's one base shorter
-    public Primer shorten(Primer p) {
-        int newlen = p.seq.length() - 1;
-        return changeLength(p, newlen);
-    }
-
-    private Primer changeLength(Primer p, int newlen) {
-        if ((newlen > lenMax) || newlen < lenMin) {
-            //don't change anything
-            return p;
-        } else {
-            primerLength = newlen;
-            if (p.forward) {//only valid to extend these from the end
-                if (p.sense) {
-                    if (p.modified) {
-                        return pf.getModifiedForwardPrimer(p.oligo);
-                    } else {
-                        return pf.getUnmodifiedForwardPrimer(p.oligo);
-                    }
-                } else {
-                    if (p.modified) {
-                        return pf.getModifiedAntisenseForwardPrimer(p.oligo);
-                    } else {
-                        return pf.getUnmodifiedAntisenseForwardPrimer(p.oligo);
-                    }
-                }
-            } else {
-                Primer fromEnd = null;
-                Primer fromStart = null;
-                if (p.sense) {
-                    fromEnd = pf.getDownstreamReversePrimer(p.oligo, p.genome_start, p.amplicon);
-                    fromStart = pf.getDownstreamReversePrimer(p.oligo, p.genome_start - 1, p.amplicon);
-                } else {
-                    fromEnd = pf.getUpstreamReversePrimer(p.oligo, p.genome_start, p.amplicon);
-                    fromStart = pf.getUpstreamReversePrimer(p.oligo, p.genome_start - 1, p.amplicon);
-                }
-                //compare the MTs, get the one closest to the target temp
-                Melt.setMTs(new Primer[]{fromEnd, fromStart});
-
-                Double dend = Math.abs(targetTemp - fromEnd.getMt());
-                Double dstart = Math.abs(targetTemp - fromStart.getMt());
-                if (dstart < dend) {
-                    return fromStart;
-                } else {
-                    return fromEnd;
-                }
-            }
-        }
-    }
-*/
     private ArrayList<ArrayList<Primer>> populateReverseSets(ArrayList<Primer> reversePrimers,
             List<Oligo> pool) {
         ArrayList<Primer[]> sets = new ArrayList<>();
@@ -411,34 +296,6 @@ public class PCR {
         }
         return arr;
     }
-
-    /**
-     * Alter the primers in the list so that for each oligo, all falling outside
-     * the optimal range are filtered out. Unless it is not possible to create a
-     * primer in the correct range, then get as close as you can
-     *
-     * @param list
-     * @return
-     *//*
-    public ArrayList<Primer> correctOutlyingPrimers(ArrayList<Primer> list) {
-        return correctOutlyingPrimers(list, forceTemp);
-    }*/
-
-    //give the ability to temporarily override forceTemp, as is done when optimizing
-    //a single primer
-    /*private ArrayList<Primer> correctOutlyingPrimers(ArrayList<Primer> list, boolean lockTemp) {
-        int counter = 0;
-        boolean running = true;
-        ArrayList<Primer> newList = new ArrayList();
-        while (running) {
-            counter++;
-            newList = evaluateAndShiftPrimers(list, lockTemp);
-            if (counter > 200 | newList.containsAll(list)){
-                running = false;
-            }
-        }
-        return newList;
-    }*/
     
     public ArrayList<Primer> optimizePrimers(ArrayList<Primer> list){
         ArrayList<Primer> newList = new ArrayList();
@@ -467,74 +324,6 @@ public class PCR {
         return opt;
     }
 
-    /**
-     * If an oligo has any primers in the acceptable temperature range, retain
-     * only those. If it does not, shift each primer's length by 1. This is
-     * called multiple times by correctOutlyingPrimers
-     *
-     * @param list
-     * @return
-     *//*
-    public ArrayList<Primer> evaluateAndShiftPrimers(ArrayList<Primer> list, boolean lockTemp) {
-        if (!lockTemp) {
-            Double[] mt = PrimerFactory.getMeltingTemps(list);
-            //get the weighted average temperature
-            targetTemp = iqmean(mt);
-        }
-
-        //get all Oligos
-        ArrayList<Oligo> oligos = new ArrayList();
-        for (Primer p : list) {
-            Oligo o = p.oligo;
-            if (!oligos.contains(o)) {
-                oligos.add(o);
-            }
-        }
-
-        //if any oligo doesn't have a primer within an acceptable range, attempt
-        //to create a new set of primers by varying the length
-        ArrayList<Primer> allAccepted = new ArrayList();
-        for (Oligo o : oligos) {
-            ArrayList<Primer> primers = new ArrayList();
-            ArrayList<Primer> accepted = new ArrayList();
-            for (Primer p : list) {
-                if (o.equals(p.oligo)) {
-                    primers.add(p);
-                    //System.out.println("DEBUG: mt = " + p.getMt());
-                    if (Math.abs(p.getMt() - targetTemp) <= mtrange) {
-                        accepted.add(p);
-                    }
-                }
-            }
-            if (accepted.isEmpty()) {
-                for (int i = 0; i < primers.size(); i++) {
-                    Primer p = primers.get(i);
-                    //compare to the effect if one base longer or shorter
-                    double delta = Math.abs(targetTemp - p.getMt());
-                    Primer shorter = shorten(p);
-                    double shortDelta = Math.abs(targetTemp - shorter.getMt());
-                    Primer longer = extend(p);
-                    double longDelta = Math.abs(targetTemp - longer.getMt());
-
-                    //pick the alternate that did best
-                    Primer candidate = longer;
-                    if (Math.min(shortDelta, longDelta) == shortDelta) {
-                        candidate = shorter;
-                    }
-                    //if the original did better
-                    if (delta <= Math.min(shortDelta, longDelta)) {
-                        accepted.add(p); //not going to get any better
-                    } //if the candidate did better
-                    else {
-                        accepted.add(candidate);
-                    }
-                }
-            }
-            allAccepted.addAll(accepted);
-        }
-        return allAccepted;
-    }
-*/
     /**
      * Calculate the interquartile mean of the given list as a quick and dirt
      * way of ignoring outliers. If n<4, simply return the arithmatic mean

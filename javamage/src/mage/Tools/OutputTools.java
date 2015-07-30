@@ -158,46 +158,6 @@ public class OutputTools {
     }
 
     /**
-     * Deprecated: Given the list of lists of MASC PCR primers, write to file
-     *
-     * @param names list of names for each oligo
-     * @param primerLists list of lists of primers for each oligo
-     * @param dest file to create
-     * @throws IOException
-     */
-    /*public static void writePrimersToFile(List<String> names, List<List<String>> primerLists, String dest) throws IOException {
-     if (names.size() != primerLists.size()) {
-     throw new IllegalArgumentException("Primer set names must agree with the number of primer sets");
-     }
-
-     File file = new File(dest);
-
-     // if file doesn't exists, then create it
-     if (!file.exists()) {
-     file.createNewFile();
-     }
-
-     FileWriter fw = new FileWriter(file.getAbsoluteFile());
-     BufferedWriter bw = new BufferedWriter(fw);
-     //write header
-     String header = ("Oligo\tUnmodifiedForward\tModifiedForward");
-     for (int length : PCR.getAmpliconLengths()) {
-     header = header + "\t" + "Rev" + String.valueOf(length);
-     }
-     bw.write(header);
-
-     //write each primer set
-     for (int i = 0; i < primerLists.size(); i++) {
-     String str = names.get(i);
-     for (String primer : primerLists.get(i)) {
-     str = str + "\t" + primer;
-     }
-     bw.newLine();
-     bw.write(str);
-     }
-     bw.close();
-     }*/
-    /**
      * Generate a file containing the two DSDNA primers for the given
      * recombination. Note that the start and end are indexed with 1 (not 0)
      * being the first base on the genome

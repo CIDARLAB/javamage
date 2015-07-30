@@ -6,14 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
 import mage.Tools.BLAST;
 import mage.Tools.BLAST.BlastResult;
 import mage.Tools.Constants;
 import mage.Tools.FASTA;
 import mage.Tools.MFOLD;
 import mage.Tools.SequenceTools;
-
 import org.biojava3.core.sequence.DNASequence;
 
 
@@ -114,8 +112,8 @@ public class Oligo extends DNASequence {
 	 * Defines a mismatch on a surface.
 	 * @param genome 		The genome from which the oligo is being made
 	 * @param target		The target sequence that will be put onto the genome
-	 * @param left_position	The left position, indicating the point at which the mutation will be inserted into the genome
-	 * @param right_position The end position of where the oligo is to cut off (inclusive)
+	 * @param left_position	1-indexed, inclusive. The left position, indicating the point at which the mutation will be inserted into the genome
+	 * @param right_position 1-indexed, exclusive. The end position of where the oligo is to cut off
 	 * @param replichore	The replichore 1 or 2
 	 * @param sense			True if sense is postive and false if negative
 	 * @param name			The name of this target
@@ -128,17 +126,19 @@ public class Oligo extends DNASequence {
 		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) 
 		{
 			// Define the starting position on the genome)
-			
-		//TODO: Should this include subtracting target length? think about the implications for the span/where changes are allowed
+		//correct for 0-indexing
+                    left_position--;
+                    right_position--;
+                    
 			int genome_start = left_position - Oligo.ideal_length + target.length() + Oligo.buffer_3prime -1;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position -1);
+			String preSequence =  genome.substring(genome_start, left_position);
                         
 			// Define the ending position on the genome
 			int genome_end  = right_position + Oligo.ideal_length - target.length() - Oligo.buffer_5prime;
 
-			// Pulls the genome string, the start position is   right_position , genome_end (non inclusive)
+			// Pulls the genome string, the start position is   right_position (inclusive), genome_end (exclusive)
 			String postSequence = genome.substring(right_position, genome_end ); 
 
                         // Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
@@ -173,9 +173,9 @@ public class Oligo extends DNASequence {
 	 * The bases from left_position to right_postion (inclusive) will be removed
 	 * For example, DeletionFactory("ABCDEFG", 3, 5,...) will generate "ABEFG"
 	 * @param genome 		The genome from which the oligo is being made
-	 * @param left_position	1-indexed left position, indicating the point at which the mutation will start
+	 * @param left_position	1-indexed left position, inclusive. Indicating the point at which the mutation will start
 	 * @param replichore	The replichore 1 or 2
-	 * @param right_position 1-indexed, an Integer to specify the position after which the genome is to resume
+	 * @param right_position 1-indexed, exclusive. An Integer to specify the position after which the genome is to resume
 	 * @param name			The name of this oligo
 	 * @return				Returns a oligo defined by the input parameters
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified
@@ -183,13 +183,17 @@ public class Oligo extends DNASequence {
 	//TODO: Confirm that the indexing on left and right positions is intuitive.
 	//Currently, both coordinates are INCLUSIVE- the change will affect the bases at both indicated indexes
 	public static Oligo DeletionFactory(String genome, int left_position, int right_position, int replichore, String name) throws Exception {
-		if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime -1) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) {
+	//correct for 0-indexing
+                    left_position--;
+                    right_position--;
+                              
+            if (genome.length() >  (right_position+Oligo.ideal_length - Oligo.buffer_5prime) && (left_position > (Oligo.ideal_length - Oligo.buffer_3prime))) {
 
 			// Define the starting position on the genome)
-			int genome_start = left_position - Oligo.ideal_length + Oligo.buffer_3prime -1;
+			int genome_start = left_position - Oligo.ideal_length + Oligo.buffer_3prime;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 +1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position-1);
+			String preSequence =  genome.substring(genome_start, left_position);
 
 			// Define the ending position on the genome
 			int genome_end  = right_position + Oligo.ideal_length - Oligo.buffer_5prime;
@@ -223,7 +227,7 @@ public class Oligo extends DNASequence {
 	 * 
 	 * @param genome 		The genome from which the oligo is being made
 	 * @param target		The target sequence that will be put onto the genome
-	 * @param left_position	The left position, indicating the point at which the mutation will be inserted into the genome
+	 * @param left_position	The left position (1-indexed,inclusive), indicating the point at which the mutation will be inserted into the genome
 	 * @param replichore	The replichore 1 or 2
 	 * @param sense			True if sense is postive and false if negative
 	 * @param name			The name of this target
@@ -232,19 +236,21 @@ public class Oligo extends DNASequence {
 	 * @throws Exception	In the event that oligo is incompletely/improperly specified
 	 */
 	public static Oligo InsertionFactory(String genome, String target, int left_position, int replichore, boolean sense, String name) throws Exception {
-		if ( (genome.length() > (left_position+Oligo.ideal_length-Oligo.buffer_3prime-1 - target.length())  ) && (left_position > 60 ) ) {
+		//correct for 0-indexing
+                    left_position--;	
+            if ( (genome.length() > (left_position+Oligo.ideal_length-Oligo.buffer_3prime - target.length())  ) && (left_position > 60 ) ) {
 
 			// Define the starting pisition on the genome)
-			int genome_start = left_position + target.length() - Oligo.ideal_length + Oligo.buffer_3prime -1;
+			int genome_start = left_position + target.length() - Oligo.ideal_length + Oligo.buffer_3prime;
 
 			// Pulls from the genome string, this start position -1 up to left position -1 (not inclusive)
-			String preSequence =  genome.substring(genome_start-1, left_position-1);
+			String preSequence =  genome.substring(genome_start, left_position);
 
 			// Define the ending position on the gneome
 			int genome_end  = left_position + Oligo.ideal_length - Oligo.buffer_5prime -target.length();
 
 			// Extract a Subsequence from the target Position to the end. THIS IS ALSO FOR A STRING i.e INDEXED FROM ZERO
-			String postSequence = genome.substring(left_position -1, genome_end);
+			String postSequence = genome.substring(left_position , genome_end);
 
 			// Take the reverse compliments of genome for -1,+1 ... ignore for -2,+2
 			if (replichore == 1){

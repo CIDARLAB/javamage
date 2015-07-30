@@ -35,12 +35,19 @@ public class PrimerFactory {
      * @return primer sequence as a String of length = primerLength
      */
     public Primer getUnmodifiedForwardPrimer(Oligo oligo) {
-        int genome_end = oligo.getGenomeStart() + oligo.target_position + oligo.target_length;
-        if (oligo.getOligoType() == OligoType.DELETION) {
-            genome_end = oligo.getGenomeEnd() + oligo.target_position - (oligo.getLength() + oligo.getGenomeStart());
-            genome_end = oligo.target_position + oligo.getGenomeEnd() - oligo.getLength();
+        int target_position = oligo.target_position;
+        //reorient a reversed oligo sequence
+        String preseq = genome.substring(oligo.getGenomeStart(),
+                oligo.getGenomeStart() + oligo.target_position);
+        if (!preseq.equals(oligo.sequence.substring(0, oligo.target_position))) {
+            target_position = oligo.span - oligo.target_position - oligo.target_length;
         }
-        genome_end = genome_end - 1;
+
+        int genome_end = oligo.getGenomeStart() + target_position + oligo.target_length;
+        if (oligo.getOligoType() == OligoType.DELETION) {
+            genome_end = target_position + oligo.getGenomeEnd() - oligo.span;
+        }
+        //genome_end = genome_end - 1;
         String seq = genome.substring(genome_end - primerLength, genome_end);
         Primer primer = forwardPrimer(seq, oligo, genome_end - primerLength, true, false);
         return primer;
@@ -52,59 +59,93 @@ public class PrimerFactory {
      * @param genome
      * @return
      */
+    //Done
     public Primer getModifiedForwardPrimer(Oligo oligo) {
-        String sequence = oligo.getSequenceAsString();
+        String sequence = oligo.sequence;
+        int target_position = oligo.target_position;
+        //reorient a reversed oligo sequence
+        String preseq = genome.substring(oligo.getGenomeStart(),
+                oligo.getGenomeStart() + target_position);
+        if (!preseq.equals(oligo.sequence.substring(0, target_position))) {
+            sequence = SequenceTools.ReverseCompliment(sequence);
+            target_position = oligo.span - oligo.target_position - oligo.target_length;
+        }
+
         int relative_start = 0;
         if (oligo.getOligoType().equals(OligoType.DELETION)) {
-            int gappos = oligo.target_position;
+            int gappos = target_position;
             relative_start = (int) (gappos - Math.floor(primerLength * 3 / 4));
         } else {
-            relative_start = oligo.target_position + oligo.target_length - primerLength;
+            relative_start = target_position + oligo.target_length
+                    - primerLength;
         }
         //handle the edge case of primer falling off the start of the oligo
-        String preseq = "";
+        preseq = "";
         int genomeStart = oligo.getGenomeStart() + relative_start;
-        if (relative_start < 0){
+        if (relative_start < 0) {
             preseq = genome.substring(genomeStart, oligo.getGenomeStart());
             relative_start = 0;
         }
         sequence = preseq.concat(sequence);
-        
+
         String seq = sequence.substring(relative_start, relative_start + primerLength);
         Primer primer = forwardPrimer(seq, oligo, genomeStart + relative_start, true, true);
         return primer;
     }
-    
+
     /**
-     * get the primer in the opposite direction. In this case, the last modified
-     * base in the oligo will be the first base in the primer
+     * get the primer in the opposite direction.
      */
+    //Done
     public Primer getModifiedAntisenseForwardPrimer(Oligo oligo) {
-        String sequence = oligo.getSequenceAsString();
-        int relative_start = 0; //where the primer starts in relation to the oligo
-        if (oligo.getOligoType().equals(OligoType.DELETION)) {
-            int gappos = oligo.target_position;
-            relative_start = (int) (gappos - Math.floor(primerLength * 1 / 4));
-        } else {
-            relative_start = oligo.target_position + oligo.target_length - primerLength;
+        String sequence = oligo.sequence;
+        int target_position = oligo.target_position;
+        //reorient a reversed oligo sequence
+        String preseq = genome.substring(oligo.getGenomeStart(),
+                oligo.getGenomeStart() + target_position);
+        if (!preseq.equals(oligo.sequence.substring(0, target_position))) {
+            sequence = SequenceTools.ReverseCompliment(sequence);
+            target_position = oligo.span - oligo.target_position - oligo.target_length;
         }
+
+        int relative_start = 0; //where the primer starts in relation to the oligo
+        relative_start = target_position;
         //handle the edge case of primer falling off the start of the oligo
-        String preseq = "";
-        int genomeStart = oligo.getGenomeStart() + relative_start;
-        if (relative_start < 0){
+        preseq = "";
+        int genomeStart = oligo.getGenomeStart() + relative_start + 1;
+        if (relative_start < 0) {
             preseq = genome.substring(genomeStart, oligo.getGenomeStart());
             relative_start = 0;
         }
         sequence = preseq.concat(sequence);
-        
+        //handle the edge case of primer falling off the end of the oligo
+        int genome_end = oligo.getGenomeEnd();
+        String postseq = genome.substring(genome_end, genome_end + primerLength);
+
+        sequence = sequence + postseq;
+
         String seq = sequence.substring(relative_start, relative_start + primerLength);
         seq = SequenceTools.ReverseCompliment(seq);
-        Primer primer = forwardPrimer(seq, oligo, genomeStart, false, true);
+        Primer primer = forwardPrimer(seq, oligo, oligo.getGenomeStart() + relative_start, false, true);
         return primer;
     }
 
     public Primer getUnmodifiedAntisenseForwardPrimer(Oligo oligo) {
-        int genome_start = oligo.getGenomeStart() + oligo.target_position;
+        int target_position = oligo.target_position;
+        //reorient a reversed oligo sequence
+        String preseq = genome.substring(oligo.getGenomeStart(),
+                oligo.getGenomeStart() + oligo.target_position);
+        if (!preseq.equals(oligo.sequence.substring(0, oligo.target_position))) {
+            target_position = oligo.span - oligo.target_position
+                    - oligo.target_length;
+        }
+
+        //insertion primer must bridge the split region
+        if (oligo.getOligoType().equals(OligoType.INSERTION)) {
+            target_position -= (int) Math.floor(primerLength * 1 / 4);
+        }
+
+        int genome_start = oligo.getGenomeStart() + target_position;
         String seq = genome.substring(genome_start, primerLength + genome_start);
         seq = SequenceTools.ReverseCompliment(seq);
         Primer primer = forwardPrimer(seq, oligo, genome_start, false, false);
@@ -121,9 +162,9 @@ public class PrimerFactory {
      * @param amplength length of the amplicon, NOT the primer
      * @return primer sequence as a String of length = primerLength
      */
-    public Primer getDownstreamReversePrimer(Oligo oligo, int genome_start, int amplength) {
+    public Primer getDownstreamReversePrimer(Oligo oligo, int amplength) {
         String gen = genome;
-        int s = genome_start + amplength;
+        int s = oligo.getGenomeStart() + oligo.target_position + amplength;
         if (gen.length() - s < amplength) {
             gen = gen.concat(gen.substring(0, amplength));
         }
@@ -133,33 +174,14 @@ public class PrimerFactory {
         return primer;
     }
 
-    /**
-     * deprecated: Generate a reverse primer
-     *
-     * @param genome
+     /**
      * @param oligo
-     * @param len
-     * @param baselength
+     * @param amplength
      * @return
      */
-    /*public Primer getSenseReversePrimer(Oligo oligo, int len, int baselength) {
-        int start = oligo.getGenomeStart() + oligo.target_position;
-        if (oligo.getOligoType().equals(OligoType.DELETION)) {
-            start = (int) (start - Math.floor(primerLength * 3 / 4));
-        }
-        start += len;
+    public Primer getUpstreamReversePrimer(Oligo oligo, int amplength) {
         String gen = genome;
-        if (gen.length() < start + primerLength) {
-            gen = gen.concat(gen.substring(0, len + primerLength));
-        }
-        String seq = gen.substring(start, start + primerLength);
-        seq = SequenceTools.ReverseCompliment(seq);
-        Primer primer = new Primer(seq, oligo, baselength, start, false, true);
-        return primer;
-    }*/
-
-    public Primer getUpstreamReversePrimer(Oligo oligo, int genome_start, int amplength) {
-        String gen = genome;
+        int genome_start = oligo.getGenomeStart();
         int fp_relative_end = 0; //where the forward primer ends in relation to the oligo
         if (oligo.getOligoType().equals(OligoType.DELETION)) {
             int gappos = oligo.target_position;
@@ -235,13 +257,12 @@ public class PrimerFactory {
                 }
             }
         } else { //reverse
-            int start = oligo.target_position;
             int amplength = amplicon + shift;
             if (sense) {
-                primer = getDownstreamReversePrimer(oligo, start, amplength);
+                primer = getDownstreamReversePrimer(oligo, amplength);
             } else {
-                start = start + oligo.target_length;
-                primer = getUpstreamReversePrimer(oligo, start, amplength);
+                //genome_start = genome_start + oligo.target_length;
+                primer = getUpstreamReversePrimer(oligo, amplength);
             }
             primer.amplicon = amplicon; //not the actual length- primers get sorted by this
         }
@@ -253,8 +274,8 @@ public class PrimerFactory {
         this.genome = genome;
         this.primerLength = defaultPrimerLength;
     }
-    
-    public PrimerFactory(String genome, int primerlength){
+
+    public PrimerFactory(String genome, int primerlength) {
         this.genome = genome;
         this.primerLength = primerlength;
     }

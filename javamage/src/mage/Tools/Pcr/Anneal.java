@@ -250,38 +250,19 @@ public class Anneal {
                     current = challenger;
                     idx = challengerIdx;
                     neighborsChecked = 0;
-                    if(score(challenger) < score(best)) best = getPrimer(challengerIdx);
+                    if(score(challenger) < score(best)) {
+                        best = getPrimer(challengerIdx);
+                    }
                 }
             }
         }
+        /*System.out.println("Merlin-DEBUG: Generated Primer for " + oligo.name + 
+                " Amplicon " + amplicon + " Sense=" + best.sense + 
+                " Modified=" + best.modified + " with MT " + best.getMt() + 
+                ": " + best.seq);*/
         return best;
     }
 
-    /**
-     * Get the relative coordinates to the next Primer to check. Set this such
-     * that at the most the may be up to 1/2 the problem space, and at the final
-     * epoch the step can only be to adjacent states
-     *
-     * @return a length 2 int array. The first element is along the "shift"
-     * axis, the second is along the "length"
-     */
-    /*DEPRECATED. Replaced by random walk method
-    protected int[] getMove(float t) {
-        int xrange = (2 * maxShift); //how many other elements in x?
-        int yrange = (lenMax - lenMin);
-        
-        Float fxrange = xrange * (t / initialT); //step down dependent on temp
-        Float fyrange = yrange * (t / initialT);
-
-        Double xmax = (xrange / 2.0);
-        Double ymax = (yrange / 2.0);
-
-        int[] move = new int[2];
-        move[0] = 1 + nextInt(((Float) fxrange).intValue()) - xmax.intValue();
-        move[1] = 1 + nextInt(((Float) fyrange).intValue()) - ymax.intValue();
-        return move;
-    }*/
-    
     /**get the relative coordinates of the next primer to check through a random walk
      * where the number of steps is controlled by the temperature. The initial distance
      * is just enough to go from the center to a corner, the distance in the final

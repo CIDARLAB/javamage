@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import mage.Core.Oligo;
 import mage.Core.Primer;
+import mage.Tools.FASTA;
 import mage.Tools.Pcr.Anneal;
 import test.Constants;
-
 /**
  *
  * @author mquintin
@@ -47,7 +47,7 @@ public class TestAnneal extends Anneal {
         }
 
         //test Cool
-        if (true) {
+        if (false) {
             //Slowdown
             Anneal.setCoolingType(CoolingType.SLOWDOWN);
             TestAnneal ta = new TestAnneal(60.0, o, 400, .05, 16, 30, false, true, false);
@@ -60,7 +60,7 @@ public class TestAnneal extends Anneal {
         }
 
         //test getOptimizedPrimer
-        if (true) {
+        if (false) {
             TestAnneal ta = new TestAnneal(60.0, o, 400, .05, 10, 30, false, true, false);
             Anneal.random.setSeed(9999l);
             ta.testOptimize();
@@ -91,6 +91,17 @@ public class TestAnneal extends Anneal {
             ta.testInitialTemp();
             ta.testInitialTemp();
             ta.testInitialTemp();
+        }
+        
+        //test a particular problem primer
+        if (true) {
+            String directory = Constants.blastdirectory + "nat/";
+            String genome = FASTA.readFFN(directory, "genome.FASTA");
+            Oligo.Directory = directory;
+            Oligo.Genome = "genome.FASTA";
+            o = Oligo.MismatchFactory(genome, "A", 4572079, 4572079, 1, true, "avrII07");
+            TestAnneal ta = new TestAnneal(60.0, o, 500, .05, 10, 30, false, true, true);
+            ta.testOptimize();
         }
 
     }
@@ -141,6 +152,7 @@ public class TestAnneal extends Anneal {
 
         //compare to all other calculated primers
         double best = 999.0;
+        Primer bestPrimer = null;
         int n = 0;
         for (Primer[] row : matrix) {
             for (Primer p : row) {
@@ -148,6 +160,7 @@ public class TestAnneal extends Anneal {
                     n++;
                     double s = score(p);
                     best = Math.min(s, best);
+                    bestPrimer = p;
                 }
             }
         }
@@ -160,6 +173,8 @@ public class TestAnneal extends Anneal {
                 (opt.genome_start - opt.oligo.target_position - opt.amplicon) + ", Len: " +
                 opt.seq.length());
         System.out.println("Optimal primer returned: " + (score(opt) == best));
+        System.out.println("Returned primer seq: " + opt.seq);
+        System.out.println("Best primer seq: " + bestPrimer.seq);
         System.out.println();
         /*System.out.println("Matrix population: ");
         for (Primer[] row : matrix){

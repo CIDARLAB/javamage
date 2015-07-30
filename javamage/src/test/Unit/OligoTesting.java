@@ -2,10 +2,9 @@ package test.Unit;
 
 import java.io.IOException;
 import java.util.List;
-
-import test.Constants;
 import mage.Core.Oligo;
 import mage.Tools.FASTA;
+import test.Constants;
 
 
 public class OligoTesting {
@@ -20,7 +19,10 @@ public class OligoTesting {
 			//testSpan();
 			//testScores();
 			//testPossibleOligos();
-			testOneOffError();
+			testOneOffError(2,true);
+			testOneOffError(1,true);
+			testOneOffError(2,false);
+			testOneOffError(1,false);
 			//testReplichoreLogic();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -116,37 +118,40 @@ public class OligoTesting {
 	}
 	
 	//edit for debugging
-	private static void testOneOffError() throws Exception{
+	private static void testOneOffError(int rep, boolean sense) throws Exception{
 		//99 A's, TT, 10 G's, 100 T's
 		String genome = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTGGGGGGGGGGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT";
-		
+		System.out.println("Testing One Off Error. Rep:" + rep + " Sense:" + sense);
 		//Oligo o1 = Oligo.MismatchFactory(genome, "CCC", 101, 103, 2, true, "mismatch");
-		Oligo o1 = Oligo.InsertionFactory(genome, "CCC", 101, 2, true, "ins");
+		Oligo o1 = Oligo.InsertionFactory(genome, "NNN", 101, rep, sense, "ins");
 		//Oligo o1 = Oligo.DeletionFactory(genome, 101, 103, 2, "del");
 		
-		System.out.println(o1.name + " span: " + o1.span);
+		/*System.out.println(o1.name + " span: " + o1.span);
 		System.out.println("min: " + o1.oligo_min);
 		System.out.println("max: " + o1.oligo_max);
 		System.out.println("margin: " + o1.getMargin());
 		System.out.println("genome start: " + o1.getGenomeStart());
 		System.out.println("genome end: " + o1.getGenomeEnd());
 		System.out.println("target position: " + o1.target_position);
-		//System.out.println("target position on genome: " + o1.x);
-		System.out.println("Insert to AAATCCCTGGG");
+		*///System.out.println("target position on genome: " + o1.x);
+		System.out.println("Insert to AAATNNNTGGG");
                 System.out.println(o1.sequence);
 		
 		//String preSequence =  genome.substring(o1.getGenomeStart()-1, 99);
 		//System.out.println(preSequence);
                 
                 //replace the T with a C
-                System.out.println("Mismatch to AAACTGGG");
-                Oligo o2 = Oligo.MismatchFactory(genome, "C", 100, 101, 2, true, "mismatch");
+                System.out.println("Mismatch to AAANTGGG");
+                Oligo o2 = Oligo.MismatchFactory(genome, "N", 100, 101, rep, sense, "mismatch");
                 System.out.println(o2.sequence);
                 
                 //delete the T
-                System.out.println("Delete to AAAGGG");
-                Oligo o3 = Oligo.DeletionFactory(genome, 100, 101, 2, "delete");
+                System.out.println("Delete to AAATGGG");
+                Oligo o3 = Oligo.DeletionFactory(genome, 100, 101, rep, "delete");
                 System.out.println(o3.sequence);
+                //System.out.println("deletion span: " + o3.span);
+                //System.out.println("deletion genome end-start: " + (o3.getGenomeEnd()-o3.getGenomeStart()));
+                //genome_end - genome_start - span  is a valid way to get deletion length
 
 	}
 	
